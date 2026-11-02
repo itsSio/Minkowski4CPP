@@ -615,7 +615,7 @@ struct AdaptiveNetImpl : torch::nn::Module {
     auto layer = [&](const ad::AdaptiveSparseTensor &x, size_t i) {
       if (g_prof.on) { // build (or hit) the kernel map first so the conv below only applies it
         const double t = prof_start(dev);
-        ad::KernelMapCache::instance().get_or_build(x, kc);
+        ad::KernelMapCache::instance().get_or_build(x, kc, /*host_arrays=*/false);
         prof_add("fwd_kernel_map", t, dev);
       }
       double t = prof_start(dev);
