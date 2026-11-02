@@ -130,6 +130,13 @@ tap point; with `output_level_shift = -1` on a fully refined region only one of
 the 2^D children under each output reaches it (the others get zero gradient).
 `CenterAveraged` reads all of them and equals `CenterSampled` on uniform grids.
 
+`CenterSampled` and `VolumeWeighted` resolve each tap on the integer grid: the tap is the
+centre of the neighbouring output-level cell, and where that cell is split into finer leaves
+it reads the leaf whose lower corner the centre is (cells are half-open). The map therefore
+depends only on the leaf keys, not on where the grid sits in space, also for voxel sizes and
+origins that are not binary fractions (earlier versions located the tap as a floating-point
+point there, and rounding decided between the leaves touching it).
+
 Coarsen output resolution with `output_level_shift = -1`:
 
 ```cpp
@@ -236,6 +243,24 @@ topology pipeline.
 Kernel maps are cached per topology. Inspect
 `KernelMapCache::instance().stats()` and use `.clear()` when intentionally
 resetting the cache.
+
+Training batches usually put each sample next to the others along the first axis,
+so every batch is a new topology and its kernel maps are built from scratch, although
+each sample's share of them is the same every epoch. Part reuse keeps those shares:
+
+```cpp
+KernelMapCache::instance().set_part_reuse_bytes(size_t(512) << 20); // 0 = off (default)
+```
+
+A topology whose leaves form groups separated along the first axis by at least
+`(kernel_size - 1) / 2` empty level-0 cells is split into those groups; each group is
+matched by content (its keys moved to start at level-0 x 0) against the groups of earlier
+batches, and the batch map is assembled from their maps. The result equals a full
+build exactly. It applies to `CenterSampled` and `VolumeWeighted`; stored groups are
+dropped least recently used first beyond the byte budget. `stats()` reports
+`part_hits`, `part_misses` and `part_bytes`. Pooled batches (`adaptive_pool`) split the
+same way, so every layer of an encoder benefits. Moving samples by whole level-0 cells
+keeps them identical; any other offset makes them new content.
 
 ## Limits and measurements
 
