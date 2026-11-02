@@ -9,6 +9,8 @@
 //       [--devices cpu,cuda,cuda-torch] [--warmup 2] [--iterations 5]
 //       [--fused-projection 0|1] (CUDA projection kernels, default 1)
 //       [--fused-tiles 0|1] (CUDA culling and tile-list kernels, default 1)
+
+//       [--fused-ssim 0|1] (CUDA SSIM kernels in --train, default 1)
 //       [--train] [--label name] [--output results.json]
 //       [--dump-grads prefix] [--compare-grads prefix]
 //
@@ -236,6 +238,8 @@ int main(int argc, char **argv) {
         minkowski::gaussian::detail::cuda_fused_projection() = std::stoi(next()) != 0;
       else if (a == "--fused-tiles") // 0: LibTorch culling and tile lists, 1: CUDA kernels
         minkowski::gaussian::detail::cuda_fused_tiles() = std::stoi(next()) != 0;
+      else if (a == "--fused-ssim") // 0: LibTorch SSIM filters, 1: fused CUDA kernels (default)
+        minkowski::gaussian::detail::cuda_fused_ssim() = std::stoi(next()) != 0;
 #endif
       else if (a == "--label")
         label = next();
