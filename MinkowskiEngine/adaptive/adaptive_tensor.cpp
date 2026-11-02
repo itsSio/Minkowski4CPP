@@ -262,7 +262,11 @@ StepResult coarsen_step(const Topology &t, const at::Tensor &f, const AxisAligne
   if (e1 < N)
     pieces.push_back(f.slice(0, e1, N));
   auto feats = pieces.size() == 1 ? pieces[0] : torch::cat(pieces, 0);
-  return {Topology::make(t.config, std::move(keys)), feats};
+  // Valid by construction, so the overlap check is skipped: coarsen() runs from the finest
+  // level up, so every descendant of a new parent below `level` was merged into a leaf at
+  // `level` in an earlier step (a parent box inside the region contains all its descendants'
+  // boxes), and an active ancestor of a parent would already overlap its children in `t`.
+  return {Topology::make(t.config, std::move(keys), /*check_overlap=*/false), feats};
 }
 
 // Leaf index per point (or -1).

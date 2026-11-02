@@ -231,7 +231,7 @@ void sort_keys(std::vector<Key> &keys, std::vector<int64_t> &order) {
 }
 
 std::shared_ptr<const Topology> Topology::make(const AdaptiveVoxelConfig &cfg,
-                                               std::vector<Key> sorted_keys) {
+                                               std::vector<Key> sorted_keys, bool check_overlap) {
   cfg.validate();
   static std::atomic<uint64_t> counter{0};
 
@@ -277,7 +277,7 @@ std::shared_ptr<const Topology> Topology::make(const AdaptiveVoxelConfig &cfg,
     if (t->counts[l] > 0)
       t->present_levels.push_back(l);
   }
-  if (has_active_ancestor(t->keys, t->present_levels, level_begin))
+  if (check_overlap && has_active_ancestor(t->keys, t->present_levels, level_begin))
     throw std::invalid_argument(
         "overlapping active voxels: a leaf and one of its ancestors are both active");
 
