@@ -718,7 +718,7 @@ int main(int argc, char **argv) {
   uint64_t data_seed = 2026;
   int64_t density_threshold = 12;
   double lr = 1e-3, kmap_part_reuse_mb = 0.0;
-  int deterministic = 0;
+  int deterministic = 0, fused_apply = -1;
   if ((argc - 1) % 2 != 0)
     throw std::invalid_argument("Arguments must be option/value pairs");
   for (int i = 1; i + 1 < argc; i += 2) {
@@ -753,6 +753,8 @@ int main(int argc, char **argv) {
       kmap_part_reuse_mb = std::stod(v);
     else if (a == "--deterministic") // 1: deterministic algorithms (warn only where missing)
       deterministic = std::stoi(v);
+    else if (a == "--fused-apply") // 0|1: fused CUDA adaptive apply_map off/on (default on)
+      fused_apply = std::stoi(v);
     else
       throw std::invalid_argument("unknown argument " + a);
   }
@@ -761,6 +763,8 @@ int main(int argc, char **argv) {
     throw std::invalid_argument("--method uniform|adaptive|gaussian|adaptive_gaussian");
   if (deterministic)
     at::globalContext().setDeterministicAlgorithms(true, /*warn_only=*/true);
+  if (fused_apply >= 0)
+    ad::detail::cuda_apply_map_fused() = fused_apply != 0;
   ad::KernelMapCache::instance().set_part_reuse_bytes(
       static_cast<size_t>(kmap_part_reuse_mb * 1048576.0));
   if (batch_size < 2)
