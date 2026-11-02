@@ -4,6 +4,7 @@
 //                          [--conv none|cpu|cuda] [--cout 16] [--dtype f32|f64]
 //                          [--region 16] [--phases cold,warm] [--drop-empty 0|1] [--group-mb M]
 //                          [--batch B --samples S --epochs E --part-reuse-mb M]
+//                          [--fused 0|1] [--grad-split 0|1]
 // Workload: half the points uniform in [0,256)^3, half in [0,16)^3; voxelized at level 0 and
 // the region [0,R)^3 refined to `depth`, R = --region (16 = the adaptive_bench workload).
 // --phases picks which kernel-map timings run (cold, warm or both).
@@ -21,6 +22,8 @@
 //  conv_<mode>_fwd_ms     : forward only, synchronized
 //  conv_<mode>_fwdbwd_ms  : forward + backward (features and weight), synchronized
 //  conv_<mode>_cuda_ms    : forward time between CUDA events (cuda only)
+//  conv_<mode>_fwdbwdx_ms / _fwdbwdw_ms : with --grad-split 1, forward + backward with only the
+//                           features / only the weight requiring a gradient
 //  cuda_max_alloc_mb / cuda_max_reserved_mb : caching-allocator peaks over the conv runs
 // With --batch B: training-style batches instead. S samples (each --n points on a random
 // ellipsoid surface spanning 4 level-0 cells, the half x < 2 cells refined to --depth) are
@@ -82,6 +85,8 @@ struct Args {
     int64_t samples = 64;
     int epochs = 3;
     double part_reuse_mb = 0.0;
+    int fused = -1;          // < 0: library default (fused CUDA apply_map kernels on/off)
+    bool grad_split = false;
 };
 
 Args parse(int argc, char** argv) {
@@ -107,6 +112,8 @@ Args parse(int argc, char** argv) {
         else if (k == "--samples") a.samples = std::atoll(v.c_str());
         else if (k == "--epochs") a.epochs = std::atoi(v.c_str());
         else if (k == "--part-reuse-mb") a.part_reuse_mb = std::atof(v.c_str());
+        else if (k == "--fused") a.fused = std::atoi(v.c_str());
+        else if (k == "--grad-split") a.grad_split = std::atoi(v.c_str()) != 0;
         else {
             std::cerr << "unknown argument " << k << "\n";
             std::exit(2);
@@ -218,6 +225,18 @@ int run_conv(const Args& a, const AdaptiveSparseTensor& t_cpu) {
                    y.features().sum().backward();
                    sync(dev);
                });
+        if (a.grad_split) {
+            for (int which = 0; which < 2; ++which)
+                report("conv_" + mode + (which == 0 ? "_fwdbwdx" : "_fwdbwdw"), a,
+                       [&] { sync(dev); },
+                       [&] {
+                           auto f = t.features().detach().requires_grad_(which == 0);
+                           auto wg = w.detach().requires_grad_(which == 1);
+                           auto y = adaptive_convolution(t.with_features(f), wg, kc);
+                           y.features().sum().backward();
+                           sync(dev);
+                       });
+        }
 #ifdef USE_CUDA
         if (dev.is_cuda()) {
             std::vector<double> ev;
@@ -343,6 +362,7 @@ int main(int argc, char** argv) {
     if (a.group_mb >= 0)
         minkowski::adaptive::detail::cuda_apply_map_group_bytes() =
             static_cast<int64_t>(a.group_mb * 1048576.0);
+    if (a.fused >= 0) minkowski::adaptive::detail::cuda_apply_map_fused() = a.fused != 0;
     torch::manual_seed(0);
     auto pts = torch::cat({torch::rand({a.n / 2, 3}, torch::kFloat64) * 256.0,
                            torch::rand({a.n - a.n / 2, 3}, torch::kFloat64) * 16.0});
