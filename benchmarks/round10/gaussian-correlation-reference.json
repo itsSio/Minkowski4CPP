@@ -1,0 +1,52 @@
+{
+  "kind": "analytic_model_comparison_not_measured_library_output",
+  "source_header_sha256": "53c58f8aa3702db7bf7855cf17da25b45cadfb2e16862fd2af38e4493a11911c",
+  "formula": "1/8 + asin(rho)/(4*pi)",
+  "covariance": "[[1,rho,0],[rho,1,0],[0,0,1]], strictly SPD for abs(rho)<1",
+  "applicability": "Centered Gaussian at axis-grid boundary; effectively unbounded octant cells. Finite cells [0,8]^3 differ by at most3*P(N(0,1)>8)<2e-15.",
+  "caveats": "BoxIntegral also renormalizes truncated support. No claim of a measured bridge bug or a finite-box runtime comparison. Current approximation is intentionally documented.",
+  "rows": [
+    {
+      "rho": -0.99,
+      "exact_positive_octant_probability": 0.011263353411103016,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": 1009.7938192792514
+    },
+    {
+      "rho": -0.9,
+      "exact_positive_octant_probability": 0.03589157328217657,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": 248.27116386696227
+    },
+    {
+      "rho": -0.5,
+      "exact_positive_octant_probability": 0.08333333333333333,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": 50.0
+    },
+    {
+      "rho": 0,
+      "exact_positive_octant_probability": 0.125,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": 0.0
+    },
+    {
+      "rho": 0.5,
+      "exact_positive_octant_probability": 0.16666666666666669,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": -25.00000000000001
+    },
+    {
+      "rho": 0.9,
+      "exact_positive_octant_probability": 0.21410842671782343,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": -41.61836508904001
+    },
+    {
+      "rho": 0.99,
+      "exact_positive_octant_probability": 0.23873664658889698,
+      "marginal_product_probability": 0.125,
+      "relative_error_percent": -47.641050594444664
+    }
+  ]
+}

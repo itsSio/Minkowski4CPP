@@ -1,0 +1,329 @@
+{
+  "conclusion": "failure",
+  "headSha": "8a78439289f489f20d1abcce5d7f24f8b3a0dc3f",
+  "jobs": [
+    {
+      "completedAt": "2026-11-02T19:30:38Z",
+      "conclusion": "failure",
+      "databaseId": 125492140979,
+      "name": "build-and-publish (134)",
+      "startedAt": "2026-11-02T19:13:59Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-11-02T19:14:00Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-11-02T19:13:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:02Z",
+          "conclusion": "success",
+          "name": "Checkout",
+          "number": 2,
+          "startedAt": "2026-11-02T19:14:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:03Z",
+          "conclusion": "success",
+          "name": "Test builder scripts",
+          "number": 3,
+          "startedAt": "2026-11-02T19:14:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:08Z",
+          "conclusion": "success",
+          "name": "Test PowerShell builders",
+          "number": 4,
+          "startedAt": "2026-11-02T19:14:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:14Z",
+          "conclusion": "success",
+          "name": "Set up Docker Buildx",
+          "number": 5,
+          "startedAt": "2026-11-02T19:14:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:14Z",
+          "conclusion": "skipped",
+          "name": "Login to Docker Hub",
+          "number": 6,
+          "startedAt": "2026-11-02T19:14:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:31Z",
+          "conclusion": "failure",
+          "name": "Build and push Docker image",
+          "number": 7,
+          "startedAt": "2026-11-02T19:14:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:31Z",
+          "conclusion": "skipped",
+          "name": "Publish default CUDA tags",
+          "number": 8,
+          "startedAt": "2026-11-02T19:30:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:31Z",
+          "conclusion": "success",
+          "name": "Post Build and push Docker image",
+          "number": 14,
+          "startedAt": "2026-11-02T19:30:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:36Z",
+          "conclusion": "success",
+          "name": "Post Set up Docker Buildx",
+          "number": 15,
+          "startedAt": "2026-11-02T19:30:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:36Z",
+          "conclusion": "success",
+          "name": "Post Checkout",
+          "number": 16,
+          "startedAt": "2026-11-02T19:30:36Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:36Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-11-02T19:30:36Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/itsSio/Minkowski4CPP/actions/runs/41507998304/job/125492140979"
+    },
+    {
+      "completedAt": "2026-11-02T19:30:36Z",
+      "conclusion": "failure",
+      "databaseId": 125492141336,
+      "name": "build-and-publish (132)",
+      "startedAt": "2026-11-02T19:13:58Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-11-02T19:14:00Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-11-02T19:13:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:02Z",
+          "conclusion": "success",
+          "name": "Checkout",
+          "number": 2,
+          "startedAt": "2026-11-02T19:14:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:02Z",
+          "conclusion": "success",
+          "name": "Test builder scripts",
+          "number": 3,
+          "startedAt": "2026-11-02T19:14:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:07Z",
+          "conclusion": "success",
+          "name": "Test PowerShell builders",
+          "number": 4,
+          "startedAt": "2026-11-02T19:14:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:11Z",
+          "conclusion": "success",
+          "name": "Set up Docker Buildx",
+          "number": 5,
+          "startedAt": "2026-11-02T19:14:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:11Z",
+          "conclusion": "skipped",
+          "name": "Login to Docker Hub",
+          "number": 6,
+          "startedAt": "2026-11-02T19:14:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:28Z",
+          "conclusion": "failure",
+          "name": "Build and push Docker image",
+          "number": 7,
+          "startedAt": "2026-11-02T19:14:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:28Z",
+          "conclusion": "skipped",
+          "name": "Publish default CUDA tags",
+          "number": 8,
+          "startedAt": "2026-11-02T19:30:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:28Z",
+          "conclusion": "success",
+          "name": "Post Build and push Docker image",
+          "number": 14,
+          "startedAt": "2026-11-02T19:30:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:34Z",
+          "conclusion": "success",
+          "name": "Post Set up Docker Buildx",
+          "number": 15,
+          "startedAt": "2026-11-02T19:30:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:34Z",
+          "conclusion": "success",
+          "name": "Post Checkout",
+          "number": 16,
+          "startedAt": "2026-11-02T19:30:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:30:34Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-11-02T19:30:34Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/itsSio/Minkowski4CPP/actions/runs/41507998304/job/125492141336"
+    },
+    {
+      "completedAt": "2026-11-02T19:31:44Z",
+      "conclusion": "failure",
+      "databaseId": 125492141501,
+      "name": "build-and-publish (124)",
+      "startedAt": "2026-11-02T19:13:59Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-11-02T19:14:02Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-11-02T19:14:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:04Z",
+          "conclusion": "success",
+          "name": "Checkout",
+          "number": 2,
+          "startedAt": "2026-11-02T19:14:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:05Z",
+          "conclusion": "success",
+          "name": "Test builder scripts",
+          "number": 3,
+          "startedAt": "2026-11-02T19:14:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:10Z",
+          "conclusion": "success",
+          "name": "Test PowerShell builders",
+          "number": 4,
+          "startedAt": "2026-11-02T19:14:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:15Z",
+          "conclusion": "success",
+          "name": "Set up Docker Buildx",
+          "number": 5,
+          "startedAt": "2026-11-02T19:14:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:14:15Z",
+          "conclusion": "skipped",
+          "name": "Login to Docker Hub",
+          "number": 6,
+          "startedAt": "2026-11-02T19:14:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:37Z",
+          "conclusion": "failure",
+          "name": "Build and push Docker image",
+          "number": 7,
+          "startedAt": "2026-11-02T19:14:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:37Z",
+          "conclusion": "skipped",
+          "name": "Publish default CUDA tags",
+          "number": 8,
+          "startedAt": "2026-11-02T19:31:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:37Z",
+          "conclusion": "success",
+          "name": "Post Build and push Docker image",
+          "number": 14,
+          "startedAt": "2026-11-02T19:31:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:42Z",
+          "conclusion": "success",
+          "name": "Post Set up Docker Buildx",
+          "number": 15,
+          "startedAt": "2026-11-02T19:31:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:42Z",
+          "conclusion": "success",
+          "name": "Post Checkout",
+          "number": 16,
+          "startedAt": "2026-11-02T19:31:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-11-02T19:31:42Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 17,
+          "startedAt": "2026-11-02T19:31:42Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/itsSio/Minkowski4CPP/actions/runs/41507998304/job/125492141501"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/itsSio/Minkowski4CPP/actions/runs/41507998304"
+}

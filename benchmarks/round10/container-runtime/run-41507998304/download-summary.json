@@ -1,0 +1,263 @@
+[
+  {
+    "job": "125492140979",
+    "name": "build-and-publish (134)",
+    "conclusion": "failure",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "86fa68ca137e97bc16343a9caca1ddb9cbe0baf0556537e4e5a00eb55f8e2c67",
+      "files": 9,
+      "status": "failed",
+      "receipt": {
+        "status": "failed",
+        "started": "2026-11-02T19:15:39.997582+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.02102209299999913,
+            "peak_child_rss_kib_so_far": 50992
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 4.983969011999989,
+            "peak_child_rss_kib_so_far": 156172
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract"
+            ],
+            "exit_code": 1,
+            "wall_seconds": 886.188179087,
+            "peak_child_rss_kib_so_far": 1765328
+          }
+        ],
+        "image_cuda_profile": "134",
+        "cpu_count": 4,
+        "disk_free_before": 70095560704,
+        "source_base_commit": "b9e9129b73164b3907aa37e3bf1cba7562de4542",
+        "verified_source_files": 294,
+        "error": "build failed with exit 1",
+        "completed": "2026-11-02T19:30:31.318229+00:00",
+        "disk_free_after": 70052712448
+      }
+    }
+  },
+  {
+    "job": "125492141336",
+    "name": "build-and-publish (132)",
+    "conclusion": "failure",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "9a54eac68ae24b4e9d519d03bf7b3df1ae1c9ff109067567e27a226254397249",
+      "files": 9,
+      "status": "failed",
+      "receipt": {
+        "status": "failed",
+        "started": "2026-11-02T19:15:33.836635+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.020031337999967036,
+            "peak_child_rss_kib_so_far": 50888
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 5.015774117000035,
+            "peak_child_rss_kib_so_far": 156040
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract"
+            ],
+            "exit_code": 1,
+            "wall_seconds": 889.310723748,
+            "peak_child_rss_kib_so_far": 1765192
+          }
+        ],
+        "image_cuda_profile": "132",
+        "cpu_count": 4,
+        "disk_free_before": 70095532032,
+        "source_base_commit": "b9e9129b73164b3907aa37e3bf1cba7562de4542",
+        "verified_source_files": 294,
+        "error": "build failed with exit 1",
+        "completed": "2026-11-02T19:30:28.313864+00:00",
+        "disk_free_after": 70052671488
+      }
+    }
+  },
+  {
+    "job": "125492141501",
+    "name": "build-and-publish (124)",
+    "conclusion": "failure",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "766c8220dae3daa16fb5d00d4b57ccb36b7d798d85e87ce611a9132a78063d9a",
+      "files": 9,
+      "status": "failed",
+      "receipt": {
+        "status": "failed",
+        "started": "2026-11-02T19:15:41.537954+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.018691442000005054,
+            "peak_child_rss_kib_so_far": 51064
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 5.106796953000014,
+            "peak_child_rss_kib_so_far": 157992
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract"
+            ],
+            "exit_code": 1,
+            "wall_seconds": 950.305501361,
+            "peak_child_rss_kib_so_far": 1765420
+          }
+        ],
+        "image_cuda_profile": "124",
+        "cpu_count": 4,
+        "disk_free_before": 70095556608,
+        "source_base_commit": "b9e9129b73164b3907aa37e3bf1cba7562de4542",
+        "verified_source_files": 294,
+        "error": "build failed with exit 1",
+        "completed": "2026-11-02T19:31:37.097026+00:00",
+        "disk_free_after": 70052704256
+      }
+    }
+  }
+]

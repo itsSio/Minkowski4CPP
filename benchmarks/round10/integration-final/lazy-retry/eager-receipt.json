@@ -1,0 +1,45 @@
+{
+  "status": "failed",
+  "source": "a67f671f4aa3a003751e3d06af85d2b9b8b459e5",
+  "started": "2026-11-02T20:40:21.1415910+01:00",
+  "configurations": [
+    {
+      "kind": "cpu",
+      "build_exit": 0,
+      "ctest_exit": 0,
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "112B5B719DC189C3C3990A8E1D75C8DE52B32F4FA7E421038505688653E9A753"
+        },
+        {
+          "name": "adaptive_split_tests",
+          "sha256": "408DEA61636D6870446A4A2558B98E8BA84E37E1AD2F22F3EFC7881121EDC0CF"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "6229BA0A050E5439DB23D4F71B1A9B81CCC58CA5A337F9939C3E6C9923DD982F"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "9E7B1A4C118D9F429267C3B941566CA78FC9E9E35391D1A9C0FAEF0F78F2BB54"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "A3EC89080AEFBED848DE01107564A8CFD3653A4BAC1630B92EA85BB1B3F7DB77"
+        },
+        {
+          "name": "point_dataset_tests",
+          "sha256": "4BBF18D6D81D5DEAC75F32F799C0D316BD5E225A33481C608521823F51E54707"
+        },
+        {
+          "name": "benchmark_memory_tests",
+          "sha256": "3508590A01B4A2CF810C7D63957FA38EF0DFB2429B752C3873BC86A7B49D3F18"
+        }
+      ],
+      "completed": "2026-11-02T20:44:56.0068318+01:00"
+    }
+  ],
+  "error": "cuda CTest failed",
+  "completed": "2026-11-02T21:00:17.5582321+01:00"
+}

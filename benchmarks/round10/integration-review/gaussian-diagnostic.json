@@ -1,0 +1,132 @@
+{
+  "timestamp": "2026-11-02T20:57:50.9051631+01:00",
+  "note": "Read-only diagnostic snapshot; no process/environment changes",
+  "process": {
+    "pid": 32508,
+    "cpu_seconds": 363.375,
+    "working_set_bytes": 932646912,
+    "started": "2026-11-02T20:52:17.0273645+01:00",
+    "threads": 12
+  },
+  "modules": [
+    {
+      "name": "c10_cuda.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\c10_cuda.dll",
+      "product_version": null
+    },
+    {
+      "name": "c10.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\c10.dll",
+      "product_version": null
+    },
+    {
+      "name": "libiomp5md.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\libiomp5md.dll",
+      "product_version": "5.0"
+    },
+    {
+      "name": "torch_cpu.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\torch_cpu.dll",
+      "product_version": null
+    },
+    {
+      "name": "torch_cuda.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\torch_cuda.dll",
+      "product_version": null
+    },
+    {
+      "name": "cudnn64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn64_9.dll",
+      "product_version": "9.26.0.51"
+    },
+    {
+      "name": "cublas64_13.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cublas64_13.dll",
+      "product_version": "6,14,11,1380"
+    },
+    {
+      "name": "nvrtc64_130_0.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\nvrtc64_130_0.dll",
+      "product_version": "6.14.11.9000"
+    },
+    {
+      "name": "cublasLt64_13.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cublasLt64_13.dll",
+      "product_version": "6,14,11,1380"
+    },
+    {
+      "name": "nvcuda.dll",
+      "path": "C:\\WINDOWS\\SYSTEM32\\nvcuda.dll",
+      "product_version": "32.0.16.1088"
+    },
+    {
+      "name": "nvcuda64.dll",
+      "path": "C:\\WINDOWS\\system32\\DriverStore\\FileRepository\\nv_dispig.inf_amd64_cc526ccc3287f5cd\\nvcuda64.dll",
+      "product_version": "32.0.16.1088"
+    },
+    {
+      "name": "nvcudart_hybrid64.dll",
+      "path": "C:\\WINDOWS\\System32\\DriverStore\\FileRepository\\nv_dispig.inf_amd64_cc526ccc3287f5cd\\nvcudart_hybrid64.dll",
+      "product_version": "6,14,11,13030"
+    },
+    {
+      "name": "cudnn_graph64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn_graph64_9.dll",
+      "product_version": null
+    },
+    {
+      "name": "cudnn_engines_precompiled64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn_engines_precompiled64_9.dll",
+      "product_version": "9.26.0.51"
+    },
+    {
+      "name": "cudnn_heuristic64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn_heuristic64_9.dll",
+      "product_version": null
+    },
+    {
+      "name": "cudnn_engines_runtime_compiled64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn_engines_runtime_compiled64_9.dll",
+      "product_version": "9.26.0.51"
+    },
+    {
+      "name": "cudnn_engines_tensor_ir64_9.dll",
+      "path": "C:\\Users\\User\\Work\\mink-build\\integration-cuda\\cudnn_engines_tensor_ir64_9.dll",
+      "product_version": null
+    }
+  ],
+  "gpu_query": [
+    "name, driver_version, pstate, utilization.gpu [%], utilization.memory [%], memory.used [MiB], memory.free [MiB]",
+    "NVIDIA GeForce RTX 2080 SUPER, 610.88, P2, 100 %, 8 %, 7853 MiB, 135 MiB"
+  ],
+  "launch_script": [
+    "$ErrorActionPreference='Stop'",
+    ". 'C:\\Users\\User\\Work\\mink-lab\\tools\\mink-env.ps1' -Cpu:$('cuda' -eq 'cpu') -Quiet",
+    "$env:CUDA_MODULE_LOADING='EAGER'",
+    "& ctest --test-dir 'C:\\Users\\User\\Work\\mink-build\\integration-cuda' --parallel 1 --verbose --output-on-failure --timeout 420 --output-junit 'C:\\Users\\User\\Work\\mink-lab\\results\\round10\\integration-final\\ctest-cuda.xml' *> 'C:\\Users\\User\\Work\\mink-lab\\results\\round10\\integration-final\\ctest-cuda.log'",
+    "exit $LASTEXITCODE"
+  ],
+  "environment_script_thread_settings": [
+    "        (Join-Path $cudaRoot 'nsight_compute'),"
+  ],
+  "selected_diagnostic_shell_environment": {
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "OMP_DYNAMIC": null,
+    "CUDA_MODULE_LOADING": null,
+    "CUBLAS_WORKSPACE_CONFIG": null
+  },
+  "environment_limit": "Selected variables are this diagnostic shell, not a direct read of the already running process environment. Launcher and mink-env scripts were inspected.",
+  "dll_file_ids": [
+    {
+      "name": "torch_cpu.dll",
+      "loaded_path_id": "File ID is 0x000000000000000000020000002e4175",
+      "installed_path_id": "File ID is 0x000000000000000000020000002e4175"
+    },
+    {
+      "name": "torch_cuda.dll",
+      "loaded_path_id": "File ID is 0x000000000000000000020000002e4177",
+      "installed_path_id": "File ID is 0x000000000000000000020000002e4177"
+    }
+  ]
+}

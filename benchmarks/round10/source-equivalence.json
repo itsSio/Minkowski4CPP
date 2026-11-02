@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "native_runtime": "a67f671",
+  "container_runtime": "aa74d97",
+  "engine_source_difference_only_documentation": [
+    "MinkowskiEngine/gaussian/README.md"
+  ],
+  "corrected_container_run": "41514149790",
+  "original_eager_timeout_preserved": true,
+  "gpu_container_execution": false
+}

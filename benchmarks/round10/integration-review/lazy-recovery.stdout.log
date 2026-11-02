@@ -1,0 +1,4 @@
+2026-11-02T20:59:34.2515558+01:00 waiting for original full CTest orchestrator28060
+2026-11-02T21:00:21.1702546+01:00 running complete CUDA CTest with LAZY loading
+2026-11-02T21:02:17.7653769+01:00 full LAZY CTest exit0
+2026-11-02T21:02:17.8105587+01:00 passed

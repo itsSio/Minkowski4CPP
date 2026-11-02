@@ -1,0 +1,36 @@
+UpdateCTestConfiguration  from :C:/Users/User/Work/mink-build/integration-cpu/DartConfiguration.tcl
+Test project C:/Users/User/Work/mink-build/integration-cpu
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 2
+    Start 2: cmake_cpu_coordinate_manager_sources
+
+2: Test command: C:\Users\User\Work\mink-env\cmake-4.2.3\bin\cmake.exe "-DSOURCE_FILE=C:/Users/User/Work/mink-build/integration-cpu/mink-cpu-library-sources.txt" "-P" "C:/Users/User/Work/mink-wt/integration/tests/cmake/check_cpu_coordinate_manager.cmake"
+2: Working Directory: C:/Users/User/Work/mink-build/integration-cpu
+2: Test timeout computed to be: 10000000
+2: -- CPU library has exactly one canonical CoordinateManager implementation
+1/2 Test #2: cmake_cpu_coordinate_manager_sources ...   Passed    0.03 sec
+test 6
+    Start 6: adaptive_part_split_compare_tests
+
+6: Test command: "C:\Program Files\Python314\python.exe" "-I" "-B" "C:/Users/User/Work/mink-wt/integration/benchmarks/test_adaptive_part_split_compare.py"
+6: Working Directory: C:/Users/User/Work/mink-build/integration-cpu
+6: Test timeout computed to be: 10000000
+6: ......
+6: ----------------------------------------------------------------------
+6: Ran 6 tests in 0.001s
+6: 
+6: OK
+2/2 Test #6: adaptive_part_split_compare_tests ......   Passed    0.12 sec
+
+The following tests passed:
+	cmake_cpu_coordinate_manager_sources
+	adaptive_part_split_compare_tests
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.17 sec

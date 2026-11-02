@@ -1,0 +1,206 @@
+{
+  "audit": "passed",
+  "claim": "full CPU runtime and ASan/UBSan split stages passed; overall CI succeeded",
+  "run": "41514149790",
+  "runtime_head": "aa74d97229e899adfb5ec7c8c0037d1d06d1245e",
+  "jobs": [
+    {
+      "job": "125513256214",
+      "label": "build-and-publish (134)",
+      "overall_ci": "success",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "passed",
+      "sanitizer_test": "6 passed; zero ASan/UBSan findings",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 13,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test identities recorded; successful runner also verified post-test binary/source hashes",
+      "rss_before_mib": 2.9375,
+      "rss_allocated_mib": 66.9375,
+      "rss_after_free_mib": 66.9375,
+      "rss_delta_mib": 64.0,
+      "cpu_count": 4,
+      "mem_total_kib": 16367520,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.018489075999980287
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 0,
+          "seconds": 3.3188058069999897
+        },
+        {
+          "name": "split-sanitizer-test",
+          "exit_code": 0,
+          "seconds": 0.582245161000003
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 4.9705669469999805
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 871.2538077400001
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.004442182999810029
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 57.356701379000015
+        }
+      ]
+    },
+    {
+      "job": "125513256481",
+      "label": "build-and-publish (124)",
+      "overall_ci": "success",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "passed",
+      "sanitizer_test": "6 passed; zero ASan/UBSan findings",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 13,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test identities recorded; successful runner also verified post-test binary/source hashes",
+      "rss_before_mib": 3.04688,
+      "rss_allocated_mib": 67.0469,
+      "rss_after_free_mib": 67.0469,
+      "rss_delta_mib": 64.00001999999999,
+      "cpu_count": 4,
+      "mem_total_kib": 16367524,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.018962959999981877
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 0,
+          "seconds": 3.4813365979999844
+        },
+        {
+          "name": "split-sanitizer-test",
+          "exit_code": 0,
+          "seconds": 0.5949300549999919
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 5.145033775000002
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 921.7510516129998
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.004343768999888198
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 58.77921267199986
+        }
+      ]
+    },
+    {
+      "job": "125513256771",
+      "label": "build-and-publish (132)",
+      "overall_ci": "success",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "passed",
+      "sanitizer_test": "6 passed; zero ASan/UBSan findings",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 13,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test identities recorded; successful runner also verified post-test binary/source hashes",
+      "rss_before_mib": 3.04688,
+      "rss_allocated_mib": 67.0469,
+      "rss_after_free_mib": 67.0469,
+      "rss_delta_mib": 64.00001999999999,
+      "cpu_count": 4,
+      "mem_total_kib": 16367520,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.018408719999996492
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 0,
+          "seconds": 3.4083926469999852
+        },
+        {
+          "name": "split-sanitizer-test",
+          "exit_code": 0,
+          "seconds": 0.5933921990000215
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 5.107497281999997
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 871.956075862
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.004201989999955913
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 57.16699464699991
+        }
+      ]
+    }
+  ]
+}

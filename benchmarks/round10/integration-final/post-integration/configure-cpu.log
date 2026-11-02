@@ -1,0 +1,81 @@
+mink-build: configure args unchanged; skipping configure
+mink-build: cmake --build "C:\Users\User\Work\mink-build\integration-cpu" --parallel 4 --target help
+[0/2] Re-checking globbed directories...
+[1/2] Re-running CMake...
+-- Compiler cache: C:/Users/User/Work/mink-env/sccache-0.19.0/sccache-v0.19.0-x86_64-pc-windows-msvc/sccache.exe
+CMake Warning at C:/Users/User/Work/mink-env/libtorch-2.15.0-cpu/libtorch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  library kineto not found.
+Call Stack (most recent call first):
+  C:/Users/User/Work/mink-env/libtorch-2.15.0-cpu/libtorch/share/cmake/Torch/TorchConfig.cmake:119 (append_torchlib_if_found)
+  CMakeLists.txt:110 (find_package)
+
+
+-- Torch version: 2.15.0
+-- Torch libraries: torch;torch_library;C:/Users/User/Work/mink-env/libtorch-2.15.0-cpu/libtorch/lib/c10.lib
+-- OpenMP enabled
+-- OpenMP runtime: LibTorch libiomp5md
+-- 
+-- ========================================
+-- MinkowskiEngine C++ Configuration
+-- ========================================
+-- Version:       1.0.0
+-- Build type:    Release
+-- CPU only:      ON
+-- Torch:         2.15.0
+-- OpenMP:        TRUE
+-- Build tests:   ON
+-- ========================================
+-- Configuring done (2.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/User/Work/mink-build/integration-cpu
+[0/4] Re-checking globbed directories...
+[1/4] All primary targets available:
+test: phony
+edit_cache: phony
+rebuild_cache: phony
+list_install_components: phony
+install: phony
+install/local: phony
+tests/utils/test: phony
+tests/utils/edit_cache: phony
+tests/utils/rebuild_cache: phony
+tests/utils/list_install_components: phony
+tests/utils/install: phony
+tests/utils/install/local: phony
+adaptive_bench: phony
+adaptive_interp_eval: phony
+adaptive_kmap_bench: phony
+adaptive_split_bench: phony
+adaptive_split_tests: phony
+adaptive_tests: phony
+adaptive_vs_uniform_bench: phony
+benchmark_memory_tests: phony
+core_conv_bench: phony
+core_tests: phony
+gaussian_adaptive_bench: phony
+gaussian_bench: phony
+gaussian_ply_bench: phony
+gaussian_render_bench: phony
+gaussian_tests: phony
+memory_growth_tests: phony
+minkowski_cpp: phony
+ml_representations: phony
+point_dataset_tests: phony
+sphere: phony
+test_framework_contract: phony
+test_framework_contract.exe: phony
+train: phony
+build.ninja: RERUN_CMAKE
+C:/Users/User/Work/mink-build/integration-cpu/cmake_install.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cpu/tests/utils/cmake_install.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cpu/CTestTestfile.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cpu/tests/utils/CTestTestfile.cmake: RERUN_CMAKE
+
+clean: CLEAN
+
+help: HELP
+
+mink-build: exit 0 (configure 0s, build 3s incl. lock wait)

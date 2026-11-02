@@ -1,0 +1,111 @@
+mink-build: configure args unchanged; skipping configure
+mink-build: cmake --build "C:\Users\User\Work\mink-build\integration-cuda" --parallel 4 --target help
+[0/2] Re-checking globbed directories...
+[1/2] Re-running CMake...
+-- Compiler cache: C:/Users/User/Work/mink-env/sccache-0.19.0/sccache-v0.19.0-x86_64-pc-windows-msvc/sccache.exe
+-- Found CUDAToolkit: C:/Users/User/Work/mink-env/cuda-13.4/include;C:/Users/User/Work/mink-env/cuda-13.4/include/cccl (found version "13.4.92")
+-- CUDA toolkit: 13.4.92
+-- CUDA compiler: C:/Users/User/Work/mink-env/cuda-13.4/bin/nvcc.exe
+-- CUDA architectures: 75
+-- Found CUDAToolkit: C:/Users/User/Work/mink-env/cuda-13.4/include (found version "13.4.92")
+-- PyTorch: CUDA detected: 13.4
+-- PyTorch: CUDA nvcc is: C:/Users/User/Work/mink-env/cuda-13.4/bin/nvcc.exe
+-- PyTorch: CUDA toolkit directory: C:/Users/User/Work/mink-env/cuda-13.4
+-- PyTorch: Header version is: 13.4
+-- C:/Users/User/Work/mink-env/cuda-13.4/lib/x64/nvrtc.lib shorthash is 629d40cf
+-- USE_CUDNN is set to 0. Compiling without cuDNN support
+-- USE_CUSPARSELT is set to 0. Compiling without cuSPARSELt support
+-- USE_CUDSS is set to 0. Compiling without cuDSS support
+-- USE_CUFILE is set to 0. Compiling without cuFile support
+CMake Warning at C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/share/cmake/Caffe2/public/cuda.cmake:322 (message):
+  pytorch is not compatible with `CMAKE_CUDA_ARCHITECTURES` and will ignore
+  its value.  Please configure `TORCH_CUDA_ARCH_LIST` instead.
+Call Stack (most recent call first):
+  C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/share/cmake/Caffe2/Caffe2Config.cmake:84 (include)
+  C:/Users/User/Work/mink-env/cmake-4.2.3/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake:93 (find_package)
+  C:/Users/User/Work/mink-env/cmake-4.2.3/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake:125 (__find_dependency_common)
+  C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/share/cmake/Torch/TorchConfig.cmake:62 (find_dependency)
+  CMakeLists.txt:110 (find_package)
+
+
+-- Added CUDA NVCC flags for: -gencode;arch=compute_75,code=sm_75
+CMake Warning at C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  library kineto not found.
+Call Stack (most recent call first):
+  C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/share/cmake/Torch/TorchConfig.cmake:119 (append_torchlib_if_found)
+  CMakeLists.txt:110 (find_package)
+
+
+-- Torch version: 2.15.0
+-- Torch libraries: torch;torch_library;C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/lib/c10.lib;C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/lib/caffe2_nvrtc.lib;C:/Users/User/Work/mink-env/libtorch-2.15.0-cu134/libtorch/lib/c10_cuda.lib
+-- OpenMP enabled
+-- OpenMP runtime: LibTorch libiomp5md
+-- 
+-- ========================================
+-- MinkowskiEngine C++ Configuration
+-- ========================================
+-- Version:       1.0.0
+-- Build type:    Release
+-- CPU only:      OFF
+-- Torch:         2.15.0
+-- OpenMP:        TRUE
+-- Build tests:   ON
+-- CUDA:          13.4.92
+-- CUDA compiler: C:/Users/User/Work/mink-env/cuda-13.4/bin/nvcc.exe
+-- Architectures: OFF
+-- ========================================
+-- Configuring done (5.4s)
+-- Generating done (0.1s)
+-- Build files have been written to: C:/Users/User/Work/mink-build/integration-cuda
+[0/4] Re-checking globbed directories...
+[1/4] All primary targets available:
+test: phony
+edit_cache: phony
+rebuild_cache: phony
+list_install_components: phony
+install: phony
+install/local: phony
+tests/utils/test: phony
+tests/utils/edit_cache: phony
+tests/utils/rebuild_cache: phony
+tests/utils/list_install_components: phony
+tests/utils/install: phony
+tests/utils/install/local: phony
+adaptive_bench: phony
+adaptive_interp_eval: phony
+adaptive_kmap_bench: phony
+adaptive_split_bench: phony
+adaptive_split_tests: phony
+adaptive_tests: phony
+adaptive_vs_uniform_bench: phony
+benchmark_memory_tests: phony
+core_conv_bench: phony
+core_tests: phony
+gaussian_adaptive_bench: phony
+gaussian_bench: phony
+gaussian_ply_bench: phony
+gaussian_raster_backward_bench: phony
+gaussian_render_bench: phony
+gaussian_tests: phony
+memory_growth_tests: phony
+minkowski_cpp: phony
+ml_representations: phony
+point_dataset_tests: phony
+sphere: phony
+test_framework_contract: phony
+test_framework_contract.exe: phony
+train: phony
+build.ninja: RERUN_CMAKE
+C:/Users/User/Work/mink-build/integration-cuda/cmake_install.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cuda/tests/utils/cmake_install.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cuda/CTestTestfile.cmake: RERUN_CMAKE
+
+C:/Users/User/Work/mink-build/integration-cuda/tests/utils/CTestTestfile.cmake: RERUN_CMAKE
+
+clean: CLEAN
+
+help: HELP
+
+mink-build: exit 0 (configure 0s, build 7s incl. lock wait)

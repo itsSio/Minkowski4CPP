@@ -1,0 +1,713 @@
+[
+  {
+    "job": "125513256214",
+    "name": "build-and-publish (134)",
+    "conclusion": "success",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "8ccb7a00a0716a180bbec11990af786cc47c51d742e27ced3c51d33e0f24ee44",
+      "files": 14,
+      "status": "passed",
+      "receipt": {
+        "status": "passed",
+        "started": "2026-11-02T19:55:25.019267+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.018489075999980287,
+            "peak_child_rss_kib_so_far": 51356
+          },
+          {
+            "name": "split-sanitizer-build",
+            "command": [
+              "c++",
+              "-std=c++20",
+              "-O1",
+              "-g",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-I/opt/minkowski-runtime/source",
+              "-I/opt/minkowski-runtime/source/tests",
+              "/opt/minkowski-runtime/source/tests/adaptive/test_part_split.cpp",
+              "-o",
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 3.3188058069999897,
+            "peak_child_rss_kib_so_far": 256648
+          },
+          {
+            "name": "split-sanitizer-test",
+            "command": [
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.582245161000003,
+            "peak_child_rss_kib_so_far": 256648
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 4.9705669469999805,
+            "peak_child_rss_kib_so_far": 256648
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract",
+              "adaptive_split_tests",
+              "point_dataset_tests",
+              "benchmark_memory_tests"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 871.2538077400001,
+            "peak_child_rss_kib_so_far": 1835504
+          },
+          {
+            "name": "ctest-list",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--show-only=json-v1"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.004442182999810029,
+            "peak_child_rss_kib_so_far": 1835504
+          },
+          {
+            "name": "ctest",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "1",
+              "--verbose",
+              "--output-on-failure",
+              "--timeout",
+              "420",
+              "--output-junit",
+              "/opt/minkowski-runtime/evidence/ctest.xml"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 57.356701379000015,
+            "peak_child_rss_kib_so_far": 1835504
+          }
+        ],
+        "image_cuda_profile": "134",
+        "cpu_count": 4,
+        "disk_free_before": 70095077376,
+        "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+        "verified_source_files": 471,
+        "split_sanitizer_sha256": "ae7e4bba516bebeb86603f3c1b905d2f8f68cc80c9b6ebd38c70b9f571c398ae",
+        "artifacts": [
+          {
+            "target": "minkowski_cpp",
+            "path": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+            "sha256": "6742ddcd6e927c273b44b2be192ec39094d704cec1adda6c586f7af5f8a20191",
+            "bytes": 9483510
+          },
+          {
+            "target": "adaptive_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_tests",
+            "sha256": "d7f689502bffdb5b9a77e5ff1930175ae530b17e47be5a358637555b38c9982f",
+            "bytes": 2752936
+          },
+          {
+            "target": "gaussian_tests",
+            "path": "/opt/minkowski-runtime/build/gaussian_tests",
+            "sha256": "dad8c918d183b4ba97eab8adc0fe1f3b346195c0915d39eab397086427cac019",
+            "bytes": 1800312
+          },
+          {
+            "target": "core_tests",
+            "path": "/opt/minkowski-runtime/build/core_tests",
+            "sha256": "f0c9e73c53dd62775a461b36fdcaa11f53c3705c5b0a37176b3653ffebe4d2de",
+            "bytes": 1869952
+          },
+          {
+            "target": "memory_growth_tests",
+            "path": "/opt/minkowski-runtime/build/memory_growth_tests",
+            "sha256": "735cb81f61a4d32ab15df5358039c50e3807b2a931121e483fc8d6a6d199de09",
+            "bytes": 1536792
+          },
+          {
+            "target": "adaptive_vs_uniform_bench",
+            "path": "/opt/minkowski-runtime/build/adaptive_vs_uniform_bench",
+            "sha256": "73a7150c6212c2ae40637d2d05a796112109fc3402f77956013fef0939153b2b",
+            "bytes": 1629192
+          },
+          {
+            "target": "ml_representations",
+            "path": "/opt/minkowski-runtime/build/ml_representations",
+            "sha256": "eba0fc4ea1787d0e24c33c2f47499247a951efdf16cba9f71e0ac8d473f1f3fd",
+            "bytes": 2379016
+          },
+          {
+            "target": "test_framework_contract",
+            "path": "/opt/minkowski-runtime/build/tests/utils/test_framework_contract",
+            "sha256": "fe3df1a5315a2448e6b1d4aba6dbd3819139e5561ef016bb6eb30e46e06beb90",
+            "bytes": 39064
+          },
+          {
+            "target": "adaptive_split_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_split_tests",
+            "sha256": "2fbe0fc86e0317021e19e6bc915e79e7d3541f3fa5363b0d5158f60691b6bb6c",
+            "bytes": 61064
+          },
+          {
+            "target": "point_dataset_tests",
+            "path": "/opt/minkowski-runtime/build/point_dataset_tests",
+            "sha256": "5ac0086657e64cfdc9b06476cbcaaa041030426c43917211e09e79a7c864b376",
+            "bytes": 244752
+          },
+          {
+            "target": "benchmark_memory_tests",
+            "path": "/opt/minkowski-runtime/build/benchmark_memory_tests",
+            "sha256": "eb6689d16966353e7ff96879c2bb5b10084dd33a651b485dc4081a2edb6561c5",
+            "bytes": 17384
+          }
+        ],
+        "junit": {
+          "tests": 14,
+          "failures": 0,
+          "suites": [
+            "ab_compare_selftest",
+            "adaptive_split_tests",
+            "adaptive_tests",
+            "adaptive_vs_uniform_bench_smoke",
+            "benchmark_memory_tests",
+            "cmake_source_filter",
+            "core_tests",
+            "gaussian_tests",
+            "memory_growth_tests",
+            "ml_representations_smoke",
+            "ml_summary_tests",
+            "modelnet_preprocessing_tests",
+            "point_dataset_tests",
+            "test_framework_contract"
+          ]
+        },
+        "completed": "2026-11-02T20:11:02.829388+00:00",
+        "disk_free_after": 70043131904
+      }
+    }
+  },
+  {
+    "job": "125513256481",
+    "name": "build-and-publish (124)",
+    "conclusion": "success",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "6c3f01fcd3c35ebc3b585d68b557f44bc2775073d52b374ac448af51387fec2b",
+      "files": 14,
+      "status": "passed",
+      "receipt": {
+        "status": "passed",
+        "started": "2026-11-02T19:55:25.158878+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.018962959999981877,
+            "peak_child_rss_kib_so_far": 50968
+          },
+          {
+            "name": "split-sanitizer-build",
+            "command": [
+              "c++",
+              "-std=c++20",
+              "-O1",
+              "-g",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-I/opt/minkowski-runtime/source",
+              "-I/opt/minkowski-runtime/source/tests",
+              "/opt/minkowski-runtime/source/tests/adaptive/test_part_split.cpp",
+              "-o",
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 3.4813365979999844,
+            "peak_child_rss_kib_so_far": 256612
+          },
+          {
+            "name": "split-sanitizer-test",
+            "command": [
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.5949300549999919,
+            "peak_child_rss_kib_so_far": 256612
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 5.145033775000002,
+            "peak_child_rss_kib_so_far": 256612
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract",
+              "adaptive_split_tests",
+              "point_dataset_tests",
+              "benchmark_memory_tests"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 921.7510516129998,
+            "peak_child_rss_kib_so_far": 1836340
+          },
+          {
+            "name": "ctest-list",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--show-only=json-v1"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.004343768999888198,
+            "peak_child_rss_kib_so_far": 1836340
+          },
+          {
+            "name": "ctest",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "1",
+              "--verbose",
+              "--output-on-failure",
+              "--timeout",
+              "420",
+              "--output-junit",
+              "/opt/minkowski-runtime/evidence/ctest.xml"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 58.77921267199986,
+            "peak_child_rss_kib_so_far": 1836340
+          }
+        ],
+        "image_cuda_profile": "124",
+        "cpu_count": 4,
+        "disk_free_before": 70095044608,
+        "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+        "verified_source_files": 471,
+        "split_sanitizer_sha256": "ae7e4bba516bebeb86603f3c1b905d2f8f68cc80c9b6ebd38c70b9f571c398ae",
+        "artifacts": [
+          {
+            "target": "minkowski_cpp",
+            "path": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+            "sha256": "6742ddcd6e927c273b44b2be192ec39094d704cec1adda6c586f7af5f8a20191",
+            "bytes": 9483510
+          },
+          {
+            "target": "adaptive_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_tests",
+            "sha256": "d7f689502bffdb5b9a77e5ff1930175ae530b17e47be5a358637555b38c9982f",
+            "bytes": 2752936
+          },
+          {
+            "target": "gaussian_tests",
+            "path": "/opt/minkowski-runtime/build/gaussian_tests",
+            "sha256": "dad8c918d183b4ba97eab8adc0fe1f3b346195c0915d39eab397086427cac019",
+            "bytes": 1800312
+          },
+          {
+            "target": "core_tests",
+            "path": "/opt/minkowski-runtime/build/core_tests",
+            "sha256": "f0c9e73c53dd62775a461b36fdcaa11f53c3705c5b0a37176b3653ffebe4d2de",
+            "bytes": 1869952
+          },
+          {
+            "target": "memory_growth_tests",
+            "path": "/opt/minkowski-runtime/build/memory_growth_tests",
+            "sha256": "735cb81f61a4d32ab15df5358039c50e3807b2a931121e483fc8d6a6d199de09",
+            "bytes": 1536792
+          },
+          {
+            "target": "adaptive_vs_uniform_bench",
+            "path": "/opt/minkowski-runtime/build/adaptive_vs_uniform_bench",
+            "sha256": "73a7150c6212c2ae40637d2d05a796112109fc3402f77956013fef0939153b2b",
+            "bytes": 1629192
+          },
+          {
+            "target": "ml_representations",
+            "path": "/opt/minkowski-runtime/build/ml_representations",
+            "sha256": "eba0fc4ea1787d0e24c33c2f47499247a951efdf16cba9f71e0ac8d473f1f3fd",
+            "bytes": 2379016
+          },
+          {
+            "target": "test_framework_contract",
+            "path": "/opt/minkowski-runtime/build/tests/utils/test_framework_contract",
+            "sha256": "fe3df1a5315a2448e6b1d4aba6dbd3819139e5561ef016bb6eb30e46e06beb90",
+            "bytes": 39064
+          },
+          {
+            "target": "adaptive_split_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_split_tests",
+            "sha256": "2fbe0fc86e0317021e19e6bc915e79e7d3541f3fa5363b0d5158f60691b6bb6c",
+            "bytes": 61064
+          },
+          {
+            "target": "point_dataset_tests",
+            "path": "/opt/minkowski-runtime/build/point_dataset_tests",
+            "sha256": "5ac0086657e64cfdc9b06476cbcaaa041030426c43917211e09e79a7c864b376",
+            "bytes": 244752
+          },
+          {
+            "target": "benchmark_memory_tests",
+            "path": "/opt/minkowski-runtime/build/benchmark_memory_tests",
+            "sha256": "eb6689d16966353e7ff96879c2bb5b10084dd33a651b485dc4081a2edb6561c5",
+            "bytes": 17384
+          }
+        ],
+        "junit": {
+          "tests": 14,
+          "failures": 0,
+          "suites": [
+            "ab_compare_selftest",
+            "adaptive_split_tests",
+            "adaptive_tests",
+            "adaptive_vs_uniform_bench_smoke",
+            "benchmark_memory_tests",
+            "cmake_source_filter",
+            "core_tests",
+            "gaussian_tests",
+            "memory_growth_tests",
+            "ml_representations_smoke",
+            "ml_summary_tests",
+            "modelnet_preprocessing_tests",
+            "point_dataset_tests",
+            "test_framework_contract"
+          ]
+        },
+        "completed": "2026-11-02T20:11:55.246532+00:00",
+        "disk_free_after": 70043090944
+      }
+    }
+  },
+  {
+    "job": "125513256771",
+    "name": "build-and-publish (132)",
+    "conclusion": "success",
+    "download_exit": 0,
+    "extract_exit": 0,
+    "evidence": {
+      "bundle_sha256": "b51ee785ee9aca437fb530ad3e9bd0ea7340070b00b4747f2144747cebdd0789",
+      "files": 14,
+      "status": "passed",
+      "receipt": {
+        "status": "passed",
+        "started": "2026-11-02T19:55:28.756606+00:00",
+        "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+        "source": "/opt/minkowski-runtime/source",
+        "build": "/opt/minkowski-runtime/build",
+        "mode": "CPU_ONLY; CUDA-enabled image dependencies, no GPU runtime claimed",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "stages": [
+          {
+            "name": "versions",
+            "command": [
+              "bash",
+              "-c",
+              "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.018408719999996492,
+            "peak_child_rss_kib_so_far": 51096
+          },
+          {
+            "name": "split-sanitizer-build",
+            "command": [
+              "c++",
+              "-std=c++20",
+              "-O1",
+              "-g",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-I/opt/minkowski-runtime/source",
+              "-I/opt/minkowski-runtime/source/tests",
+              "/opt/minkowski-runtime/source/tests/adaptive/test_part_split.cpp",
+              "-o",
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 3.4083926469999852,
+            "peak_child_rss_kib_so_far": 256224
+          },
+          {
+            "name": "split-sanitizer-test",
+            "command": [
+              "/opt/minkowski-runtime/build/adaptive_split_sanitized"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.5933921990000215,
+            "peak_child_rss_kib_so_far": 256224
+          },
+          {
+            "name": "configure",
+            "command": [
+              "cmake",
+              "-S",
+              "/opt/minkowski-runtime/source",
+              "-B",
+              "/opt/minkowski-runtime/build",
+              "-GNinja",
+              "-DCMAKE_BUILD_TYPE=Release",
+              "-DCMAKE_PREFIX_PATH=/opt/libtorch",
+              "-DCMAKE_CUDA_ARCHITECTURES=75",
+              "-DCPU_ONLY=ON",
+              "-DMINK_BUILD_TESTS=ON",
+              "-DMINK_BUILD_ADAPTIVE_TESTS=ON",
+              "-DMINK_BUILD_ML_EXPERIMENTS=ON",
+              "-DMINKOWSKI_ENABLE_GAUSSIAN=ON",
+              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 5.107497281999997,
+            "peak_child_rss_kib_so_far": 256224
+          },
+          {
+            "name": "build",
+            "command": [
+              "cmake",
+              "--build",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "2",
+              "--target",
+              "adaptive_tests",
+              "gaussian_tests",
+              "core_tests",
+              "memory_growth_tests",
+              "adaptive_vs_uniform_bench",
+              "ml_representations",
+              "test_framework_contract",
+              "adaptive_split_tests",
+              "point_dataset_tests",
+              "benchmark_memory_tests"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 871.956075862,
+            "peak_child_rss_kib_so_far": 1836140
+          },
+          {
+            "name": "ctest-list",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--show-only=json-v1"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 0.004201989999955913,
+            "peak_child_rss_kib_so_far": 1836140
+          },
+          {
+            "name": "ctest",
+            "command": [
+              "ctest",
+              "--test-dir",
+              "/opt/minkowski-runtime/build",
+              "--parallel",
+              "1",
+              "--verbose",
+              "--output-on-failure",
+              "--timeout",
+              "420",
+              "--output-junit",
+              "/opt/minkowski-runtime/evidence/ctest.xml"
+            ],
+            "exit_code": 0,
+            "wall_seconds": 57.16699464699991,
+            "peak_child_rss_kib_so_far": 1836140
+          }
+        ],
+        "image_cuda_profile": "132",
+        "cpu_count": 4,
+        "disk_free_before": 70095130624,
+        "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+        "verified_source_files": 471,
+        "split_sanitizer_sha256": "ae7e4bba516bebeb86603f3c1b905d2f8f68cc80c9b6ebd38c70b9f571c398ae",
+        "artifacts": [
+          {
+            "target": "minkowski_cpp",
+            "path": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+            "sha256": "6742ddcd6e927c273b44b2be192ec39094d704cec1adda6c586f7af5f8a20191",
+            "bytes": 9483510
+          },
+          {
+            "target": "adaptive_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_tests",
+            "sha256": "d7f689502bffdb5b9a77e5ff1930175ae530b17e47be5a358637555b38c9982f",
+            "bytes": 2752936
+          },
+          {
+            "target": "gaussian_tests",
+            "path": "/opt/minkowski-runtime/build/gaussian_tests",
+            "sha256": "dad8c918d183b4ba97eab8adc0fe1f3b346195c0915d39eab397086427cac019",
+            "bytes": 1800312
+          },
+          {
+            "target": "core_tests",
+            "path": "/opt/minkowski-runtime/build/core_tests",
+            "sha256": "f0c9e73c53dd62775a461b36fdcaa11f53c3705c5b0a37176b3653ffebe4d2de",
+            "bytes": 1869952
+          },
+          {
+            "target": "memory_growth_tests",
+            "path": "/opt/minkowski-runtime/build/memory_growth_tests",
+            "sha256": "735cb81f61a4d32ab15df5358039c50e3807b2a931121e483fc8d6a6d199de09",
+            "bytes": 1536792
+          },
+          {
+            "target": "adaptive_vs_uniform_bench",
+            "path": "/opt/minkowski-runtime/build/adaptive_vs_uniform_bench",
+            "sha256": "73a7150c6212c2ae40637d2d05a796112109fc3402f77956013fef0939153b2b",
+            "bytes": 1629192
+          },
+          {
+            "target": "ml_representations",
+            "path": "/opt/minkowski-runtime/build/ml_representations",
+            "sha256": "eba0fc4ea1787d0e24c33c2f47499247a951efdf16cba9f71e0ac8d473f1f3fd",
+            "bytes": 2379016
+          },
+          {
+            "target": "test_framework_contract",
+            "path": "/opt/minkowski-runtime/build/tests/utils/test_framework_contract",
+            "sha256": "fe3df1a5315a2448e6b1d4aba6dbd3819139e5561ef016bb6eb30e46e06beb90",
+            "bytes": 39064
+          },
+          {
+            "target": "adaptive_split_tests",
+            "path": "/opt/minkowski-runtime/build/adaptive_split_tests",
+            "sha256": "2fbe0fc86e0317021e19e6bc915e79e7d3541f3fa5363b0d5158f60691b6bb6c",
+            "bytes": 61064
+          },
+          {
+            "target": "point_dataset_tests",
+            "path": "/opt/minkowski-runtime/build/point_dataset_tests",
+            "sha256": "5ac0086657e64cfdc9b06476cbcaaa041030426c43917211e09e79a7c864b376",
+            "bytes": 244752
+          },
+          {
+            "target": "benchmark_memory_tests",
+            "path": "/opt/minkowski-runtime/build/benchmark_memory_tests",
+            "sha256": "eb6689d16966353e7ff96879c2bb5b10084dd33a651b485dc4081a2edb6561c5",
+            "bytes": 17384
+          }
+        ],
+        "junit": {
+          "tests": 14,
+          "failures": 0,
+          "suites": [
+            "ab_compare_selftest",
+            "adaptive_split_tests",
+            "adaptive_tests",
+            "adaptive_vs_uniform_bench_smoke",
+            "benchmark_memory_tests",
+            "cmake_source_filter",
+            "core_tests",
+            "gaussian_tests",
+            "memory_growth_tests",
+            "ml_representations_smoke",
+            "ml_summary_tests",
+            "modelnet_preprocessing_tests",
+            "point_dataset_tests",
+            "test_framework_contract"
+          ]
+        },
+        "completed": "2026-11-02T20:11:07.322737+00:00",
+        "disk_free_after": 70043189248
+      }
+    }
+  }
+]

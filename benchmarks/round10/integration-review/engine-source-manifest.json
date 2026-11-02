@@ -1,0 +1,757 @@
+{
+  "source": "a67f671f4aa3a003751e3d06af85d2b9b8b459e5",
+  "files": [
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive.hpp",
+      "sha256": "728a829ef62c937b772176ba3a07c9d2f953665c3b3e50b0e822c9c8372595c3"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_tensor.cpp",
+      "sha256": "a878aa57dbe8003889ddd58fc2491b1c6537f9598ecc6e8e96f66a1cf4e28757"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_tensor.hpp",
+      "sha256": "8d12e2112af2b46d9cbd559917661e9efd0ae71bd20893255e5a858a1da7edcb"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology.cpp",
+      "sha256": "521a6fd18a14c7691add24907ef459a9dfe0b13b7379ac43d71fe6f3867e5ff2"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology.hpp",
+      "sha256": "c96e2733d6303a86128d833327f823e32edaf2cefb516cf56bdac5680fd38021"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology_cuda.cu",
+      "sha256": "faeddef289a60a0a9b981606df9003ce33a8fb1355cd3e6a348bc83ff3a1717a"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/config.cpp",
+      "sha256": "fe61702d398fff99917996ef22f54cb2df433cd587363797615f280b38b56673"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/config.hpp",
+      "sha256": "86d17e3158525e21416d8a8be8a03dc637e2a4915724c088563a5c661a539a0c"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/fused_apply.hpp",
+      "sha256": "2e9bf2fd532c4e3c2ba6e0da45dde005eb6942d1d7e7c61a834c4a4915c39e09"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/fused_apply_cuda.cu",
+      "sha256": "c9fcf45d704e32fe915b7c85fc64a2a815094c7b09207a9d3c3248bdcc88d1d6"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map.cpp",
+      "sha256": "de8b792432d244f8b90b8725c7cab389b654911b2bcbe53fcb457b53f456145a"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map.hpp",
+      "sha256": "fe459bd539921d43d726c7ef4338db2727b20b634d8170395d24b9c3fe25ccf7"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map_cuda.cu",
+      "sha256": "d5c7b425b851ca286f31b6616fa62dc1d5693ce63888ff81a0301aa873579df3"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/ops.cpp",
+      "sha256": "811fa62eec85a0300c5d720f7a503de2814b2270512cb282275cc8bbcde471dd"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/ops.hpp",
+      "sha256": "bb28482e77c35e5765557c4a58c271e1f521f9e64fdffec7ed9aac80cf7755b2"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/part_split.hpp",
+      "sha256": "1bcb3d2fe6f47bfceccde67afd6088b289942c021f8d776f5ddcd23256d69c41"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/voxel_geometry.hpp",
+      "sha256": "8a979661fc6999d3bb4a3d6712c7d5cdf6d1665e62c0be3718944f2248dc55b6"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/voxel_key.hpp",
+      "sha256": "2e25274b0ccd6df4997aca0a3a9a4911b9a055a41f898d64a78e1404a2abcedb"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/broadcast_fn.cu",
+      "sha256": "c9c0977240d9636270551ebbe8e8d191f5f0a330f5f2e948b96d11d6ab778c65"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/broadcast_fn.hpp",
+      "sha256": "e56ecdc0ddf809d763171d61db5779f252ca471636d8301c1f72450a8df42e95"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/convolution_fn.cu",
+      "sha256": "da78babccfcd028626d6027bf25181b29b18ae8725c3f306b377281e66ebdd1c"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/convolution_fn.hpp",
+      "sha256": "47ba6541cc1ce14b340ed5943850743dd51a56b73a73376b14770926d42bd014"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/instance_norm_fn.cu",
+      "sha256": "da6cf2d6bea6cee5102b05e29bf83df9660f1345764571ed340dfdb6e89b6bb7"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/instance_norm_fn.hpp",
+      "sha256": "03e05f77b5b201a540ddd564fc358d5c90c9d74f2fc44945ad4080565c6e039d"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/interpolation_fn.cu",
+      "sha256": "22b3869bf2480214835f07cd0f0c4bca86e6cedec4487707240c9d2b9f820628"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/interpolation_fn.hpp",
+      "sha256": "9299403a1209abeaf5ddfd1787ca2fce2f4f38c73928c94dbee57f86a71d1fa3"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/manager_holder.hpp",
+      "sha256": "fcc18ac84aa693a5047f1ce8f4a35c2cf7a53c259473b53a882deba9f5b20941"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pooling_fn.cu",
+      "sha256": "d20916f09671bd3c403fd7caea00ce6af663844632159b85c545136a2d1b8544"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pooling_fn.hpp",
+      "sha256": "5701ddce571cc011a82a2ec20b6d5d760ce68cb7e7579c4091f4b0add8651edd"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pruning_fn.cu",
+      "sha256": "c5867fdbc9454264a8e62b6876cb7846c9a35b397e03fb27f44583213537fe04"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pruning_fn.hpp",
+      "sha256": "c9486f670ddf782f08dcc2585b4b324e8911f0be7f173652754bf441c3976311"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/spmm_fn.cu",
+      "sha256": "d74ee4ff4123dacb2afa4455ebdce8adafe86d840019693ae02aa1e45ba2c2cb"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/spmm_fn.hpp",
+      "sha256": "85e8d6417f65e3dce6a060eeb652eb07b7b88b99cccdbb71c6ae2c56235f6f3a"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.cpp",
+      "sha256": "6b33cf59d2ef70169f815b74102462426df31381f24151256cd6b79ac87a419f"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.cu",
+      "sha256": "427e3ad51608c76ab2f200e7f5b39d6ff105050fef7fe7a74a23d6769591568a"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.hpp",
+      "sha256": "919c56728794f4e8bf46a91106cc9ac7eb2c6dc6ff5b02bd1a6887cbbca81252"
+    },
+    {
+      "path": "MinkowskiEngine/functional.hpp",
+      "sha256": "d1aad093d5b6b351cd46b4fe5b5f9fc2dc03e30243fda1dca87758921e10fe33"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian3d.hpp",
+      "sha256": "39a9f2a05504f9beb29e2283a8b3c660a4f7fec566596f269fdc52e69e813c2c"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adam_cuda.cu",
+      "sha256": "157b6b5d4f5de6a198c0b0496320db96fe647a5d59b0089f636d4bf643690c89"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adaptive.cpp",
+      "sha256": "b957eee86c3e1124a8a04d68de19f49c250582a4c98fda4a961fea0cc5623511"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adaptive.hpp",
+      "sha256": "62dd6081b34dc3a855a664d0e94e0bede96223907dd398e9e70e8930ab53336c"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_camera.hpp",
+      "sha256": "cfcef03d18fd0da741deb7ffe6b17e0a209d840f1f2abfc02b0e2be5233c65a5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cuda.cu",
+      "sha256": "7999a42f58e0c65cf7d9d5070f8270de7521828287d0edb4cf06309108c09932"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cuda.hpp",
+      "sha256": "55b943b58086ea80b2040210e093b6f7f172f1641124f1a7a0f17c4d7a39bcfc"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cull_cuda.cu",
+      "sha256": "4a86be4bddffd9e3e637188ad5f9743e6fcb94fc8c0719a4479fcaeeaa0ce4c7"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_gather_cuda.cu",
+      "sha256": "63b1471658838f1a44fe3df742c66dfde6a5cd44007d4407bd1984fefc2a3ff5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_model.cpp",
+      "sha256": "24041f17e6316db5a2bd9186bc82aac701e9bc40950a57941ece6411cd3aec63"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_model.hpp",
+      "sha256": "1d23e5a71a90b3469f1d46beb674f64b7e5eed2b944f43eed2eb8f8cc07960e2"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_optimizer.cpp",
+      "sha256": "54e5d83e3c3230361494e5572935a9bf5281dd3ddbaeb27c97cefd1e79bde4c1"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_optimizer.hpp",
+      "sha256": "9df01017a42945e3d06d1a8d0bf7e66ab7cc5a4af06b21a836416503e291a1d0"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ply.cpp",
+      "sha256": "1d7796c45bb788707a623139f56f532b93bbcb4ca9b72bd432b6f59e9c15e1ac"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ply.hpp",
+      "sha256": "73bfcca29d96a4b04040d9bd0d31b59f1e5b00724e92697660637d427a8f72be"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_project_cuda.cu",
+      "sha256": "d270d62b18df30e59958e947ab745533a9bfb7f2287f4d22987417851a1860c9"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_raster_cuda.cu",
+      "sha256": "27dc5c3143e5e7ce4e4f7e94ccf6bfaeb3abfb0866eaed924c9bd3ee32a673db"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_render.cpp",
+      "sha256": "0161ddd56634cab79f9e88d570222a0d63bf7dd4d4dc620d62675671164bc4b5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_render.hpp",
+      "sha256": "9039dd00a4088453e24f7ab3c2cf26a91f3d9a17c3f00682e0f0b5bfaf59cfbe"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_sh.cpp",
+      "sha256": "acd2412d725adc3b0e34a5320c44369948837d6037e5a8a608851e2a7c31a048"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_sh.hpp",
+      "sha256": "e9dfc198d240a2f056927d42843ebe9e582ce7b3715f74b075923e7d94d85ce4"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ssim_cuda.cu",
+      "sha256": "67feba96d313d98abe7ba919aaa7d0076ac23acfd3811dba20bdd93bfb51eac2"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_tensor.cpp",
+      "sha256": "91db62aee8137044aa73dc324bc758ad628f379372a9cb5c6248afa5d8138719"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_tensor.hpp",
+      "sha256": "f3bdc2c38139aec60009c6abcb89beb8c98cc653b86734ae7dc750da573a7f81"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_trainer.cpp",
+      "sha256": "b6dfc42dd863bba06da1e086da7fa114f6bf2faf58052916de1c04a90b76d861"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_trainer.hpp",
+      "sha256": "85d11a5d382de60d105403e4c498188a50d7cef5883c84376b593f31134d3f95"
+    },
+    {
+      "path": "MinkowskiEngine/kernel_generator.cpp",
+      "sha256": "193ded41363b3a2c6c9ea54971f082c1f367b5cba6a62022984218487f3ba38b"
+    },
+    {
+      "path": "MinkowskiEngine/kernel_generator.hpp",
+      "sha256": "19a77be8939d7de1678b7cf23a6d7e8eb3bf19632e774c6bbcb7eb85b1f9b7b7"
+    },
+    {
+      "path": "MinkowskiEngine/minkowski.hpp",
+      "sha256": "db3fde610d920c07944cd6196d64cdbb1f642e8825c2e08fe92b7716596d6355"
+    },
+    {
+      "path": "MinkowskiEngine/modules/broadcast.cpp",
+      "sha256": "28f79083a5423a7c42bb57e76ded36c1fa26da808551d3e9022afc90e29c4ec5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/broadcast.hpp",
+      "sha256": "277cb933aeada3ba01306cfb7f2fe75c89dd2c69ac6f7b8585bae21837112330"
+    },
+    {
+      "path": "MinkowskiEngine/modules/convolution.cpp",
+      "sha256": "5ccdebf7541df77efcca228401886a1b5c623301328928dcdb254d773977716c"
+    },
+    {
+      "path": "MinkowskiEngine/modules/convolution.hpp",
+      "sha256": "d0ba752a38513008263ac2743dad4fd6aa461629e2a5d458161c33380f77a5d5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/interpolation.cpp",
+      "sha256": "05f0c19fd11d16a344f234a906c034dc3c2a98e3c483ca7c2b72e4ac2d86550b"
+    },
+    {
+      "path": "MinkowskiEngine/modules/interpolation.hpp",
+      "sha256": "378eb386a2bb39376b316c1f396464971297888068bb2b763e45b66f511eceb2"
+    },
+    {
+      "path": "MinkowskiEngine/modules/linear.cpp",
+      "sha256": "a10da40fd494edf76d57f6921bbf1c71c2f33187d3440366bd28b6aa3d90cd1a"
+    },
+    {
+      "path": "MinkowskiEngine/modules/linear.hpp",
+      "sha256": "274dbee3280b63d7149ded8d959b88f6e6740450599f286dbaa50e015b8fa563"
+    },
+    {
+      "path": "MinkowskiEngine/modules/nonlinearity.cpp",
+      "sha256": "29dc47c2117065bd6750556ae2eecd9f7aac4e9c577af2def3a8a877bc81645e"
+    },
+    {
+      "path": "MinkowskiEngine/modules/nonlinearity.hpp",
+      "sha256": "f6bb3bd13161940f7490be32a9249e25460d877f24b5852c23968ef1a1d34ae4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/normalization.cpp",
+      "sha256": "8ad04173298e13e762d4db84ad15266967a42562f8408c87c1a2662d1e2c43f1"
+    },
+    {
+      "path": "MinkowskiEngine/modules/normalization.hpp",
+      "sha256": "9532283772e88447440e9903b80b5ba5d88a8a4ad13d04123c79383422a03012"
+    },
+    {
+      "path": "MinkowskiEngine/modules/ops.cpp",
+      "sha256": "3bf783e0639457969c39efdb0eaa957a965311e1804386a12e1ed298bbe694b4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/ops.hpp",
+      "sha256": "0aa46946eac97eff42c66597c4ca088fb6c4267821a7b3c1fb068589f34956a4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pooling.cpp",
+      "sha256": "7a86aeec317ae3bd192e129cb19f6d07fbf059a031840ef2b24e23c7eafd866e"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pooling.hpp",
+      "sha256": "7d5401f9e4cfc926566a65a4c07912a0aca610f9ad06bffe26458d869050221c"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pruning.cpp",
+      "sha256": "ea230732ea6fcfa4cc4d9bcda68182e03127f0fd87120efe6445f5c194053952"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pruning.hpp",
+      "sha256": "112680914261c6a9d2ebfcfe4fd6e67b2580246bdf7a5282d8e3865ac87788a3"
+    },
+    {
+      "path": "MinkowskiEngine/modules/resnet_block.cpp",
+      "sha256": "96c2d845562340912956ba11b32bddaee629267f1bd0f70317bbb2c5d1521776"
+    },
+    {
+      "path": "MinkowskiEngine/modules/resnet_block.hpp",
+      "sha256": "b8ae474733d25ac7dfd53b41bf96d6041153445c504ace1d09f78f091a35ae20"
+    },
+    {
+      "path": "MinkowskiEngine/modules/senet_block.cpp",
+      "sha256": "483582fb7b80cc2188070b4f268b22f2d044d6b389ad5c8d63110b37a3e14f66"
+    },
+    {
+      "path": "MinkowskiEngine/modules/senet_block.hpp",
+      "sha256": "282d64464d59c9c86545a56fe678ee859d4fcdafa25ddc279596890cee0e21e5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/union_op.cpp",
+      "sha256": "7868f6a49be112f6c00ff43808e66ba908726e60706082af7f8cd08cb09d0b4d"
+    },
+    {
+      "path": "MinkowskiEngine/modules/union_op.hpp",
+      "sha256": "f36fff2a74a9ebf17f6c31a394316550b1da67717760b402fa2f42e87853b2cb"
+    },
+    {
+      "path": "MinkowskiEngine/serialization.cpp",
+      "sha256": "4de266b2ef5d206053499cf02f69874bbeec91fc169e3938e24411e6bcc8e8f0"
+    },
+    {
+      "path": "MinkowskiEngine/serialization.hpp",
+      "sha256": "8eb9decac556947aa90b5eb85267f64b4f8d74ffa74ab07a89a6d72df455fbc8"
+    },
+    {
+      "path": "MinkowskiEngine/sparse_tensor.cpp",
+      "sha256": "86abe1a9c8f593586554188235b38b46cf21d94b4ffdb4bd7d2aacc955c2fde3"
+    },
+    {
+      "path": "MinkowskiEngine/sparse_tensor.hpp",
+      "sha256": "34d98d21fbc8021590d059565ee9bb0e299c9a0e722f4ac56c3ea402f299f49b"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/concurrent_unordered_map.cuh",
+      "sha256": "82c04ad7bf5356e97932364e28588b5b606f4a098c9bc7413ff7af6fbaea3bbf"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/nvtx/nvtx3.hpp",
+      "sha256": "d9c4d32ee9e653b899148b427c813f1ccf4291177ec64aa3df25f05f1ffda5da"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/nvtx/ranges.hpp",
+      "sha256": "723f5f540925f79be0d9d3f5b50e596d20730af3138cbb9e177256211c96ffe5"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/device_atomics.cuh",
+      "sha256": "8e5d7ad03cbc7c008bf7a6a7a683936f9b06f5d55fbfc719b146a6ab20abe40c"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/device_operators.cuh",
+      "sha256": "5994db9ee139e12be357cd3baefd259c40d9c829b903093f169003042e1ab731"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/hash_functions.cuh",
+      "sha256": "784d93ceb3201d09117b564dfd1b09d47e495876b180aae321daea189af7b7d8"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/types.h",
+      "sha256": "cf92bb96a8ced746d901cc1b841dd7befd9993b79bff835c1e9e46c563d00d28"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/types.hpp",
+      "sha256": "12d9ee37a9e5b0ce447ddd33d4a1402eae9d45a3c0c54132c71c8bd176ae8946"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/utilities/error.hpp",
+      "sha256": "32aa670e32234615b7ce24cbe23b987851b79f36dcbafdc3af3cc3bbb9cd3024"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/utilities/legacy/wrapper_types.hpp",
+      "sha256": "c51fdbffaa8ffe556a9e41aab6f780944ed80f33a9e718f6134d78ad520444ae"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/hash_allocator.cuh",
+      "sha256": "e5f5ff55bbaa54341b5cd3b5c0b00958c3f2c5ad5c6d204c697644139e580a9a"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/helper_functions.cuh",
+      "sha256": "223d17d4b906a7643fb4b2ce2c9ce8b8b4ac8fca4463a3a315dabc58fab00ac8"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/managed.cuh",
+      "sha256": "1276ae19c741c8e97f940969d3e9146cf80ed5f798f9c0acea917094a87646be"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/robin_hood.h",
+      "sha256": "819da77fbfac8f48e00e46e1636e76d451065f1c805e49fabecf325a6a6c38eb"
+    },
+    {
+      "path": "MinkowskiEngine/src/allocators.cuh",
+      "sha256": "7599b7aff107cef987338fcebd02b1daf34b02817d82ed348686f5a5bfa3e0e0"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_cpu.cpp",
+      "sha256": "13fe42a0f1d88ca67a10ac4c63bb47ae0cae74a4637abda8bd6cfa24c966f1cc"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_gpu.cu",
+      "sha256": "99362bccfa2615b56c5d2ea8381607ef0c9fae82d13b959753574613fadc5a37"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.cu",
+      "sha256": "55acfbbb57d9a9ebe06978529917137f7fa82a2f0565e8fa0316b1495681c012"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.cuh",
+      "sha256": "52448ed317f281b5e84c096735bb8b5711081b5bb7febb8eb300fbee7c77d038"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.hpp",
+      "sha256": "51debc7179bf354a1b66bf2a718629003ad3c862a31aef5a119921718fb20d79"
+    },
+    {
+      "path": "MinkowskiEngine/src/common.hpp",
+      "sha256": "b5d6d4b15b93ece222b73fc2c80f390992941036c49f9bab3fcd59105f40a650"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_cpu.cpp",
+      "sha256": "3b71a93798eac601aee89ab04220c00ed988d40ebece21b453008bc8e604d56f"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_gpu.cu",
+      "sha256": "8dbe9e593df6da2a50c18f36b148667627316a24eaea51846a90ca6ab69d971b"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.cu",
+      "sha256": "ab7d4bf041e388c72bffd9ed58131cedc0b381b8361221333be3f24b76349967"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.cuh",
+      "sha256": "7df481937b51b011e821089849b7dca7b3703da4ba0fc0def4c7d74ca1673871"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.hpp",
+      "sha256": "b93086e1d7b25aab6a98e1f20ecebabab7a5b36765c5cda043b4cae5a677cfb3"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_transpose_cpu.cpp",
+      "sha256": "56ba933e4b241746f2cae07173b444af75203b9ddeb74e50bbbf91481a2753fb"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_transpose_gpu.cu",
+      "sha256": "af842dee1050441fa91d5264d377906b06ff9e3e88b65394e6b89ab3e8ec9f33"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate.hpp",
+      "sha256": "f63d342f5f7af9dc51ece4ea676ca2d37ef8aa5b389601f7461b563621275f3e"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map.hpp",
+      "sha256": "962a195e95a6039db340d9f1c20f2964f80d90af3c27f0a16baf3c4afa56859b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_cpu.hpp",
+      "sha256": "ad7e6b1e765ba2e96ab3931caad98f265cce4888545511f1e56e9c17d911c16b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_functors.cuh",
+      "sha256": "756b6b951c4817c768b175749fcb4c6800bf69ed1edd93e0dd43c41c2989be44"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_gpu.cu",
+      "sha256": "0fee819be8f0906624fc3f556ee3f6b5cc58a396ca52b3a5cd0ed74315fa785f"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_gpu.cuh",
+      "sha256": "2ad2b4f6ea7d120553241faa42a9c35cbaa53486a44a9eab23a6fc076bd5310b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_key.hpp",
+      "sha256": "95bc376807cad402f025003cbbff83f14d8a82f460afa82d3c5a07f770c4e236"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.cpp",
+      "sha256": "410db9649f674e8c0d1f4a060657a6df1d333b52aca0571d9c98acc971765ebb"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.cu",
+      "sha256": "534e5e68872f6d8ac4a4b11d1525f07905a31da3f74efc11fe8367d5e4d4505d"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.hpp",
+      "sha256": "35c76db953e2b768cb84a9567be6c7b873c51c2729a356341b7941b330af40d1"
+    },
+    {
+      "path": "MinkowskiEngine/src/cuda_common.hpp",
+      "sha256": "0b12d0a5b36967ac1af1cd3d03b536bf97479439d47d9e030a083f43a640d6c8"
+    },
+    {
+      "path": "MinkowskiEngine/src/direct_max_pool.cpp",
+      "sha256": "5ed806b74bc42be9e4340d267cf1b8eb365197333690fefcb8fbaf10f5c6dea8"
+    },
+    {
+      "path": "MinkowskiEngine/src/dispatcher.hpp",
+      "sha256": "07526c9520b971959b7a3ca76fb226389ffeefdb253a37a2512f50744ac2b953"
+    },
+    {
+      "path": "MinkowskiEngine/src/errors.hpp",
+      "sha256": "4c529da3047c8218c4ee07836ff344fffbb85eb3db823f5dd3d6e176d7fe45a5"
+    },
+    {
+      "path": "MinkowskiEngine/src/global_pooling_cpu.cpp",
+      "sha256": "d140a819453de6e2029886bce06277b30dabeb659ca5d27cdec921697ca3a12c"
+    },
+    {
+      "path": "MinkowskiEngine/src/global_pooling_gpu.cu",
+      "sha256": "9fe28088f55fcc88f3658797ce7335f265fca93c4beb39f737b987142deaed07"
+    },
+    {
+      "path": "MinkowskiEngine/src/gpu.cu",
+      "sha256": "2194f74d03f6263f4ce6ceea56a02a3b3122ee1dc87227d83b7368a7eaedd249"
+    },
+    {
+      "path": "MinkowskiEngine/src/gpu.cuh",
+      "sha256": "3436579e698c05cae1b241675a6c900abfaa21b76519d2f477920c3fa0ab83fa"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_cpu.cpp",
+      "sha256": "5d43ad1933b4eef4f1a803814fa2fe55254d536e56161b04407e8abafde4f2dc"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_gpu.cu",
+      "sha256": "58adb61c0a81c2a96a27235c94d239cbcdfe560e50ac8e4f0a56c62e3a998252"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_kernel.hpp",
+      "sha256": "d5399d0b6bef85f5c4a713dfef76f9dbd9b306da59dbcbc088a5be576b763d62"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_map.cuh",
+      "sha256": "9c838a0120d5e82caa8dec20c615034413d60b3b9cfcc5aa9ef424d218d9587f"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_map.hpp",
+      "sha256": "cc79c47eeea05b785d639c7174e7d15f2cae67585c2d79028f43ab94fa1406b8"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_region.hpp",
+      "sha256": "88b4888f40b3a3d62cbc8a69ca7ff70b91df860d3733c39b8d14403bdc363ca2"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_cpu.cpp",
+      "sha256": "d2b9a4727621c49930c192a0202c2cb59cf5ec3186add8d0e1c2418dea3c1605"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_gpu.cu",
+      "sha256": "5f930201f435a55b57807c0dae5993e276d1d9a4ac35cff7537b1a79fe3f1c55"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_transpose_cpu.cpp",
+      "sha256": "5ed98d6bb7e347669ca5a434299368c8e151f98c86464451c8c6d26925762d3b"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_transpose_gpu.cu",
+      "sha256": "907e933f441c77559825212e978545ef98c0319e06fdadec129e8318268d6e4e"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions.cuh",
+      "sha256": "848867d7d612ff9890ceb8eb32b6f1c88f3eef21ef3c1e26006a04795858b772"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions.hpp",
+      "sha256": "46fa4889eccc2ea3ed988fd15c6f1527383134aff2fca1f71dd3c05eec22a66d"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions_cpu.cpp",
+      "sha256": "45cf646f89c355d2a7bfcffe86e3164d1a09596da526fb1e8358c28c21f91cb8"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions_gpu.cu",
+      "sha256": "94848715c2100ebeb2a30a55ac6304e7f4dc8de6aabaf028e442bfa55a06d692"
+    },
+    {
+      "path": "MinkowskiEngine/src/mkl_alternate.hpp",
+      "sha256": "b74e7da744e0bbfc317bc61a9373981485c75ecfa393cc09b85d6bb26cacbd0f"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.cu",
+      "sha256": "00c65aa42298ee8cb6d24f2c268a8d0ddf2aa84e5b8e4170bcebe86be07481b2"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.cuh",
+      "sha256": "6fab71444f8da8b4c02e418c7e4794c60b93231993c04f153f258c54f8a83881"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.hpp",
+      "sha256": "ee9f3593d5557103bddb2cfcb46a401f40359a3947d2e4f6196c56d0aa4d01e5"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.cu",
+      "sha256": "186752d9a14b733e89b17d039ebf01de78365b7090160cf5726f057119e0d8fb"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.cuh",
+      "sha256": "16b82a8976c80a7fa9fc94fe974c491d5cb9c379a2fa7b5f34220a3598f606c9"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.hpp",
+      "sha256": "713653bd63c4ac11a608ad5dcb7536510b9c81c569699a857c1a0c2afc5348ee"
+    },
+    {
+      "path": "MinkowskiEngine/src/primitives/small_vector.hpp",
+      "sha256": "830dc19925767344c39afb1bb885727bf8450c0f743011d1f73ce43172f217bd"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning.hpp",
+      "sha256": "8802dbcee537900b5052a52f44d416afb48b438623cd762f101ea2029158d4f7"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning_cpu.cpp",
+      "sha256": "0cc78b25dfd6f8463f4b27ea452e9589925e9d62343ac485f2fe465a3b142a95"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning_gpu.cu",
+      "sha256": "ec6cbdf8a226a016f377085071fa88d366f385c7aa62020115a048d43cba48f6"
+    },
+    {
+      "path": "MinkowskiEngine/src/quantization.cpp",
+      "sha256": "14b1f539d8b31e878173eb95d2404c2b14bb3f9cf9cceb01009dedfcaa735e4a"
+    },
+    {
+      "path": "MinkowskiEngine/src/sharedmem.cuh",
+      "sha256": "acd788e2516cc528568e903ce776fbf9d7c163d157cbae6ba117aed2f18ee005"
+    },
+    {
+      "path": "MinkowskiEngine/src/spmm.cu",
+      "sha256": "801e8dbc0ba9c4e5e9b4d5e6bc9e504be058b75958a0439640fff657c168d83b"
+    },
+    {
+      "path": "MinkowskiEngine/src/spmm.cuh",
+      "sha256": "b1debe160b1c2e31dbbb7af97fba5a3c4d073fde3e90e2627dafff153fd5d680"
+    },
+    {
+      "path": "MinkowskiEngine/src/storage.cuh",
+      "sha256": "35fad466745068f27c411f5a49ac3067587bb362b6166c278170aedae3e46a5f"
+    },
+    {
+      "path": "MinkowskiEngine/src/thrust_policy.cuh",
+      "sha256": "85739fab6ec649fd18a9cec5f1b0a4a5ea93a77a69f1f34de94cd4f9dff0157f"
+    },
+    {
+      "path": "MinkowskiEngine/src/types.hpp",
+      "sha256": "3374ec844e0c71dec4e2ef2294d817bd9dcbe64a61ff541bc450b1fcf8d44a21"
+    },
+    {
+      "path": "MinkowskiEngine/src/utils.hpp",
+      "sha256": "bd6d09991e2a15c114b9e4de6fcf47e1b39f0f57a053dbf8dfaff8a568389bdb"
+    },
+    {
+      "path": "MinkowskiEngine/tensor_field.cpp",
+      "sha256": "52270b0b73c9b4a48230087f5923eb24be8613b16eb4ffda7311cfd4bd27c6e3"
+    },
+    {
+      "path": "MinkowskiEngine/tensor_field.hpp",
+      "sha256": "e275457b79293e91f862e68b63655063912f1903dc28d68bae61d369a73c4306"
+    },
+    {
+      "path": "MinkowskiEngine/training/training.cpp",
+      "sha256": "34ac2e26254ba1cdb47bd437b589e4210ef823bd081b91d0c77d84f734f8ebcc"
+    },
+    {
+      "path": "MinkowskiEngine/training/training.hpp",
+      "sha256": "cc98882420676934650036a31f43a5f1137b977e8b782b24849e1ba252f2cb4c"
+    },
+    {
+      "path": "MinkowskiEngine/types.hpp",
+      "sha256": "1f8e7aa390458428df3282281fe7cd67c568b6f5ac1640a8ecd7afbe451ec07e"
+    },
+    {
+      "path": "MinkowskiEngine/utils/collation.cpp",
+      "sha256": "324fc28e9ebe771054e51e2c9516c62525c42c544dbc1d4781ef296366ecb4e6"
+    },
+    {
+      "path": "MinkowskiEngine/utils/collation.hpp",
+      "sha256": "550c1630bef86a3cb02fb05a50881afb18934a98a007713dac6d2f8c34d653bf"
+    },
+    {
+      "path": "MinkowskiEngine/utils/init.cpp",
+      "sha256": "45ab0977865ac7b950bed9a7e889bb4a58e23322a28c6e1c1d061ed865e69634"
+    },
+    {
+      "path": "MinkowskiEngine/utils/init.hpp",
+      "sha256": "6cb0685cd4a19a1f316ede5862eba573d2c2b892b4d1580c0c28e8c661b838cb"
+    },
+    {
+      "path": "MinkowskiEngine/utils/quantization.cpp",
+      "sha256": "4db3e1ebeeddb195ea1fcdc644d8169c93d6a584b0e2e649d1e896fa4027a93a"
+    },
+    {
+      "path": "MinkowskiEngine/utils/quantization.hpp",
+      "sha256": "e5939b010e95718fda53145931c6b4bc7783828eed71303d9cbc40eb72219be8"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere.cpp",
+      "sha256": "2124b4009654ea4ec2e76afe6ffb3679eb68e33fd1ed7c29151a35611242f0e9"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere.hpp",
+      "sha256": "192a382140344c0292b5feecf7537c1c5e7908fc1d4ee988f319404dbaed3f63"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere_cuda.cu",
+      "sha256": "81c1ed0fb2745cda976ae5057fcaa9d82d4d57d6bb938077be724e8062480a01"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere_geometry.hpp",
+      "sha256": "4e00f5c1f64300b5381dc9f7f0a454a311ef47af56c096b48ae2a2d3685443ae"
+    }
+  ]
+}

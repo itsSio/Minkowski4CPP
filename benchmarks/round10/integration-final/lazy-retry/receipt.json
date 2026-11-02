@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source": "a67f671f4aa3a003751e3d06af85d2b9b8b459e5",
+  "started": "2026-11-02T21:00:17.6618343+01:00",
+  "loading": "LAZY",
+  "timeout_seconds": 420,
+  "original_status": "failed",
+  "original_error": "cuda CTest failed",
+  "ctest_exit": 0,
+  "completed": "2026-11-02T21:02:17.8063762+01:00"
+}

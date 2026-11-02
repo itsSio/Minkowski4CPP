@@ -1,0 +1,364 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "8b9c3028d6467ff3be7c793141927841d70f47f52d0590677438f488ca154992",
+      "bytes": 9
+    },
+    {
+      "path": "audit-modelnet.py",
+      "sha256": "74a728579f0b6a0d5ce20ffb7fd7d3db42df186383b043682e09fb8b97dd0b8a",
+      "bytes": 4455
+    },
+    {
+      "path": "check-cpu-manager-guard.py",
+      "sha256": "79a17d958d4a7072ef31c7e727a4d50ae1e83ce97c9178475ad7f17249b4b890",
+      "bytes": 1418
+    },
+    {
+      "path": "check-post-integration.ps1",
+      "sha256": "fc34a9fcde8185fd5d858742edf674edbf08780d7ccd28baed3262409efc5466",
+      "bytes": 2007
+    },
+    {
+      "path": "container-runtime/audit-runtime-stages.py",
+      "sha256": "456d14ebc084eed6517908212d069969c67ab9fd609cb21609fc51945ccc37ca",
+      "bytes": 11152
+    },
+    {
+      "path": "container-runtime/CPU-STAGE-CERTIFICATE.md",
+      "sha256": "9e05da96036aeb64660f6e02a2a5b5943a7feefc041178821ee342a3816505d2",
+      "bytes": 4461
+    },
+    {
+      "path": "container-runtime/CPU-VALIDATION-CERTIFICATE.md",
+      "sha256": "5923b079162f1b9624e9911feae7e4bdb6214cdfd80f94fed71ff03d659f20ae",
+      "bytes": 4214
+    },
+    {
+      "path": "container-runtime/PR54-CUDA124-DIAGNOSIS.md",
+      "sha256": "d01e4ec54f2055fdc118c7565e4cf0a93e4b49c66291a65a5a28a3566304aa8c",
+      "bytes": 1365
+    },
+    {
+      "path": "container-runtime/RECOVERY.md",
+      "sha256": "d3d4b0e50ebf8a60bb695ee70df7fafa71a9f0a702124b0bb784e3f4ca118166",
+      "bytes": 4193
+    },
+    {
+      "path": "container-runtime/run-41507998304/decoded-evidence.zip",
+      "sha256": "0f7b2c3d196dd498842e21ddd7e3cfb6ea18689838a5175a1075b3c4d0529c14",
+      "bytes": 122578
+    },
+    {
+      "path": "container-runtime/run-41507998304/download-summary.json",
+      "sha256": "a3083e9bbd738d9e043ad7240a50a5641688d2c6c7a8e1c42d255095a547c8c4",
+      "bytes": 9457
+    },
+    {
+      "path": "container-runtime/run-41507998304/run.json",
+      "sha256": "50095f20e13c01ba05545e27a7d350b51fcdef7689470ba5b6403306cdd8197e",
+      "bytes": 10569
+    },
+    {
+      "path": "container-runtime/run-41511100024/decoded-evidence.zip",
+      "sha256": "e96dff6c3e5add45817ca23f1c458c0a110fef06bc652c9a26d59e3bf3609b4f",
+      "bytes": 206290
+    },
+    {
+      "path": "container-runtime/run-41511100024/download-summary.json",
+      "sha256": "1dd8d8cda94c69cc60a993325158344981c742e16ca97a8c664e7e6f45a08f1a",
+      "bytes": 24564
+    },
+    {
+      "path": "container-runtime/run-41511100024/run.json",
+      "sha256": "c85d098e9a2036f4da38645e0786e4d43cd9425a3a0d4cad49d29b7b4df15414",
+      "bytes": 10569
+    },
+    {
+      "path": "container-runtime/run-41512323659/decoded-evidence.zip",
+      "sha256": "fd42295dc44eef46e4f5a7638ac26def195290cf983ea3c2bee297776ad6821e",
+      "bytes": 208902
+    },
+    {
+      "path": "container-runtime/run-41512323659/download-summary.json",
+      "sha256": "f5a4c33f043a96ac4fd2602a54ad8585325752522fd54641fc1f5bb9ccbd3bf4",
+      "bytes": 25625
+    },
+    {
+      "path": "container-runtime/run-41512323659/independent-stage-certificate.json",
+      "sha256": "c86f9b816cab0af5afc16017325d3d0f95ade8509667f23cc4a944aab286b5ff",
+      "bytes": 6675
+    },
+    {
+      "path": "container-runtime/run-41512323659/run.json",
+      "sha256": "2f59f79b9fdcd43d2e7c869a77c86bb9d6f9139de15fd238fe23f357177f7dcc",
+      "bytes": 10594
+    },
+    {
+      "path": "container-runtime/run-41512323659/runtime-stage-certificate.csv",
+      "sha256": "ff17b5d7a61e0b8b52fcdea9053042044e8fa03abb391d8284be51f6f3b291f8",
+      "bytes": 2377
+    },
+    {
+      "path": "container-runtime/run-41514149790/decoded-evidence.zip",
+      "sha256": "bc0798483c9814f0f99e8c64e56ac0a613aa2de86032a5348d9660b7dfb02761",
+      "bytes": 209517
+    },
+    {
+      "path": "container-runtime/run-41514149790/download-summary.json",
+      "sha256": "48506f461056ebea6834e8ea16a254ca8c34f63c2028513f7fbb8af1837f98f1",
+      "bytes": 26684
+    },
+    {
+      "path": "container-runtime/run-41514149790/independent-stage-certificate.json",
+      "sha256": "ec9d9c1b1a81d27b648bf3ba110b89d3cd1be6fbfefce3c85ac5d4bb22ff6345",
+      "bytes": 6997
+    },
+    {
+      "path": "container-runtime/run-41514149790/run.json",
+      "sha256": "d79cd67b440e9d35bd8e963e56ce911b5794b7f5981877c7da535331f8027126",
+      "bytes": 10594
+    },
+    {
+      "path": "container-runtime/run-41514149790/runtime-stage-certificate.csv",
+      "sha256": "3de9c38c83a2dada7284b3eee396a8eb0f1f3f20e1cdefae21e5d7c537e9da0c",
+      "bytes": 2300
+    },
+    {
+      "path": "gaussian-correlation-reference.json",
+      "sha256": "2a959494e0e0182ea67a94719978da03f1005c4d927b7fdd77d2546be9c86d14",
+      "bytes": 1992
+    },
+    {
+      "path": "gaussian-correlation-reference.py",
+      "sha256": "16e25ccf3db4f92643f698e17f3a656deaff9931426639d537afc63e90ac3a80",
+      "bytes": 2006
+    },
+    {
+      "path": "integration-final/build-cpu.log",
+      "sha256": "8099887413c5f15f380cd8d6834406bfd2f559f7f41c1c976fd5092c8fc70a95",
+      "bytes": 87597
+    },
+    {
+      "path": "integration-final/build-cuda.log",
+      "sha256": "ae0c1c91d8c4c77ce2f9284b4fd0972e8145287d294e77cfe05cbba776ac8f05",
+      "bytes": 91545
+    },
+    {
+      "path": "integration-final/ctest-cpu.log",
+      "sha256": "39710d3b607a2df4a6570ecb1666c938fb21689b246b85b5895950612dd7c674",
+      "bytes": 60850
+    },
+    {
+      "path": "integration-final/ctest-cpu.ps1",
+      "sha256": "e0bff9effacd70eed3008c825ae05a5ee15331ffaa6401a274a93c30729ad2f7",
+      "bytes": 463
+    },
+    {
+      "path": "integration-final/ctest-cpu.xml",
+      "sha256": "fd113628d4cfeb9f3175ef969b38fea065bf5bfe524d439458dc63db80b70fd2",
+      "bytes": 10832
+    },
+    {
+      "path": "integration-final/ctest-cuda.log",
+      "sha256": "38c0b1986be8faf4db193336913dd2cf152d1815764221ec1e922d8b5d3e4adc",
+      "bytes": 90406
+    },
+    {
+      "path": "integration-final/ctest-cuda.ps1",
+      "sha256": "0b31d5d83a32683ce027e7171645bdd6309dcd81af6b1292a35c39e1eab1e030",
+      "bytes": 467
+    },
+    {
+      "path": "integration-final/ctest-cuda.xml",
+      "sha256": "622fbba58e7e9b5089ac2cf12d4560d6e372f96d846b2655ce416abfc173ffe7",
+      "bytes": 30281
+    },
+    {
+      "path": "integration-final/lazy-retry/binaries-after.json",
+      "sha256": "fe6a2a8f227081b8a6cb64da89654a2980af1daa780bc9d33382c94abb4e77bc",
+      "bytes": 892
+    },
+    {
+      "path": "integration-final/lazy-retry/binaries-before.json",
+      "sha256": "fe6a2a8f227081b8a6cb64da89654a2980af1daa780bc9d33382c94abb4e77bc",
+      "bytes": 892
+    },
+    {
+      "path": "integration-final/lazy-retry/ctest-cuda.log",
+      "sha256": "462c2139b54e365caebbb22b2e9c30db79a87e5552396c563e4ebc72a924bbfc",
+      "bytes": 74050
+    },
+    {
+      "path": "integration-final/lazy-retry/ctest-cuda.xml",
+      "sha256": "7e3a4eb2ee87ffa6acb39f5ecfc6f1cf17278dccad6e1c78e7de95d81e6556f4",
+      "bytes": 10822
+    },
+    {
+      "path": "integration-final/lazy-retry/eager-ctest-cuda.log",
+      "sha256": "38c0b1986be8faf4db193336913dd2cf152d1815764221ec1e922d8b5d3e4adc",
+      "bytes": 90406
+    },
+    {
+      "path": "integration-final/lazy-retry/eager-ctest-cuda.xml",
+      "sha256": "622fbba58e7e9b5089ac2cf12d4560d6e372f96d846b2655ce416abfc173ffe7",
+      "bytes": 30281
+    },
+    {
+      "path": "integration-final/lazy-retry/eager-receipt.json",
+      "sha256": "6007981c71ce46e2ef379ebf8920b6090a5a4efd8ecaeb6fd0a5c3dee41b4871",
+      "bytes": 1474
+    },
+    {
+      "path": "integration-final/lazy-retry/gpu-after.csv",
+      "sha256": "8758d5d9d272a1b15bc049b3fdb55da7f50515645d7326ad1fe1f19391d27942",
+      "bytes": 194
+    },
+    {
+      "path": "integration-final/lazy-retry/gpu-before.csv",
+      "sha256": "74f83c77b0bd03922579acd33df6797275cf2f0288588aa86fce6e28011ad816",
+      "bytes": 194
+    },
+    {
+      "path": "integration-final/lazy-retry/receipt.json",
+      "sha256": "98731bea4d6feac03fc9eba1b8caba19338f8b40a9cc45990eedbf1fe04455eb",
+      "bytes": 330
+    },
+    {
+      "path": "integration-final/lazy-retry/run-ctest.ps1",
+      "sha256": "8496333ae802d1069533f008c1af0857d1bd0d2368da871110b84ec7b62cf75d",
+      "bytes": 1827
+    },
+    {
+      "path": "integration-final/post-integration/configure-cpu.log",
+      "sha256": "250fa3c250540007dd94aa0993e974049c21a21335a07e92efeaa9a1512234e9",
+      "bytes": 2836
+    },
+    {
+      "path": "integration-final/post-integration/configure-cuda.log",
+      "sha256": "84a4352b346f5b4c7e969e963e8831dbc07e62e0cf8a508621a5412b4165a6b8",
+      "bytes": 4974
+    },
+    {
+      "path": "integration-final/post-integration/ctest-cpu.log",
+      "sha256": "a0c36e47712bad3005bff81903cc30749fcf061f17efb07c38d14287d5bc5bf5",
+      "bytes": 1672
+    },
+    {
+      "path": "integration-final/post-integration/ctest-cpu.xml",
+      "sha256": "f24d89731507823f45f4dad8e0224f788dd6a1290a1f0ff13b17664aa0242400",
+      "bytes": 769
+    },
+    {
+      "path": "integration-final/post-integration/ctest-cuda.log",
+      "sha256": "1e4a0e04021a173c5bdc85327c21da10665540184fd118a91df1ce2ca955590c",
+      "bytes": 1051
+    },
+    {
+      "path": "integration-final/post-integration/ctest-cuda.xml",
+      "sha256": "6fd649949601eb5f956501a3b95fad15b456c99f2f9f8e9c70d427ac802056ba",
+      "bytes": 498
+    },
+    {
+      "path": "integration-final/post-integration/receipt.json",
+      "sha256": "bc51b1f4c5ed6b5e2f9c55148c297a0ae7180d78f5ba7056fbf005a365f49bb8",
+      "bytes": 2572
+    },
+    {
+      "path": "integration-final/receipt.json",
+      "sha256": "6007981c71ce46e2ef379ebf8920b6090a5a4efd8ecaeb6fd0a5c3dee41b4871",
+      "bytes": 1474
+    },
+    {
+      "path": "integration-review/audit_integration.py",
+      "sha256": "39a7a3e7312ab4b5847bad1c9e20b5cda3a0e46d939f66637c29d40eefea5bf4",
+      "bytes": 9338
+    },
+    {
+      "path": "integration-review/audit_partial_docker.py",
+      "sha256": "4ba0ce77dfdb9f2f434fc063ed1eefaa7b77e65a52fa5623066578922ba1968d",
+      "bytes": 4377
+    },
+    {
+      "path": "integration-review/diagnose-gaussian.ps1",
+      "sha256": "dd8b8dc1e61a0e0b1947a348a0c91a0bdd29ba85814a1fe59437dc17ff00d612",
+      "bytes": 2085
+    },
+    {
+      "path": "integration-review/engine-source-manifest.json",
+      "sha256": "e2bd12de6031b2b3c7fea74127d283c21fe527c72aa5c00422f70dc094b67e1f",
+      "bytes": 29058
+    },
+    {
+      "path": "integration-review/gate-audit.json",
+      "sha256": "9ad55c9d5006a0f364e0d815cd0c54f9ab44dcfa66c9c985cc5f42f91644564f",
+      "bytes": 5162
+    },
+    {
+      "path": "integration-review/gaussian-diagnostic.json",
+      "sha256": "4418044db7c0613ee5c048689582ff3f7ab63f46386ad54bb15fe3b60e408238",
+      "bytes": 5107
+    },
+    {
+      "path": "integration-review/lazy-recovery.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "integration-review/lazy-recovery.stdout.log",
+      "sha256": "94c4dccaa932dd0c5fb02b89761d2005aae4429c82a460586715a396b8b67cb5",
+      "bytes": 265
+    },
+    {
+      "path": "integration-review/partial-docker-audit.json",
+      "sha256": "9029e2d5356dc3d13fec9078c23a9e0d0abb51c751551de91303c96d8ce6036f",
+      "bytes": 1873
+    },
+    {
+      "path": "integration-review/recover-native-lazy.ps1",
+      "sha256": "36138284b22fc9bf1e5ad0b96dcb77b5dcf96912ffa394d6315308219ac90132",
+      "bytes": 3848
+    },
+    {
+      "path": "integration-review/REVIEW.md",
+      "sha256": "2b22b2d717d51d81fd0b421c34876040673c4ee1d8f2975909758a77d4ac41e0",
+      "bytes": 8740
+    },
+    {
+      "path": "pr-index.md",
+      "sha256": "6778323261fcd3124bcf49b1afb530c1ccd045207431b6dd4aebeed4bf2d15ba",
+      "bytes": 21741
+    },
+    {
+      "path": "publication-raw.json",
+      "sha256": "0c438e12a2efd7d2aaaabfe0c4da14836d64ea7819b2f28319e18c3a333ea437",
+      "bytes": 68066
+    },
+    {
+      "path": "publication-verification.json",
+      "sha256": "82dbe7ab57ac805bd1f76989df5f15f8f3a0dbd1440356d84772ce668c2ce8d9",
+      "bytes": 7789
+    },
+    {
+      "path": "REPORT.md",
+      "sha256": "da56915b46b67caf50ec03998d4eabd7c2b3e22300ec98dd6383e0322905f52c",
+      "bytes": 12909
+    },
+    {
+      "path": "source-equivalence.json",
+      "sha256": "bf857091445e4718ad6e4ee18838c36fd11fc9893eca08099cbfdf7894a19650",
+      "bytes": 322
+    },
+    {
+      "path": "validate-integrated.ps1",
+      "sha256": "feae74b65f39d0e461cca952c5792c1b8ba980eb0d317ac2fffa191c7b2d1d11",
+      "bytes": 2716
+    },
+    {
+      "path": "verify.py",
+      "sha256": "42fd3c9625f0bfe81b3022fee0a135c4431efc232b9c7c04c574501423449f10",
+      "bytes": 1780
+    }
+  ]
+}

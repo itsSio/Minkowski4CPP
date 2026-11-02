@@ -1,0 +1,176 @@
+{
+  "status": "passed",
+  "source": "a67f671f4aa3a003751e3d06af85d2b9b8b459e5",
+  "original_eager_failure": {
+    "status": "failed",
+    "loading": "EAGER",
+    "failed_suite": "gaussian_tests",
+    "reason": "Timeout",
+    "seconds": 420.288,
+    "junit_sha256": "622fbba58e7e9b5089ac2cf12d4560d6e372f96d846b2655ce416abfc173ffe7"
+  },
+  "source_checks": [
+    {
+      "path": "MinkowskiEngine/adaptive/part_split.hpp",
+      "candidate": "95093e2",
+      "sha256": "1bcb3d2fe6f47bfceccde67afd6088b289942c021f8d776f5ddcd23256d69c41"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_raster_cuda.cu",
+      "candidate": "b96db27",
+      "sha256": "27dc5c3143e5e7ce4e4f7e94ccf6bfaeb3abfb0866eaed924c9bd3ee32a673db"
+    },
+    {
+      "path": "benchmarks/ml_representations_summary.py",
+      "candidate": "7460c7e",
+      "sha256": "0af2c5ec13b81ab7148f8d6b26a2cf6b94e9b406825149700c2fbdc4dfc134a2"
+    },
+    {
+      "path": "benchmarks/benchmark_memory.hpp",
+      "candidate": "2ceceea",
+      "sha256": "1778586a1e9052463641b76e819eda646c9b713cd6331814c1e830c0112d1758"
+    }
+  ],
+  "engine_manifest": {
+    "files": 188,
+    "sha256": "e2bd12de6031b2b3c7fea74127d283c21fe527c72aa5c00422f70dc094b67e1f"
+  },
+  "cpu_manager_objects": [
+    "CMakeFiles\\minkowski_cpp.dir\\MinkowskiEngine\\coordinate_manager.cu.obj"
+  ],
+  "configurations": [
+    {
+      "kind": "cpu",
+      "loading": "EAGER",
+      "ctest_suites": 14,
+      "suite_counts": [
+        [
+          "175",
+          "0",
+          "21"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "78",
+          "0",
+          "14"
+        ],
+        [
+          "37",
+          "0",
+          "15"
+        ],
+        [
+          "6",
+          "0",
+          "6"
+        ]
+      ],
+      "junit_sha256": "fd113628d4cfeb9f3175ef969b38fea065bf5bfe524d439458dc63db80b70fd2",
+      "archive_sha256": "ec71a162a2f86206fe5e1fce413af26990bf25607db3e7a26d43c7dc7cbc8c6c",
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "112b5b719dc189c3c3990a8e1d75c8de52b32f4fa7e421038505688653e9a753"
+        },
+        {
+          "name": "adaptive_split_tests",
+          "sha256": "408dea61636d6870446a4a2558b98e8ba84e37e1ad2f22f3efc7881121edc0cf"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "6229ba0a050e5439db23d4f71b1a9b81ccc58ca5a337f9939c3e6c9923dd982f"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "9e7b1a4c118d9f429267c3b941566ca78fc9e9e35391d1a9c0faef0f78f2bb54"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "a3ec89080aefbed848de01107564a8cfd3653a4bac1630b92ea85bb1b3f7db77"
+        },
+        {
+          "name": "point_dataset_tests",
+          "sha256": "4bbf18d6d81d5deac75f32f799c0d316bd5e225a33481c608521823f51e54707"
+        },
+        {
+          "name": "benchmark_memory_tests",
+          "sha256": "3508590a01b4a2cf810c7d63957fa38ef0dfb2429b752c3873bc86a7b49d3f18"
+        }
+      ]
+    },
+    {
+      "kind": "cuda",
+      "loading": "LAZY",
+      "ctest_suites": 14,
+      "suite_counts": [
+        [
+          "199",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "117",
+          "0",
+          "0"
+        ],
+        [
+          "51",
+          "0",
+          "1"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ]
+      ],
+      "junit_sha256": "7e3a4eb2ee87ffa6acb39f5ecfc6f1cf17278dccad6e1c78e7de95d81e6556f4",
+      "archive_sha256": "66f35ed43a6117014cb230afb567370ce78b4fc430a5e58fb2bc0d4058cf7d00",
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "8f070d97c65187efaeb9f3b0a0ad2bb7f682d4b74eb5e5ce5ae38d30e3c73093"
+        },
+        {
+          "name": "adaptive_split_tests",
+          "sha256": "008605024690bc67eb0c11636e1e0c824b02fcb282e6cfed3f69d33aca6438a6"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "b7405fcef3e41d72caf5c1fcb2b1f7586157cceb28d7f473c719f18e8e7828fd"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "839570b2570c42a5d6dbad41b223de2bddcac7b4b556983990ab4bf2648498b9"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "ba2ca42cfaf0e8ebac74077edbd3b7eb7935e5431c022de22bc4bef62f13eb36"
+        },
+        {
+          "name": "point_dataset_tests",
+          "sha256": "050eed43e9fd7b3bad36b7d4f0b683dd2e1f4147fa8796af4117b82d8f8f7140"
+        },
+        {
+          "name": "benchmark_memory_tests",
+          "sha256": "7c5122f3de9edf63e751d4144bf1891039ccb48fdd00814b304df6ecdedf1ae8"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Native CPU/CUDA only; Docker results audited separately",
+    "Historical ModelNet pilot belongs to source0a4b62a, not this integrated build",
+    "No sum of unrelated percentage gains or claim of real-training Gaussian speedup"
+  ]
+}

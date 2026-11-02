@@ -1,0 +1,357 @@
+[
+  {
+    "baseRefName": "main",
+    "body": "## SUMMARY\n\nFix Linux CPU_ONLY static-library consumers failing to link with duplicate\nCoordinateManager definitions. Exclude the legacy coordinate_manager.cpp when\nthe unified coordinate_manager.cu is compiled as C++; keep the unified CPU\nimplementation and its out-of-line destructor. CUDA source selection is unchanged.\n\nThe new CPU change is a five-line build fix against upstream main `f4ac612`,\nplus a configured-target regression test. Fix commit `21774d4`; test `66d087a`.\nCurrent head `4ac4292` also merges the existing PR #32 allocator-namespace\ncompatibility prerequisite for CUDA 12.4, preserving that PR's ancestry rather\nthan recreating its fix. Review/merge PR #32 before this stacked update.\n\n## TECHNICAL DETAILS\n\nThe CPU source glob collects the legacy.cpp, while MINK_DUAL_BACKEND_SOURCES\nalso contributes coordinate_manager.cu with LANGUAGE CXX. Both define the\nconstructor and nine other manager methods. A consumer requiring both archive\nmembers gets duplicate definitions from GNU ld. The unified implementation owns\nthe destructor and remaining manager functionality, so retaining that source is\nnecessary.\n\nThe fix removes exactly the legacy path from MINK_CPU_SOURCES in CPU_ONLY.\nThe new CTest reads SOURCES from the actual configured minkowski_cpp target and\nrequires exactly one unified implementation and no legacy implementation.\nIt does not reconstruct the glob logic in a second implementation.\n\n## TESTING\n\n| Check | Result |\n|---|---|\n| Before: Linux pinned-image baseline41507998304 | Three repeated CPU_ONLY builds fail at core_tests link with duplicate CoordinateManager symbols; no tests executed |\n| After: Linux source rebuild41511100024 | All three library/consumer builds pass; CTest13/13 passes in each |\n| Independent full native integrationa67f671 | CPU full build and CTest14/14 pass; actual build.ninja contains only the unified coordinate manager object |\n| Standalone upstream-based branch configuration | Pass; CMake4.2.3/MSVC19.44 with existing CPU LibTorch2.15 |\n| Registered cmake_cpu_coordinate_manager_sources | 1/1 passed on actual configured library target |\n| Adversarial source-list fixtures | Correct target passes; legacy duplicate, repeated unified and missing unified inputs all fail as expected |\n\nThe Linux after-run's overall CI status is failed: a later, unrelated standalone\nadaptive sanitizer compile incorrectly requested C++17 for a C++20 defaulted\noperator. The complete library rebuild and all13 CTest suites had already passed.\nThis limitation is preserved, not described as a green CI run. Corrected harness\n[CI 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790)\nnow passes all three jobs: modified-source rebuild, CTest 14/14 and standalone\nsplit ASan/UBSan 6/6 with zero findings. Pre/post binary identities, source\nmanifests, rebuilt linkage, JUnit and actual Linux RSS were independently audited.\n\nThe initial upstream PR CI also exposed main's existing CUDA 12.4 allocator\nnamespace failure in bench_adaptive_kmap.cpp. It is exactly the defect already\nfixed by PR #32; merge `4ac4292` incorporates that existing prerequisite. The\noriginal failed check remains in history and the new exact-head CI is separate.\n\nLinux logs and source/binary identities:\n[baseline failure](https://github.com/itsSio/Minkowski4CPP/actions/runs/41507998304),\n[rebuilt library and13-suite runtime](https://github.com/itsSio/Minkowski4CPP/actions/runs/41511100024),\n[corrected complete container validation](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790).\nThese inherited matrix labels are repetitions of one pinned image in CPU_ONLY;\nthey are not three CUDA runtime-version validations.\n\n## BENCHMARKS\n\nThis fixes a link failure and makes no numerical or runtime-performance claim.\nBefore/after source selection is two competing definitions versus one canonical\nimplementation. Build wall time is not compared: the surrounding research\nintegration targets/source sets changed and the original build did not complete.\n\n| Requested metric | Before | After | Interpretation |\n|---|---|---|---|\n| Link correctness | Duplicate-symbol failure | Library and all13 suites link/run | Functional improvement |\n| Runtime latency/throughput | Unavailable for failing consumer | Not separately benchmarked | No speedup claimed |\n| CPU/GPU peak memory | Not a comparable completed workload | Not separately measured for this source-selection fix | No memory improvement claimed |\n| Kernel duration | Not applicable | Not applicable | No kernel or arithmetic change |\n| Percentage performance improvement | Not applicable | Not applicable | A failed link has no meaningful runtime ratio |\n\n## MACHINE LEARNING RESULTS\n\nNot applicable to this build-only fix. The container's four-method ML smoke\nsuite passed as part of the13-suite regression run; no accuracy gain is claimed.\n\n## TRADEOFFS\n\nThe legacy source remains in the repository; it is excluded only from CPU_ONLY\nlibrary target selection. Removing it entirely would be a separate cleanup.\nThe regression test requires MINK_BUILD_TESTS and CPU_ONLY. Native Windows\nvalidation and Linux container execution are reported separately. Container GPU\nexecution was unavailable; the change does not alter the non-CPU_ONLY branch.\n\n## REPRODUCTION\n\nUse the existing image without installing a host development environment:\n\n```sh\ndocker run --rm -v \"$PWD:/src:ro\" -v mink-cpu-link-build:/build \\\n  acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba \\\n  bash -lc 'cmake -S /src -B /build -GNinja -DCPU_ONLY=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/libtorch -DMINK_BUILD_TESTS=ON && cmake --build /build --parallel 2 && ctest --test-dir /build --output-on-failure'\n```\n\nUse a fresh build volume per revision. Upstream baseline `f4ac612`, CPU fix/test\ncandidate `66d087a`, current dependency-complete head `4ac4292`.\nThe standalone configuration/source-selection test can run immediately after\nconfiguration with `ctest --test-dir /build -R cmake_cpu_coordinate_manager_sources -V`.\nThe original upstream revision has no registered source-selection guard.\n\nThe container runs Ubuntu24.04/GCC13.3.0, CMake4.2.3, LibTorch2.15.0 and\nCUDA13.4/nvcc13.4.92 dependencies in CPU_ONLY mode. Native configuration used\nWindows11, Ryzen5 5600X6C/12T,16GiBRAM, MSVC19.44, CPU LibTorch2.15.0.\nThe broader native integration also has RTX2080SUPER8GiB/SM75 and driver610.88;\nthat GPU is not used by this configured CPU source-selection test.\n",
+    "comments": [
+      {
+        "id": "IC_kwDORShwes8AAAABiJ4Gdg",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "Investigated the duplicate-symbol Linux CPU build discovered while executing the\nactual modified-source library in the existing pinned Docker image. The source\nglob and dual-backend list both supplied CoordinateManager definitions. The fix\nkeeps the unified implementation and excludes the legacy.cpp only for CPU_ONLY.\n\nThree baseline container jobs failed at link before tests. Three changed-source\ncontainer jobs rebuilt and linked successfully, then passed13/13 CTest suites.\nTheir later standalone adaptive sanitizer compile failed because the harness\nused C++17 instead of C++20; this separate failure remains documented. Corrected\ncomplete container run41514149790 is pending at submission.\n\nThe new configured-target CTest passes; synthetic duplicate and missing-source\nfixtures fail as intended. The independent full native CPU integration passes\n14/14 suites. No kernel, arithmetic, ML accuracy, memory or runtime-speed gain\nis claimed. A future cleanup could retire the unused legacy source after all\nsupported build entry points are reviewed. The full PR description includes\nsource identities, environment, exact commands, limitations and before/after\nfunctional results.\n",
+        "createdAt": "2026-11-02T19:56:16Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587025014",
+        "viewerDidAuthor": true
+      },
+      {
+        "id": "IC_kwDORShwes8AAAABiKP18A",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "Updated validation and compatibility prerequisite:\n\n- Corrected container run41514149790 passed all three jobs. Each rebuilt the\n  modified library in the pinned existing image, passed14/14 CTest suites and\n  six split ASan/UBSan cases with zero findings. Independent audits verified\n  source/binary identities, rebuilt archive linkage, JUnit and Linux RSS.\n- The combined native runtime passed CPU14/14 and CUDA14/14 with LAZY loading.\n  An original EAGER run timed out the unchanged SSIM17x300 reference case at\n  420.288seconds under severe VRAM pressure. It remains preserved; no rebuild,\n  test filtering, tolerance relaxation or timeout increase was used on the retry.\n- Initial upstream CI's CUDA12.4 failure is the existing allocator namespace\n  defect in bench_adaptive_kmap.cpp, already addressed by PR#32. Merge4ac4292\n  incorporates that existing PR head38b23ec instead of duplicating the fix.\n  The five-line CPU source-selection change and its guard are unchanged.\n- Exact-head upstream CI for4ac4292 is newly running. Earlier failed CI remains\n  in history and is not overwritten or called a pass.\n\nThe body now describes the dependency and completed container results. There\nis still no runtime-speed, memory or ML-quality improvement claim for this\nbuild fix, and no GPU-container execution claim.\n",
+        "createdAt": "2026-11-02T20:14:57Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587414000",
+        "viewerDidAuthor": true
+      }
+    ],
+    "headRefName": "fix/cpu-coordinate-manager-link",
+    "headRefOid": "4ac4292e40fd78c4d3b81cdc3e775898737647f8",
+    "number": 54,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870280",
+        "name": "build-and-publish (124)",
+        "startedAt": "2026-11-02T20:13:40Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870494",
+        "name": "build-and-publish (132)",
+        "startedAt": "2026-11-02T20:13:40Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870782",
+        "name": "build-and-publish (134)",
+        "startedAt": "2026-11-02T20:13:40Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:14:11Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://dashboard.gitguardian.com",
+        "name": "GitGuardian Security Checks",
+        "startedAt": "2026-11-02T20:13:37Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "title": "fix(cmake): avoid duplicate CPU coordinate manager definitions",
+    "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54"
+  },
+  {
+    "baseRefName": "main",
+    "body": "## SUMMARY\r\n\r\nAdd a reproducible ModelNet10 input path to the four-representation classification\r\nharness, prevent summaries from mixing different datasets with identical sample\r\ncounts, and report Linux process peak RSS with explicit memory scopes. The\r\nexisting procedural dataset remains the default. Include a three-seed real-object\r\npilot and checksummed raw evidence, with the model/input differences disclosed.\r\n\r\n## TECHNICAL DETAILS\r\n\r\n- Standard-library Python preprocessing reads meshes directly from the official\r\n  ZIP, preserves original train/test membership, selects deterministic per-class\r\n  subsets and samples triangle surfaces proportional to area. It stores bounding\r\n  box normalization, source/split hashes and every selected object identity.\r\n- A LibTorch-independent C++ reader validates fixed local filenames, binary\r\n  headers/sizes, checksums, per-class histograms, finite bounded coordinates and\r\n  unique nonoverlapping sample IDs before conversion to tensors.\r\n- `--dataset-dir` supplies point/sample counts and data seed; conflicting CLI data\r\n  options are rejected. Generated procedural examples remain unchanged.\r\n- Summary aggregation compares the complete dataset identity and manifest across\r\n  runs. Historical unidentified procedural cohorts remain readable but cannot\r\n  mix with explicitly identified datasets. It validates before printing a table\r\n  or replacing an existing CSV.\r\n- A dependency-free helper preserves Windows PeakWorkingSetSize and adds Linux\r\n  `getrusage(RUSAGE_SELF).ru_maxrss` with KiB-to-MiB conversion, with Darwin's\r\n  byte units handled separately. Unsupported/failing APIs return -1. Output\r\n  identifies lifetime RSS and training-loop-plus-epoch-evaluation CUDA peaks.\r\n- Correct Gaussian documentation to describe the existing adaptive bridge and\r\n  its frozen geometry and marginal-axis covariance approximation.\r\n\r\nDataset feature `0e5c4fe`, summary guard `7460c7e`, RSS helper `2ceceea`.\r\nThe measured pilot runtime is separately identified as combined integration\r\n`0a4b62a83a98b091497e996773c68b6f89c38a3c`. Documentation/reporting changes\r\nare not represented as another set of model training results.\r\n\r\n## TESTING\r\n\r\n| Check | Result |\r\n|---|---|\r\n| Standalone C++ dataset loader | 22 cases passed; header/size/hash/label/bounds/path/split regressions |\r\n| Python preprocessing | 5 tests passed; deterministic sampling, area weighting, malformed/degenerate OFF, archive split/binary roundtrip |\r\n| Summary CLI guards | 20 tests passed; mismatched manifests, malformed data, duplicate identities, incomplete curves, invalid metrics and cohort mismatch |\r\n| Portable RSS allocation test on Windows | Passed; touched 64 MiB and observed 4.40625->68.4219 MiB; peak stayed 68.4219 MiB after release |\r\n| Focused native CTest at RSS source 2ceceea | 4/4 passed (loader, RSS, summary, preprocessing) |\r\n| Measured integration 0a4b62a full native CTest | CPU 11/11 and CUDA 11/11 passed |\r\n| Completed ML trials | 12/12 passed: 4 methods x 3 seeds x 6 epochs |\r\n| Independent metric/provenance audits | Both passed; every confusion/P/R/F1 and training-time sum recomputed |\r\n| Raw evidence SHA256 verification | All 46 files and 12 expected trial identities passed |\r\n| Modified-source Docker execution | Three jobs passed 14/14 suites, actual Linux RSS unit/high-water checks, and split ASan/UBSan: [run41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790) |\r\n\r\nThe summary bug has a before/after reproduction using the same counts, seeds,\r\nepochs and learning rate with one training-split SHA256 changed: the baseline\r\naccepts the incompatible pair; the new summary rejects it before output.\r\n\r\nExact focused checks:\r\n\r\n```sh\r\ncmake --build /build --parallel 2 --target point_dataset_tests benchmark_memory_tests\r\nctest --test-dir /build -R 'point_dataset_tests|benchmark_memory_tests|ml_summary_tests|modelnet_preprocessing_tests' --output-on-failure\r\npython benchmarks/modelnet10_results/verify.py\r\npython benchmarks/ml_representations_summary.py benchmarks/modelnet10_results/raw --seeds 1,2,3\r\n```\r\n\r\n## BENCHMARKS\r\n\r\nThis change extends experiment coverage and measurement correctness. It does not\r\nclaim a library latency or memory optimization. External ModelNet input could not\r\nbe loaded by the previous harness. Linux RSS previously returned unavailable;\r\nactual Linux helper execution passed in all three audited container jobs. Kernel execution\r\ntime is not isolated by this ML harness. CPU inference/model benchmarking was\r\nnot performed; CPU execution was exercised by the correctness suites.\r\n\r\nThe following is a practical systems comparison under the same input subset and\r\ntraining budget, not a before/after speedup caused by this PR. Means and sample\r\nstandard deviations are over three seeds; MiB values are rounded. Exact raw\r\nallocator values, reserved peaks, latency ranges and all memory records are in\r\n`benchmarks/modelnet10_results/raw/`.\r\n\r\n| Method | Train seconds | Cached batch1 latency ms | Batched evaluation samples/s | Peak allocated VRAM MiB | Peak reserved VRAM MiB | Lifetime RSS MiB |\r\n|---|---:|---:|---:|---:|---:|---:|\r\n| uniform |12.0+/-2.8|37.36+/-5.13|446+/-40|57|76|3777+/-24|\r\n| adaptive |6.7+/-0.4|10.86+/-0.36|948+/-11|171|200|4078+/-13|\r\n| gaussian |2.6+/-0.2|2.31+/-0.12|6738+/-225|42|58|3771+/-0|\r\n| adaptive_gaussian |5.8+/-0.3|11.85+/-1.66|1135+/-74|94|120|3949+/-1|\r\n\r\nAdaptive active elements are 368.89 versus 785.81 for uniform (-53.1%), while its\r\ntraining-loop allocated VRAM is roughly 3x greater. This is evidence that active\r\nvoxel count alone is insufficient to infer practical memory savings.\r\n\r\nMedian conversion times are 0.22+/-0.04, 0.98+/-0.23, 6.07+/-0.17 and 5.93+/-0.64 ms\r\nper object respectively. Conversion is excluded from cached inference/throughput;\r\nthe two median distributions must not be summed and called measured end-to-end\r\nlatency. Whole pipeline inference and separate memory scopes remain future work.\r\n\r\n## MACHINE LEARNING RESULTS\r\n\r\nThe subset has 400 training/200 test objects, 1024 points/object, 40/20 objects per\r\nclass. Every method uses six epochs, batch 16, Adam learning rate 0.001, fixed\r\ndata seed 2026 and initialization/shuffle seeds 1,2,3. Original split membership\r\nand no-augmentation preprocessing are preserved. Full six-epoch convergence,\r\nper-class metrics and confusion matrices are included in the evidence.\r\n\r\n| Method | Accuracy% | Macro precision% | Macro recall% | Macro F1% | Parameters | Input channels |\r\n|---|---:|---:|---:|---:|---:|---:|\r\n|uniform|74.5+/-2.8|76.1+/-2.4|74.5+/-2.8|74.3+/-2.9|677930|2|\r\n|adaptive|78.0+/-1.7|80.2+/-1.2|78.0+/-1.7|77.6+/-1.7|882650|3|\r\n|gaussian|79.5+/-2.6|82.3+/-1.2|79.5+/-2.6|78.4+/-3.5|110218|11|\r\n|adaptive_gaussian|80.8+/-1.3|82.2+/-1.5|80.8+/-1.3|80.6+/-1.0|885242|9|\r\n\r\nThe combined method observes +6.3 percentage points versus uniform. The models\r\nhave different architectures, parameter counts and feature information; this\r\ndoes not isolate representation quality or establish statistical superiority.\r\nThe Gaussian set MLP receives means/normals/scales/counts, while sparse conv\r\nmodels receive different occupancy/density/level or bridge-aggregated features.\r\nThe report includes the complete feature definitions. There was no validation\r\nsplit or hyperparameter selection; introduce one before further tuning.\r\n\r\n## TRADEOFFS\r\n\r\n- These are small, contended pilot measurements on a shared Build PC, sampled\r\n  CPU utilization 23.8%-81.9%, with unrelated GPU use. Within each seed method\r\n  order was fixed, so this is not a balanced quiet-machine timing comparison.\r\n- CUDA atomics remain nondeterministic. Seeds freeze data, sample ordering and\r\n  initialization without promising bitwise cross-run/toolkit identity.\r\n- Conversion runs on the host and is substantial for both Gaussian modes. The\r\n  mixture drops cells with fewer than three points. Those preprocessing choices\r\n  can affect both accuracy and cost.\r\n- Peak RSS is a process-lifetime high-water mark. CUDA's existing `*_train`\r\n  fields include per-epoch evaluation; separate phase peaks remain unmeasured.\r\n- Full manifests contain source hashes and identities, but no redistributed CAD\r\n  meshes or points. Same-ID/exact-hash split checks do not detect near duplicates.\r\n- Loader identity uses FNV-1a for portable corruption detection, not adversarial\r\n  authentication; recorded SHA256 provenance provides the stronger audit identity.\r\n- Darwin unit conversion is implemented but has no macOS execution result.\r\n- Docker on standard GitHub Linux runners is CPU-only. Native CUDA results do\r\n  not imply GPU container execution or three-toolkit compatibility.\r\n- This extends the existing bridge/ML harness PRs #26/#31 and compatibility PR #32.\r\n  The branch includes the independent CPU manager fix and configured-target guard\r\n  from PR #54 via merge d46eea3; its final focused CTest passed 5/5.\r\n\r\n## REPRODUCTION\r\n\r\nHardware: AMD Ryzen 5 5600X 6C/12T, 16 GiB RAM, RTX 2080 SUPER 8 GiB, driver 610.88.\r\nNative toolchain: Windows 11, MSVC 19.44, CUDA 13.4.3, LibTorch 2.15.0, Release.\r\nMeasured source 0a4b62a, executable SHA256\r\n`ec62ba12f3e29c4b4c23f53c0bbd51296c2e77e805d970c69f990eeef0c6c095`.\r\nDataset archive SHA256\r\n`9d8679435fc07d1d26f13009878db164a7aa8ea5e7ea3c8880e42794b7307d51`.\r\nProcessed manifest SHA256\r\n`983109bf609859eccc4ae302e1ae966fb6a5537032d6f8c139022779f5f36e6c`.\r\nFull split hashes, source IDs and exact per-process CLI arguments are preserved.\r\n\r\nReuse the existing image:\r\n`acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`.\r\nThe internal container harness rebuilds modified source and verifies source\r\nmanifest, CMake dependency/archive linkage and executable hashes; it rejects the\r\npreinstalled Minkowski library. Its completed run URL, source identity, commands and JUnit are recorded below.\r\n\r\n```sh\r\npython benchmarks/prepare_modelnet10.py --archive /data/ModelNet10.zip --download \\\r\n  --output /data/subset40-20-p1024-s2026 --train-per-class 40 --test-per-class 20 \\\r\n  --points 1024 --seed 2026\r\ncmake --build /build --parallel 2 --target ml_representations point_dataset_tests\r\nCUDA_MODULE_LOADING=EAGER CUBLAS_WORKSPACE_CONFIG=:4096:8 \\\r\n  /build/ml_representations --method uniform --dataset-dir /data/subset40-20-p1024-s2026 \\\r\n  --device cuda --epochs 6 --seed 1 --batch 16 --kmap-part-reuse-mb 512 \\\r\n  --fused-apply 1 --deterministic 0 --output /results/uniform-seed1.json\r\n```\r\n\r\nThe cache/fusion options reproduce the measured integration runtime; they are\r\nabsent from the standalone dataset feature's earlier base. Repeat all four modes\r\nand seeds 1,2,3 in fresh processes, preserving logs and without overlapping GPU\r\nbenchmarks. `benchmarks/modelnet10_results/README.md` explains every timing scope,\r\nfeature definition, limitation and source/result identity in detail.\r\n\r\n\r\n### Executed container validation and reproduction\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe earlier baseline run41507998304 failed to link duplicate CPU manager symbols.\r\nRuns 41511100024 and 41512323659 rebuilt successfully and passed 13/13 and 14/14\r\nsuites respectively in all three jobs, then failed a standalone sanitizer command\r\nthat incorrectly used C++17 for a C++20 type. Those failures and successful test\r\nstages remain preserved; the corrected run fixes the flag and executes the\r\nsanitizer first. Documentation workflow successes are excluded from validation.\r\n\r\nTo repeat the actual CPU container path using the frozen source:\r\n\r\n```sh\r\ngit fetch https://github.com/itsSio/Minkowski4CPP.git test/docker-runtime\r\ngit worktree add ../mink-container-validation aa74d97\r\ndocker build --progress=plain --build-arg JOBS=2 \\\r\n  -f ../mink-container-validation/docker/Dockerfile ../mink-container-validation\r\n```\r\n\r\nThe runner recorded four logical CPUs and approximately 15.6 GiB RAM; CPU model\r\nwas not recorded and is not inferred. Image tools: GCC 13.3.0, CMake 4.2.3,\r\nLibTorch 2.15.0+cu134 and CUDA 13.4 dependencies. GPU work below is native\r\nsupplementary evidence, not execution by this CPU_ONLY container.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.\r\n\r\nActual Linux 64 MiB touched-allocation results: 2.938->66.938 MiB; 3.047->67.047 MiB; 3.047->67.047 MiB. Each peak remained\r\nnondecreasing after release. Lifetime RSS is not a resettable phase counter.\r\n",
+    "comments": [
+      {
+        "id": "IC_kwDORShwes8AAAABiKPmDg",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "This investigation extends the procedural four-representation study to actual\r\nModelNet10 CAD objects and addresses two measurement weaknesses: equal-sized\r\ndatasets could be silently mixed by the aggregator, and Linux RSS was always\r\nreported unavailable. The new loader/preprocessor preserve original split\r\nmembership and deterministic surface samples with complete source/split hashes;\r\nthe summary rejects incompatible manifests; portable RSS uses platform-correct\r\nunits and explicitly documents its lifetime high-water scope.\r\n\r\nThe dataset reader's 22 cases, preprocessing 5 tests and summary 20 tests pass.\r\nFocused native CTest 4/4 passes, including a 64 MiB allocation/high-water test;\r\nmeasured integration CPU/CUDA CTest 11/11 passed each. Both independent audits\r\nrecomputed every scalar/per-class confusion metric across all 12 completed ML runs.\r\nAll 46 evidence SHA256 identities and the expected three-seed/four-method cohort\r\nverify. Verified modified-source Docker execution and Linux RSS results follow.\r\nAfter merging the CPU-link prerequisite, the focused native suite passed 5/5.\r\n\r\nSix-epoch mean accuracies over three seeds were 74.5%, 78.0%, 79.5% and 80.8% for\r\nuniform, adaptive, Gaussian, and combined respectively. Adaptive used 53.1% fewer\r\nactive elements but roughly 3x the allocated training-loop VRAM of uniform. The\r\nGaussian set model had the fastest cached inference but conversion cost exceeded\r\nits cached inference cost. The models have different capacities and feature\r\ninformation, trials were contended/fixed-order, and the latency excludes\r\nconversion. No isolated representation-quality or end-to-end speedup claim is\r\nmade. Raw outputs, parameter/input definitions, convergence curves, memory\r\nscopes, source/binary identities and exact reproduction commands are preserved.\r\n\r\nFuture useful work: add a deterministic validation split before tuning, run\r\nmatched-information and capacity-matched ablations, measure actual\r\nconversion-inclusive inference and separate memory phases, then repeat timing\r\nunder controlled load with balanced method ordering. No original measurements\r\nor failures were overwritten.\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.\r\nActual Linux RSS: 2.938->66.938 MiB; 3.047->67.047 MiB; 3.047->67.047 MiB; stable after release.\r\n",
+        "createdAt": "2026-11-02T20:14:45Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55#issuecomment-6587409934",
+        "viewerDidAuthor": true
+      }
+    ],
+    "headRefName": "test/ml-modelnet10",
+    "headRefOid": "d46eea3e23890e46da7c9b77a42a14f287620aed",
+    "number": 55,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371669",
+        "name": "build-and-publish (124)",
+        "startedAt": "2026-11-02T20:14:38Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:39Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409466/job/125524373580",
+        "name": "build",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371283",
+        "name": "build-and-publish (132)",
+        "startedAt": "2026-11-02T20:14:36Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371144",
+        "name": "build-and-publish (134)",
+        "startedAt": "2026-11-02T20:14:36Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:39Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409466/job/125524948027",
+        "name": "deploy",
+        "startedAt": "2026-11-02T20:15:39Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:09Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://dashboard.gitguardian.com",
+        "name": "GitGuardian Security Checks",
+        "startedAt": "2026-11-02T20:14:33Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "title": "test: add ModelNet10 datasets and audited representation experiments",
+    "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55"
+  },
+  {
+    "baseRefName": "main",
+    "body": "## SUMMARY\r\n\r\nDistribute the Gaussian rasterizer's ten warp-reduced backward attributes across\r\nten lanes, so they issue adjacent atomic additions together. This reduces\r\nisolated synthetic backward-kernel latency by 3.18% to 29.27% on an RTX 2080\r\nSUPER. Representative real-scene training remains approximately flat; this PR\r\ndoes not claim a training, accuracy or memory improvement.\r\n\r\nThis change stacks on Gaussian gather PR #53 (`229f04d`). Measured runtime is\r\n`b96db27aa5ef68e67d8c8bc3b3e6fa3a7548dcac`; its direct-raster benchmark parent\r\nis `dbead49`. Later documentation commits do not change measured runtime.\r\n\r\n## TECHNICAL DETAILS\r\n\r\nThe prior kernel reduces all ten attributes using the same shuffle-down tree,\r\nthen lane zero executes ten scalar atomic instructions. The changed kernel keeps\r\nthat reduction tree, broadcasts each lane-zero result, and assigns attribute k\r\nto lane k. Lanes zero through nine issue one warp instruction to adjacent\r\nattributes. Zero sums remain suppressed. Full-mask shuffles remain warp-uniform,\r\nincluding image edges and inactive pixels. Current-stream launches, shared\r\nGaussian IDs, forward math, projection, tile construction and public APIs are\r\nunchanged. Floating-point accumulation across warps remains nondeterministic.\r\n\r\nThe original path remains available through the internal\r\n`cuda_raster_backward_parallel_atomics()` comparison switch, default enabled,\r\nand benchmark `--parallel-atomics 0|1`. This process-wide switch is for controlled\r\ntests; changing it concurrently with application launches is unsupported.\r\n\r\nStatic inspection of the measured object shows 62 to 58 registers, 55 to 65\r\nshuffle instructions and 10 to 1 global atomic-add instructions. Both versions\r\nuse 11,268 shared bytes and no stack/local spills. These are static binary\r\nproperties, not measured dynamic occupancy or hardware-counter results.\r\n\r\n## TESTING\r\n\r\nAdded three registered Gaussian tests covering 0/1/31/255/256/257/513\r\ncontributions per tile, partial 19 by 35 image edges, nonuniform RGB/depth/alpha\r\nloss, a nondefault CUDA stream, exactly zero upstream gradients and ten\r\nfinite-difference checks. Serial/parallel gradient tolerance is 2e-5 relative\r\nplus 2e-6 absolute; finite differences allow 1% relative plus 0.002 absolute.\r\nObserved differences remained below 9.54e-7 across focused and sanitizer runs.\r\n\r\n| Validation | Result |\r\n|---|---|\r\n| Full CPU CTest | 4/4 suites passed; adaptive 119 passed/1 CUDA skip, Gaussian 47 passed/8 CUDA skips |\r\n| Full CUDA CTest | 4/4 suites passed; adaptive 123/0, Gaussian 71/0 |\r\n| Adaptive versus uniform smoke / framework | Passed in both builds; nine framework cases each |\r\n| Added focused tests | 3/3 passed, including all ten finite differences |\r\n| Compute Sanitizer memcheck | 3/3 tests; zero errors |\r\n| Compute Sanitizer racecheck | 3/3 tests; zero hazards, errors or warnings |\r\n| Compute Sanitizer initcheck | 3/3 tests; zero errors |\r\n| Independent evidence audits | All 80 A/B processes, source/input/binary identities, raw invariants and final native receipts passed |\r\n| Docker CPU runtime | Three repeated jobs passed 14/14 suites and split ASan/UBSan; source aa74d97, [run41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790) |\r\n\r\nNo sanitizer exclusions were used. Raw logs, JUnit, SHA256 manifests, static CUDA\r\nreview and interrupted-experiment history are in\r\n`benchmarks/gaussian_parallel_atomics_results/`.\r\n\r\n## BENCHMARKS\r\n\r\nTen paired process rounds reverse serial/parallel order each round. There are\r\n80 successful processes. Synthetic workloads use 32 by 32 tiles, 256 Gaussians\r\nper tile, five warmups and 30 CUDA-event samples per process. Real-scene runs use\r\n139,410 Gaussians at 512 and 1024 pixels, three warmups and ten synchronized\r\nwall-time samples per process. Tables show medians of process medians; complete\r\nmin/max ranges and paired changes are retained in the raw summary.\r\n\r\n| Workload / metric | Serial ms | Parallel ms | Change | Parallel lower |\r\n|---|---:|---:|---:|---:|\r\n| Row groups / isolated GPU backward kernel | 2.02486 | 1.43217 | -29.27% | 10/10 |\r\n| Sparse / isolated GPU backward kernel | 2.36523 | 2.10533 | -10.99% | 9/10 |\r\n| Dense / isolated GPU backward kernel | 9.89513 | 9.58031 | -3.18% | 8/10 |\r\n| Real 512 / backward wall latency | 14.48255 | 14.17745 | -2.11% | 5/10 |\r\n| Real 1024 / backward wall latency | 26.89975 | 26.69355 | -0.77% | 7/10 |\r\n| Real 512 / training step | 27.39870 | 27.37945 | -0.07% | 6/10 |\r\n| Real 1024 / training step | 66.58185 | 67.08795 | +0.76% | 6/10 |\r\n\r\n| Derived phase throughput | Serial /s | Parallel /s | Change |\r\n|---|---:|---:|---:|\r\n| Row-group isolated kernel launches | 493.86 | 698.24 | +41.38% |\r\n| Sparse isolated kernel launches | 422.79 | 474.98 | +12.34% |\r\n| Dense isolated kernel launches | 101.06 | 104.38 | +3.29% |\r\n| Real 512 training steps | 36.50 | 36.52 | +0.07% |\r\n| Real 1024 training steps | 15.02 | 14.91 | -0.75% |\r\n\r\nThroughput is the reciprocal of the corresponding latency, not a separate\r\nmeasurement. Synthetic kernel throughput excludes other rendering and training.\r\n\r\n| Memory metric (MiB) | Serial | Parallel | Change |\r\n|---|---:|---:|---:|\r\n| 512 render backward CUDA allocated peak | 196.5239 | 196.5239 | 0% |\r\n| 1024 render backward CUDA allocated peak | 232.8652 | 232.8652 | 0% |\r\n| 512 render CUDA reserved peak | 244 | 244 | 0% |\r\n| 1024 render CUDA reserved peak | 308 | 308 | 0% |\r\n| 512 complete-process working-set peak | 965.1914 | 965.1309 | -0.006% |\r\n| 1024 complete-process working-set peak | 976.2812 | 976.2207 | -0.006% |\r\n\r\nRender forward allocated peaks also match exactly (100.1484/129.7222 MiB).\r\nWorking-set differences are noise. Training-phase VRAM and real-scene\r\nkernel-only duration were not collected; no corresponding improvement is claimed.\r\n\r\n## MACHINE LEARNING RESULTS\r\n\r\nNot applicable to this kernel-only change. The real-scene harness measures a\r\nrendering/training step, not convergence, reconstruction quality or trained model\r\naccuracy. No model accuracy or convergence claim is made.\r\n\r\n## TRADEOFFS\r\n\r\nThe workstation was contended: observed CPU load ranged roughly 38% to 94%,\r\nand background GPU memory use was about 6.8 GiB. Unchanged forward-path aggregate\r\nmedians moved +3.28% at 512 and +2.70% at 1024. Small real-scene differences,\r\nincluding the 1024 training regression, are reported without asserting a\r\nperformance change beyond noise. Initial severe outliers remain in the report.\r\nOnly the tested RTX 2080 SUPER architecture is covered.\r\n\r\nThe initial run stopped after 60 successful processes because Windows rejected a\r\nreceipt-file write while a reader held it. The failure receipt and output hashes\r\nare preserved. Identity-checked resume ran the missing 20 processes only, after\r\nanother experiment released the shared lock. It did not overwrite earlier\r\nresults. The writer now atomically replaces receipts with bounded retries.\r\n\r\nThe preceding per-warp bounds experiment (`8438c04`) was rejected: dense kernel\r\n+4.95%, row groups +2.40%, real 512 backward +4.11% with zero of ten lower pairs.\r\nIts source and results remain preserved in the separate negative-experiment\r\nrecord. No part of that rejected optimization is in this candidate.\r\n\r\n## REPRODUCTION\r\n\r\nNative supplementary hardware/software: Ryzen 5 5600X, six cores/twelve threads,\r\n16 GiB system RAM; RTX 2080 SUPER 8 GiB, sm_75, driver 610.88; Windows 11,\r\nMSVC 19.44, CUDA 13.4.3, LibTorch 2.15.0 cu134, Release. Use the repository's\r\nexisting pinned Docker image for dependency setup; completed runtime evidence is\r\nrecorded in the executed container section below. Native CUDA execution is\r\nseparate from Docker CPU validation; no container GPU execution is claimed.\r\n\r\nBuild the measured checkout with CUDA and Gaussian benchmarks enabled, then run:\r\n\r\n```sh\r\ncmake --build build --parallel 2 --target gaussian_raster_backward_bench gaussian_render_bench gaussian_tests adaptive_tests\r\nctest --test-dir build --output-on-failure --timeout 420\r\nbuild/gaussian_tests gaussian_parallel_atomics\r\ncompute-sanitizer --tool memcheck --error-exitcode 99 build/gaussian_tests gaussian_parallel_atomics\r\ncompute-sanitizer --tool racecheck --error-exitcode 99 build/gaussian_tests gaussian_parallel_atomics\r\ncompute-sanitizer --tool initcheck --error-exitcode 99 build/gaussian_tests gaussian_parallel_atomics\r\nbuild/gaussian_raster_backward_bench --pattern row-groups --tiles 32 --per-tile 256 --warmup 5 --iterations 30 --parallel-atomics 0 --output row-groups-serial.json\r\nbuild/gaussian_raster_backward_bench --pattern row-groups --tiles 32 --per-tile 256 --warmup 5 --iterations 30 --parallel-atomics 1 --output row-groups-parallel.json\r\nbuild/gaussian_render_bench --input tests/data/test.ply --counts 0 --sizes 512,1024 --devices cuda --warmup 3 --iterations 10 --train --parallel-atomics 0 --output render-serial.json\r\nbuild/gaussian_render_bench --input tests/data/test.ply --counts 0 --sizes 512,1024 --devices cuda --warmup 3 --iterations 10 --train --parallel-atomics 1 --output render-parallel.json\r\n```\r\n\r\nRepeat ten times with reversed order each round, using fresh output names, no\r\noverlapping compiles/GPU workloads, and the same scene SHA256 recorded in the\r\nreceipt. Repeat synthetic runs for `dense` and `sparse`. The exact original\r\nPowerShell launch/build/test commands, source and executable hashes, data hash,\r\nraw samples, summaries and reproduction scripts are in the evidence directory.\r\nRun `python verify_evidence.py` inside that directory to verify every frozen\r\nfile and independently recompute aggregate and paired summary metrics.\r\n\r\nFuture work: profile real-scene kernel share and stalls on an isolated GPU,\r\nthen evaluate additional GPU architectures before generalizing these findings.\r\n\r\n\r\n### Executed container validation and reproduction\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe earlier baseline run41507998304 failed to link duplicate CPU manager symbols.\r\nRuns 41511100024 and 41512323659 rebuilt successfully and passed 13/13 and 14/14\r\nsuites respectively in all three jobs, then failed a standalone sanitizer command\r\nthat incorrectly used C++17 for a C++20 type. Those failures and successful test\r\nstages remain preserved; the corrected run fixes the flag and executes the\r\nsanitizer first. Documentation workflow successes are excluded from validation.\r\n\r\nTo repeat the actual CPU container path using the frozen source:\r\n\r\n```sh\r\ngit fetch https://github.com/itsSio/Minkowski4CPP.git test/docker-runtime\r\ngit worktree add ../mink-container-validation aa74d97\r\ndocker build --progress=plain --build-arg JOBS=2 \\\r\n  -f ../mink-container-validation/docker/Dockerfile ../mink-container-validation\r\n```\r\n\r\nThe runner recorded four logical CPUs and approximately 15.6 GiB RAM; CPU model\r\nwas not recorded and is not inferred. Image tools: GCC 13.3.0, CMake 4.2.3,\r\nLibTorch 2.15.0+cu134 and CUDA 13.4 dependencies. GPU work below is native\r\nsupplementary evidence, not execution by this CPU_ONLY container.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.\r\n",
+    "comments": [
+      {
+        "id": "IC_kwDORShwes8AAAABiKPmbw",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "Investigated the Gaussian backward rasterizer after the preceding per-warp bounds\r\nexperiment regressed and was rejected. The retained candidate preserves each\r\nattribute's reduction tree and distributes ten reduced attribute atomics across\r\nten warp lanes. Static inspection shows one global atomic instruction in place\r\nof ten, with ten extra shuffle instructions and no spilling.\r\n\r\nAll three added correctness tests passed, including empty/partial tiles,\r\nnondefault streams, zero loss and ten finite differences. Full native CPU and\r\nCUDA CTest each passed four suites. Memcheck/initcheck reported zero errors;\r\nracecheck reported zero hazards/errors/warnings, with no exclusions. An\r\nindependent audit verified all test/binary identities and the 80 benchmark\r\nprocesses.\r\n\r\nTen balanced pairs show isolated GPU backward latency changes of -29.27% for\r\nrow groups, -10.99% for sparse controls and -3.18% for dense controls. Real-scene\r\ntraining is approximately flat (-0.07% at 512, +0.76% at 1024), within substantial\r\nunchanged-forward control variability and background workstation load. CUDA\r\nallocator peaks match; there is no demonstrated training, accuracy or memory\r\nimprovement. The original interrupted receipt and all completed raw output\r\nhashes remain preserved.\r\n\r\nFurther work should profile dynamic kernel stalls on an isolated GPU and\r\nvalidate other GPU architectures. Verified container and native results follow.\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.",
+        "createdAt": "2026-11-02T20:14:46Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587410031",
+        "viewerDidAuthor": true
+      }
+    ],
+    "headRefName": "perf/gaussian-backward-parallel-atomics",
+    "headRefOid": "8641c440bd0932d593dc22365a456dd2b43ccc66",
+    "number": 56,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372473",
+        "name": "build-and-publish (124)",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524372938",
+        "name": "build",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372801",
+        "name": "build-and-publish (132)",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372649",
+        "name": "build-and-publish (134)",
+        "startedAt": "2026-11-02T20:14:40Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:01Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524615531",
+        "name": "deploy",
+        "startedAt": "2026-11-02T20:15:01Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:07Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://dashboard.gitguardian.com",
+        "name": "GitGuardian Security Checks",
+        "startedAt": "2026-11-02T20:14:34Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "title": "perf(gaussian): parallelize reduced raster gradient atomics",
+    "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56"
+  },
+  {
+    "baseRefName": "main",
+    "body": "## SUMMARY\r\n\r\nCompact repeated occupied x cells before splitting adaptive cached parts, then\r\nassign leaves with monotonic cursors within each sorted level. This reduces\r\nrepeated CPU sorting and boundary searches in the existing opt-in part cache.\r\nThis PR stacks on #52; the split-only diff starts at `647450b`.\r\n\r\n## TECHNICAL DETAILS\r\n\r\nRuntime candidate: `95093e2938e939ad5dd954c33ae4ea583879fa4d`; original\r\nruntime `2623c56`, baseline documentation head `647450b`. Public APIs, canonical\r\nleaf order, part boundaries, weights and mathematical reductions are unchanged.\r\nSix independent old/new differential tests include 250 deterministic randomized\r\ncases. The baseline implementation is retained solely in test/benchmark code.\r\nThe report explains the O(N + U log U) boundary construction and the cursor\r\nassignment worst-case tradeoff, without claiming a benefit for every layout.\r\n\r\n## TESTING\r\n\r\nAudited historical native results: CPU CTest 5/5, CUDA CTest 5/5. CPU adaptive:\r\n133 passed/8 skipped; CUDA adaptive: 144 passed/0 skipped. Six split tests passed\r\nin both builds. Gaussian: CPU 36 passed/4 skipped, CUDA 42 passed/0 skipped.\r\nRegistered smoke/framework suites passed. CPU skips are CUDA-only coverage.\r\nExact kernel-map indices, ordering, weights, values and gradients remain covered\r\nby the existing part-cache regression tests. No numerical tolerances changed.\r\n\r\nNew portable runner contract checks:\r\n`python benchmarks/test_adaptive_part_split_compare.py`: 6/6 passed.\r\nIndependent evidence audit reparsed all 108 process logs and recomputed 26\r\nsummary rows; source/binary bindings, balanced order, checksums and all recorded\r\nleaf/pair/cache invariants passed. Logs, JUnit and checksummed raw evidence live\r\nin `benchmarks/adaptive_part_split_results/`.\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\n## BENCHMARKS\r\n\r\nSix balanced interleaved A/B process pairs per workload. CPU phase: 3 warmups,\r\n15 timed repeats/process. Complete batch maps: valid adaptive tensors from 64\r\nellipsoid samples, 2048 points each, depth 3, batch 16, 4 epochs, 512 MiB host\r\npart cache. CUDA synchronization and EAGER module loading in both arms. Raw\r\nranges and every memory metric are in the accompanying report.\r\n\r\n| Workload / metric | Original median [min, max] | Changed median [min, max] | Change | Changed lower |\r\n|---|---|---|---|---|\r\n| center / kmap_batch_first_epoch_ms | 148.3785 [143.4990, 177.2560] | 137.4425 [131.1630, 154.3710] | -7.37% | 6/6 |\r\n| center / kmap_batch_later_epochs_ms | 23.7925 [20.9480, 33.5640] | 19.2345 [18.1450, 20.5770] | -19.16% | 6/6 |\r\n| center / peak_working_set_mb | 1894.4845 [1891.5470, 1896.7300] | 1895.1110 [1893.2970, 1897.9960] | +0.03% | 2/6 |\r\n| volume / kmap_batch_first_epoch_ms | 170.6435 [139.9110, 195.0270] | 167.1530 [147.3070, 175.4240] | -2.05% | 4/6 |\r\n| volume / kmap_batch_later_epochs_ms | 25.0485 [20.9920, 29.7160] | 22.0835 [20.8040, 29.1820] | -11.84% | 5/6 |\r\n| volume / peak_working_set_mb | 1935.0780 [1933.1020, 1936.7500] | 1934.7325 [1933.2190, 1938.1990] | -0.02% | 2/6 |\r\n\r\n| Workload / metric | Original median [min, max] | Changed median [min, max] | Change | Changed lower |\r\n|---|---|---|---|---|\r\n| center / kmap_batch_first_epoch_ms | 139.7570 [101.6810, 262.1070] | 141.7780 [121.2720, 201.6000] | +1.45% | 4/6 |\r\n| center / kmap_batch_later_epochs_ms | 12.0645 [11.4130, 14.7090] | 10.7460 [9.9730, 11.8010] | -10.93% | 6/6 |\r\n| center / peak_working_set_mb | 3562.7540 [3559.3200, 3567.9610] | 3562.0235 [3558.7070, 3563.5780] | -0.02% | 4/6 |\r\n| center / cuda_max_alloc_mb | 784.7680 [784.7680, 784.7680] | 784.7680 [784.7680, 784.7680] | +0.00% | 0/6 |\r\n| center / cuda_max_reserved_mb | 818.0000 [818.0000, 818.0000] | 818.0000 [818.0000, 818.0000] | +0.00% | 0/6 |\r\n| volume / kmap_batch_first_epoch_ms | 163.7640 [134.5310, 204.0040] | 164.7095 [130.0110, 245.0780] | +0.58% | 3/6 |\r\n| volume / kmap_batch_later_epochs_ms | 13.5580 [12.7910, 16.8650] | 12.2455 [11.6420, 16.9340] | -9.68% | 5/6 |\r\n| volume / peak_working_set_mb | 3604.1915 [3599.9650, 3611.0740] | 3603.7925 [3601.2230, 3608.5620] | -0.01% | 4/6 |\r\n| volume / cuda_max_alloc_mb | 1319.6520 [1319.6520, 1319.6520] | 1319.6520 [1319.6520, 1319.6520] | +0.00% | 0/6 |\r\n| volume / cuda_max_reserved_mb | 1366.0000 [1366.0000, 1366.0000] | 1366.0000 [1366.0000, 1366.0000] | +0.00% | 0/6 |\r\n\r\n| Device / later-epoch mode | Original map-phase calls/s | Changed map-phase calls/s | Change |\r\n|---|---:|---:|---:|\r\n| cpu / center | 42.03 | 51.99 | +23.70% |\r\n| cpu / volume | 39.92 | 45.28 | +13.43% |\r\n| cuda / center | 82.89 | 93.06 | +12.27% |\r\n| cuda / volume | 73.76 | 81.66 | +10.72% |\r\n\r\nReciprocal map-phase throughput is not total training throughput. Isolated CUDA\r\nkernel execution time: not measured; this is a host algorithm change. CPU\r\nwhole-process working set and CUDA allocated/reserved peaks are effectively\r\nunchanged; no material memory reduction is claimed. GPU utilization gains are\r\nnot inferred. Phase-only improvements range from 21.02% to 60.76%, with all\r\n30 corresponding paired comparisons lower; the report gives exact ranges.\r\n\r\n## MACHINE LEARNING RESULTS\r\n\r\nNo new model accuracy or convergence claim. The timed valid adaptive batch-map\r\nworkload is representative infrastructure, not a matched end-to-end ML study.\r\n\r\n## TRADEOFFS\r\n\r\nCUDA first-epoch medians increased 1.45% (CenterSampled) and 0.58%\r\n(VolumeWeighted), with overlapping ranges. These regressions remain recorded.\r\nThe shared host had substantial background CPU/GPU load despite exclusive lab\r\nbenchmark locks; results are contended paired observations. Cursor scans can\r\nlose to binary searches for many parts and sparse occupied levels. The\r\nunique-x control improved here but does not establish universal superiority.\r\nWhole-process peaks do not isolate temporary vector memory. No Gaussian\r\nalgorithm or CUDA kernel is changed by this improvement.\r\n\r\n## REPRODUCTION\r\n\r\nExact native scripts, commands, hardware, executable SHA256 and source commits\r\nare retained in the evidence directory. Windows 11, Ryzen 5 5600X 6C/12T,\r\n16 GiB RAM, RTX 2080 SUPER 8 GiB/SM75, driver 610.88, MSVC 19.44,\r\nCMake 4.2.3, CUDA 13.4.3 (nvcc 13.4.92), LibTorch 2.15.0.\r\nNo host environment was installed. The portable comparison helper accepts\r\nexplicit original/changed binaries and revision labels and refuses overwritten\r\noutput directories. Build each revision into a separate build volume inside\r\nthe existing pinned Docker image, then follow the report's exact CMake,\r\nCTest and Python commands. Immutable image and runtime receipts are in the executed container section below.\r\n\r\n\r\nThe portable comparison helper is now also registered with CTest. Six internal\r\nguard cases pass using an explicit module import under isolated Python mode.\r\n\r\n\r\n### Executed container validation and reproduction\r\n\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe earlier baseline run41507998304 failed to link duplicate CPU manager symbols.\r\nRuns 41511100024 and 41512323659 rebuilt successfully and passed 13/13 and 14/14\r\nsuites respectively in all three jobs, then failed a standalone sanitizer command\r\nthat incorrectly used C++17 for a C++20 type. Those failures and successful test\r\nstages remain preserved; the corrected run fixes the flag and executes the\r\nsanitizer first. Documentation workflow successes are excluded from validation.\r\n\r\nTo repeat the actual CPU container path using the frozen source:\r\n\r\n```sh\r\ngit fetch https://github.com/itsSio/Minkowski4CPP.git test/docker-runtime\r\ngit worktree add ../mink-container-validation aa74d97\r\ndocker build --progress=plain --build-arg JOBS=2 \\\r\n  -f ../mink-container-validation/docker/Dockerfile ../mink-container-validation\r\n```\r\n\r\nThe runner recorded four logical CPUs and approximately 15.6 GiB RAM; CPU model\r\nwas not recorded and is not inferred. Image tools: GCC 13.3.0, CMake 4.2.3,\r\nLibTorch 2.15.0+cu134 and CUDA 13.4 dependencies. GPU work below is native\r\nsupplementary evidence, not execution by this CPU_ONLY container.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.\r\n",
+    "comments": [
+      {
+        "id": "IC_kwDORShwes8AAAABiKPmFQ",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "Investigated repeated sorting and per-leaf boundary searches in adaptive\r\npart reuse. Compaction and monotonic level cursors preserve exact boundaries,\r\nleaf/pair ordering, weights, cache statistics and gradients. Six differential\r\ntests include 250 randomized cases; all 108 measured processes and 26 aggregate\r\nrows were independently audited. CPU warm CenterSampled map latency fell 19.16%\r\nand CUDA 10.93%; CUDA first epoch increased 1.45%. VolumeWeighted warm latency\r\nfell 11.84% CPU/9.68% CUDA, with first-epoch CUDA +0.58%. Memory is effectively\r\nunchanged. Contention, ranges and cursor worst-case tradeoffs remain explicit.\r\nNative branch suites and portable helper tests passed. No training or accuracy\r\ngain is claimed. Additional isolated-hardware/architecture evaluation is useful.\r\nDocker CPU execution is now verified by [corrected run 41514149790](https://github.com/itsSio/Minkowski4CPP/actions/runs/41514149790),\r\nsource `aa74d97`. All three repeated jobs rebuilt the library from modified\r\nsource in `acaicia/minkowski4cpp@sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba`, passed all 14 CTest suites, and passed six standalone\r\nadaptive split cases under GCC ASan/UBSan with zero findings. Source manifests,\r\nCMake/archive linkage, pre/post binary hashes and JUnit were independently\r\naudited. The installed Minkowski archive was rejected. All three labels use\r\nthe same CPU_ONLY image; no three-toolkit or container GPU execution is claimed.\r\n\r\nThe combined native integration `a67f671` independently passed CPU 14/14\r\nand CUDA 14/14 using LAZY loading, including 117 CUDA Gaussian cases. Later\r\nevidence/test-registration head `e5bf8d0` has an identical engine tree; its new\r\nchecks passed CPU 2/2 and CUDA 1/1. An initial EAGER run timed out the existing\r\nSSIM 17x300 reference at 420.288 seconds while about 125 MiB GPU memory was free.\r\nThe same binaries passed the complete LAZY retry in 116.41 seconds, with no\r\nfiltering, rebuild, tolerance change or timeout increase. The failed run remains\r\npreserved; its cause was not isolated and EAGER stress behavior is not qualified.",
+        "createdAt": "2026-11-02T20:14:45Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57#issuecomment-6587409941",
+        "viewerDidAuthor": true
+      }
+    ],
+    "headRefName": "perf/adaptive-compact-part-split",
+    "headRefOid": "b5c4bd8ab8b0f3557f04ff1cca09feea8e95922b",
+    "number": 57,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524369573",
+        "name": "build-and-publish (124)",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:14:59Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408696/job/125524367280",
+        "name": "build",
+        "startedAt": "2026-11-02T20:14:36Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524368838",
+        "name": "build-and-publish (132)",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524370094",
+        "name": "build-and-publish (134)",
+        "startedAt": "2026-11-02T20:14:36Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:00Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408696/job/125524603396",
+        "name": "deploy",
+        "startedAt": "2026-11-02T20:15:00Z",
+        "status": "COMPLETED",
+        "workflowName": "Documentation"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-02T20:15:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://dashboard.gitguardian.com",
+        "name": "GitGuardian Security Checks",
+        "startedAt": "2026-11-02T20:14:37Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ],
+    "title": "perf(adaptive): compact occupied cells when splitting cached parts",
+    "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57"
+  }
+]

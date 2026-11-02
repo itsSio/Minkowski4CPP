@@ -1,0 +1,187 @@
+{
+  "status": "passed",
+  "checked_utc": "2026-11-02T20:17:20.941156+00:00",
+  "validation": "Exact heads, open state, base main, full body and comprehensive comment read back",
+  "pull_requests": [
+    {
+      "number": 54,
+      "title": "fix(cmake): avoid duplicate CPU coordinate manager definitions",
+      "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54",
+      "head": "4ac4292e40fd78c4d3b81cdc3e775898737647f8",
+      "state": "OPEN",
+      "reviewDecision": "review pending",
+      "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587414000",
+      "body_sha256": "7326a3321b720b8b73398f5d1a2cf9dde56b8bf10c565bdbbcad39c7394c05b6",
+      "checks": [
+        {
+          "name": "build-and-publish (124)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870280"
+        },
+        {
+          "name": "build-and-publish (132)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870494"
+        },
+        {
+          "name": "build-and-publish (134)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870782"
+        },
+        {
+          "name": "GitGuardian Security Checks",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dashboard.gitguardian.com"
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "title": "test: add ModelNet10 datasets and audited representation experiments",
+      "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55",
+      "head": "d46eea3e23890e46da7c9b77a42a14f287620aed",
+      "state": "OPEN",
+      "reviewDecision": "review pending",
+      "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55#issuecomment-6587409934",
+      "body_sha256": "0ee874ac3bdcf1b8a2f87758d9c6b027b20f86eb88f8f158157796da3e1ab197",
+      "checks": [
+        {
+          "name": "build-and-publish (124)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371669"
+        },
+        {
+          "name": "build",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409466/job/125524373580"
+        },
+        {
+          "name": "build-and-publish (132)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371283"
+        },
+        {
+          "name": "build-and-publish (134)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371144"
+        },
+        {
+          "name": "deploy",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409466/job/125524948027"
+        },
+        {
+          "name": "GitGuardian Security Checks",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dashboard.gitguardian.com"
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "title": "perf(gaussian): parallelize reduced raster gradient atomics",
+      "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56",
+      "head": "8641c440bd0932d593dc22365a456dd2b43ccc66",
+      "state": "OPEN",
+      "reviewDecision": "review pending",
+      "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587410031",
+      "body_sha256": "6f332f964b4988561523bc282fee25cb5b772c15f081a3702c9eb6d076a2b487",
+      "checks": [
+        {
+          "name": "build-and-publish (124)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372473"
+        },
+        {
+          "name": "build",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524372938"
+        },
+        {
+          "name": "build-and-publish (132)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372801"
+        },
+        {
+          "name": "build-and-publish (134)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372649"
+        },
+        {
+          "name": "deploy",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524615531"
+        },
+        {
+          "name": "GitGuardian Security Checks",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dashboard.gitguardian.com"
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "title": "perf(adaptive): compact occupied cells when splitting cached parts",
+      "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57",
+      "head": "b5c4bd8ab8b0f3557f04ff1cca09feea8e95922b",
+      "state": "OPEN",
+      "reviewDecision": "review pending",
+      "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57#issuecomment-6587409941",
+      "body_sha256": "f81442c6a0b6505c2813c2c7f56514ceff10a5bdada0c4f24b1361062e924558",
+      "checks": [
+        {
+          "name": "build-and-publish (124)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524369573"
+        },
+        {
+          "name": "build",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408696/job/125524367280"
+        },
+        {
+          "name": "build-and-publish (132)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524368838"
+        },
+        {
+          "name": "build-and-publish (134)",
+          "status": "IN_PROGRESS",
+          "conclusion": "",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524370094"
+        },
+        {
+          "name": "deploy",
+          "status": "COMPLETED",
+          "conclusion": "SKIPPED",
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408696/job/125524603396"
+        },
+        {
+          "name": "GitGuardian Security Checks",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://dashboard.gitguardian.com"
+        }
+      ]
+    }
+  ]
+}

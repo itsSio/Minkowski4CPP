@@ -1,0 +1,46 @@
+{
+  "status": "partial_runtime_verified_overall_failed",
+  "run": 41511100024,
+  "workflow_head": "e7b0810de398ce5a7f25815789c139f0362b07de",
+  "jobs": [
+    {
+      "job": "125502834676",
+      "checked_evidence_files": 12,
+      "ctest_suites": 13,
+      "ctest_failures": 0,
+      "canonical_manager": "/opt/minkowski-runtime/source/MinkowskiEngine/coordinate_manager.cu",
+      "archive": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+      "source_manifest_base": "701b599b5fb39d1bfb7310b3d691079b2a91067f",
+      "overall_status": "failed",
+      "failed_stage": "split-sanitizer-build"
+    },
+    {
+      "job": "125502835143",
+      "checked_evidence_files": 12,
+      "ctest_suites": 13,
+      "ctest_failures": 0,
+      "canonical_manager": "/opt/minkowski-runtime/source/MinkowskiEngine/coordinate_manager.cu",
+      "archive": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+      "source_manifest_base": "701b599b5fb39d1bfb7310b3d691079b2a91067f",
+      "overall_status": "failed",
+      "failed_stage": "split-sanitizer-build"
+    },
+    {
+      "job": "125502835152",
+      "checked_evidence_files": 12,
+      "ctest_suites": 13,
+      "ctest_failures": 0,
+      "canonical_manager": "/opt/minkowski-runtime/source/MinkowskiEngine/coordinate_manager.cu",
+      "archive": "/opt/minkowski-runtime/build/libminkowski_cpp.a",
+      "source_manifest_base": "701b599b5fb39d1bfb7310b3d691079b2a91067f",
+      "overall_status": "failed",
+      "failed_stage": "split-sanitizer-build"
+    }
+  ],
+  "limits": [
+    "This is source-built container CPU execution, not container GPU validation",
+    "All three matrix labels use one identical pinned image",
+    "RSS and Gaussian atomics are absent from this first candidate; await final candidate",
+    "Standalone split ASan/UBSan was not built or executed"
+  ]
+}

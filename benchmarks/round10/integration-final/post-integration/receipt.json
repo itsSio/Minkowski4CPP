@@ -1,0 +1,77 @@
+{
+  "source": "e5bf8d07208071266fcc350f341082956344b57b",
+  "tested_runtime": "a67f671f4aa3a003751e3d06af85d2b9b8b459e5",
+  "engine_tree": "4686fb69c4ab658f216949729e695985084ef8aa",
+  "status": "passed",
+  "configurations": [
+    {
+      "kind": "cpu",
+      "exit": 0,
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "112B5B719DC189C3C3990A8E1D75C8DE52B32F4FA7E421038505688653E9A753"
+        },
+        {
+          "name": "adaptive_split_tests",
+          "sha256": "408DEA61636D6870446A4A2558B98E8BA84E37E1AD2F22F3EFC7881121EDC0CF"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "6229BA0A050E5439DB23D4F71B1A9B81CCC58CA5A337F9939C3E6C9923DD982F"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "9E7B1A4C118D9F429267C3B941566CA78FC9E9E35391D1A9C0FAEF0F78F2BB54"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "A3EC89080AEFBED848DE01107564A8CFD3653A4BAC1630B92EA85BB1B3F7DB77"
+        },
+        {
+          "name": "point_dataset_tests",
+          "sha256": "4BBF18D6D81D5DEAC75F32F799C0D316BD5E225A33481C608521823F51E54707"
+        },
+        {
+          "name": "benchmark_memory_tests",
+          "sha256": "3508590A01B4A2CF810C7D63957FA38EF0DFB2429B752C3873BC86A7B49D3F18"
+        }
+      ]
+    },
+    {
+      "kind": "cuda",
+      "exit": 0,
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "8F070D97C65187EFAEB9F3B0A0AD2BB7F682D4B74EB5E5CE5AE38D30E3C73093"
+        },
+        {
+          "name": "adaptive_split_tests",
+          "sha256": "008605024690BC67EB0C11636E1E0C824B02FCB282E6CFED3F69D33ACA6438A6"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "B7405FCEF3E41D72CAF5C1FCB2B1F7586157CCEB28D7F473C719F18E8E7828FD"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "839570B2570C42A5D6DBAD41B223DE2BDDCAC7B4B556983990AB4BF2648498B9"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "BA2CA42CFAF0E8EBAC74077EDBD3B7EB7935E5431C022DE22BC4BEF62F13EB36"
+        },
+        {
+          "name": "point_dataset_tests",
+          "sha256": "050EED43E9FD7B3BAD36B7D4F0B683DD2E1F4147FA8796AF4117B82D8F8F7140"
+        },
+        {
+          "name": "benchmark_memory_tests",
+          "sha256": "7C5122F3DE9EDF63E751D4144BF1891039CCB48FDD00814B304DF6ECDEDF1AE8"
+        }
+      ]
+    }
+  ],
+  "completed": "2026-11-02T21:05:41.7820552+01:00"
+}

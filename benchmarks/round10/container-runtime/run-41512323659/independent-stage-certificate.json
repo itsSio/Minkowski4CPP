@@ -1,0 +1,191 @@
+{
+  "audit": "passed",
+  "claim": "full CPU runtime stages passed; overall CI failed at standalone sanitizer compilation",
+  "run": "41512323659",
+  "runtime_head": "a4c2f3132c2f34d4f411a15328a4f2dd35c47564",
+  "jobs": [
+    {
+      "job": "125507027448",
+      "label": "build-and-publish (132)",
+      "overall_ci": "failure",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "failed: harness requested C++17, project requires C++20",
+      "sanitizer_test": "not executed",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 12,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test hashes recorded in receipt; failed sanitizer prevented final post-test hash check",
+      "rss_before_mib": 2.87109,
+      "rss_allocated_mib": 66.8711,
+      "rss_after_free_mib": 66.8711,
+      "rss_delta_mib": 64.00001,
+      "cpu_count": 4,
+      "mem_total_kib": 16367524,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.019314263000012488
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 5.133436515
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 880.5751572519999
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.004822396000008666
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 57.150900807000085
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 1,
+          "seconds": 0.5986937130001024
+        }
+      ]
+    },
+    {
+      "job": "125507027883",
+      "label": "build-and-publish (124)",
+      "overall_ci": "failure",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "failed: harness requested C++17, project requires C++20",
+      "sanitizer_test": "not executed",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 12,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test hashes recorded in receipt; failed sanitizer prevented final post-test hash check",
+      "rss_before_mib": 2.89062,
+      "rss_allocated_mib": 66.8906,
+      "rss_after_free_mib": 66.8906,
+      "rss_delta_mib": 63.99998000000001,
+      "cpu_count": 4,
+      "mem_total_kib": 16367524,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.017996863999997004
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 3.1302551640000047
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 600.364276218
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.0035071680000555716
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 37.41021101199999
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 1,
+          "seconds": 0.35411781899995276
+        }
+      ]
+    },
+    {
+      "job": "125507027928",
+      "label": "build-and-publish (134)",
+      "overall_ci": "failure",
+      "library_build": "passed",
+      "ctest_suites": 14,
+      "ctest_failures": 0,
+      "sanitizer_build": "failed: harness requested C++17, project requires C++20",
+      "sanitizer_test": "not executed",
+      "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
+      "canonical_git_blobs_verified": 471,
+      "decoded_evidence_hashes_verified": 12,
+      "linkage": "rebuilt archive; installed Minkowski archive excluded",
+      "manager_source": "coordinate_manager.cu only; CPU_ONLY",
+      "binary_hash_scope": "pre-test hashes recorded in receipt; failed sanitizer prevented final post-test hash check",
+      "rss_before_mib": 2.77734,
+      "rss_allocated_mib": 66.9023,
+      "rss_after_free_mib": 66.9023,
+      "rss_delta_mib": 64.12496,
+      "cpu_count": 4,
+      "mem_total_kib": 16367524,
+      "cpu_model": "not recorded; not inferred",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "image_digest": "sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba",
+      "compiler": "GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+      "cmake": "4.2.3",
+      "libtorch": "2.15.0+cu134",
+      "gpu": "no GPU execution; CPU_ONLY against CUDA-enabled LibTorch",
+      "stages": [
+        {
+          "name": "versions",
+          "exit_code": 0,
+          "seconds": 0.017614586000007648
+        },
+        {
+          "name": "configure",
+          "exit_code": 0,
+          "seconds": 5.103692384999988
+        },
+        {
+          "name": "build",
+          "exit_code": 0,
+          "seconds": 885.9629463800001
+        },
+        {
+          "name": "ctest-list",
+          "exit_code": 0,
+          "seconds": 0.004803345000027548
+        },
+        {
+          "name": "ctest",
+          "exit_code": 0,
+          "seconds": 59.03449223100006
+        },
+        {
+          "name": "split-sanitizer-build",
+          "exit_code": 1,
+          "seconds": 0.5683396570000241
+        }
+      ]
+    }
+  ]
+}
