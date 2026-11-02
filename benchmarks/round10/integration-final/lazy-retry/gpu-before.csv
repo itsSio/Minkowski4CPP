@@ -1,0 +1,2 @@
+timestamp, name, driver_version, pstate, utilization.gpu [%], memory.used [MiB], memory.free [MiB]
+2026/11/02 21:00:20.314, NVIDIA GeForce RTX 2080 SUPER, 610.88, P2, 58 %, 6545 MiB, 1443 MiB

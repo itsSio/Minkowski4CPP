@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="2"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="0"
+	timestamp="2026-11-02T21:05:32"
+	>
+	<testcase name="cmake_cpu_coordinate_manager_sources" classname="cmake_cpu_coordinate_manager_sources" time="0.0275352" status="run">
+		<properties/>
+		<system-out>-- CPU library has exactly one canonical CoordinateManager implementation
+</system-out>
+	</testcase>
+	<testcase name="adaptive_part_split_compare_tests" classname="adaptive_part_split_compare_tests" time="0.117714" status="run">
+		<properties/>
+		<system-out>......
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
+</system-out>
+	</testcase>
+</testsuite>
