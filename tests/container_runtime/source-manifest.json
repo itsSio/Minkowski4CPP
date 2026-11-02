@@ -1,0 +1,1476 @@
+{
+  "source_base_commit": "b9e9129b73164b3907aa37e3bf1cba7562de4542",
+  "format": "Canonical Git blob bytes; Linux checkout",
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 33883,
+      "sha256": "9ea00a2e40ef1c304bda72f515eb2fda38e7dd7ae3da11124d69e2275529a3ff"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive.hpp",
+      "bytes": 347,
+      "sha256": "728a829ef62c937b772176ba3a07c9d2f953665c3b3e50b0e822c9c8372595c3"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_tensor.cpp",
+      "bytes": 30455,
+      "sha256": "a878aa57dbe8003889ddd58fc2491b1c6537f9598ecc6e8e96f66a1cf4e28757"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_tensor.hpp",
+      "bytes": 7076,
+      "sha256": "8d12e2112af2b46d9cbd559917661e9efd0ae71bd20893255e5a858a1da7edcb"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology.cpp",
+      "bytes": 16562,
+      "sha256": "521a6fd18a14c7691add24907ef459a9dfe0b13b7379ac43d71fe6f3867e5ff2"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology.hpp",
+      "bytes": 14958,
+      "sha256": "c96e2733d6303a86128d833327f823e32edaf2cefb516cf56bdac5680fd38021"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/adaptive_topology_cuda.cu",
+      "bytes": 5905,
+      "sha256": "faeddef289a60a0a9b981606df9003ce33a8fb1355cd3e6a348bc83ff3a1717a"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/config.cpp",
+      "bytes": 2148,
+      "sha256": "fe61702d398fff99917996ef22f54cb2df433cd587363797615f280b38b56673"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/config.hpp",
+      "bytes": 1290,
+      "sha256": "86d17e3158525e21416d8a8be8a03dc637e2a4915724c088563a5c661a539a0c"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/fused_apply.hpp",
+      "bytes": 2372,
+      "sha256": "2e9bf2fd532c4e3c2ba6e0da45dde005eb6942d1d7e7c61a834c4a4915c39e09"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/fused_apply_cuda.cu",
+      "bytes": 20766,
+      "sha256": "c9fcf45d704e32fe915b7c85fc64a2a815094c7b09207a9d3c3248bdcc88d1d6"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map.cpp",
+      "bytes": 46752,
+      "sha256": "59f9c788400d50348e37426aefd0a3628efc9821ff0bff99570bd27fe75107ce"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map.hpp",
+      "bytes": 10135,
+      "sha256": "fe459bd539921d43d726c7ef4338db2727b20b634d8170395d24b9c3fe25ccf7"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/kernel_map_cuda.cu",
+      "bytes": 3826,
+      "sha256": "d5c7b425b851ca286f31b6616fa62dc1d5693ce63888ff81a0301aa873579df3"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/ops.cpp",
+      "bytes": 25887,
+      "sha256": "811fa62eec85a0300c5d720f7a503de2814b2270512cb282275cc8bbcde471dd"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/ops.hpp",
+      "bytes": 4123,
+      "sha256": "bb28482e77c35e5765557c4a58c271e1f521f9e64fdffec7ed9aac80cf7755b2"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/voxel_geometry.hpp",
+      "bytes": 2738,
+      "sha256": "8a979661fc6999d3bb4a3d6712c7d5cdf6d1665e62c0be3718944f2248dc55b6"
+    },
+    {
+      "path": "MinkowskiEngine/adaptive/voxel_key.hpp",
+      "bytes": 1182,
+      "sha256": "2e25274b0ccd6df4997aca0a3a9a4911b9a055a41f898d64a78e1404a2abcedb"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/broadcast_fn.cu",
+      "bytes": 5106,
+      "sha256": "c9c0977240d9636270551ebbe8e8d191f5f0a330f5f2e948b96d11d6ab778c65"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/broadcast_fn.hpp",
+      "bytes": 2681,
+      "sha256": "e56ecdc0ddf809d763171d61db5779f252ca471636d8301c1f72450a8df42e95"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/convolution_fn.cu",
+      "bytes": 12578,
+      "sha256": "da78babccfcd028626d6027bf25181b29b18ae8725c3f306b377281e66ebdd1c"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/convolution_fn.hpp",
+      "bytes": 9004,
+      "sha256": "47ba6541cc1ce14b340ed5943850743dd51a56b73a73376b14770926d42bd014"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/instance_norm_fn.cu",
+      "bytes": 6718,
+      "sha256": "da6cf2d6bea6cee5102b05e29bf83df9660f1345764571ed340dfdb6e89b6bb7"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/instance_norm_fn.hpp",
+      "bytes": 2559,
+      "sha256": "03e05f77b5b201a540ddd564fc358d5c90c9d74f2fc44945ad4080565c6e039d"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/interpolation_fn.cu",
+      "bytes": 4181,
+      "sha256": "22b3869bf2480214835f07cd0f0c4bca86e6cedec4487707240c9d2b9f820628"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/interpolation_fn.hpp",
+      "bytes": 2367,
+      "sha256": "9299403a1209abeaf5ddfd1787ca2fce2f4f38c73928c94dbee57f86a71d1fa3"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/manager_holder.hpp",
+      "bytes": 1892,
+      "sha256": "fcc18ac84aa693a5047f1ce8f4a35c2cf7a53c259473b53a882deba9f5b20941"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pooling_fn.cu",
+      "bytes": 17557,
+      "sha256": "d20916f09671bd3c403fd7caea00ce6af663844632159b85c545136a2d1b8544"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pooling_fn.hpp",
+      "bytes": 11854,
+      "sha256": "5701ddce571cc011a82a2ec20b6d5d760ce68cb7e7579c4091f4b0add8651edd"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pruning_fn.cu",
+      "bytes": 4105,
+      "sha256": "c5867fdbc9454264a8e62b6876cb7846c9a35b397e03fb27f44583213537fe04"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/pruning_fn.hpp",
+      "bytes": 2143,
+      "sha256": "c9486f670ddf782f08dcc2585b4b324e8911f0be7f173652754bf441c3976311"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/spmm_fn.cu",
+      "bytes": 3175,
+      "sha256": "d74ee4ff4123dacb2afa4455ebdce8adafe86d840019693ae02aa1e45ba2c2cb"
+    },
+    {
+      "path": "MinkowskiEngine/autograd/spmm_fn.hpp",
+      "bytes": 4499,
+      "sha256": "85e8d6417f65e3dce6a060eeb652eb07b7b88b99cccdbb71c6ae2c56235f6f3a"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.cpp",
+      "bytes": 3989,
+      "sha256": "6b33cf59d2ef70169f815b74102462426df31381f24151256cd6b79ac87a419f"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.cu",
+      "bytes": 4103,
+      "sha256": "427e3ad51608c76ab2f200e7f5b39d6ff105050fef7fe7a74a23d6769591568a"
+    },
+    {
+      "path": "MinkowskiEngine/coordinate_manager.hpp",
+      "bytes": 3090,
+      "sha256": "919c56728794f4e8bf46a91106cc9ac7eb2c6dc6ff5b02bd1a6887cbbca81252"
+    },
+    {
+      "path": "MinkowskiEngine/functional.hpp",
+      "bytes": 9811,
+      "sha256": "d1aad093d5b6b351cd46b4fe5b5f9fc2dc03e30243fda1dca87758921e10fe33"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian3d.hpp",
+      "bytes": 8683,
+      "sha256": "39a9f2a05504f9beb29e2283a8b3c660a4f7fec566596f269fdc52e69e813c2c"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adam_cuda.cu",
+      "bytes": 2757,
+      "sha256": "157b6b5d4f5de6a198c0b0496320db96fe647a5d59b0089f636d4bf643690c89"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adaptive.cpp",
+      "bytes": 28700,
+      "sha256": "b957eee86c3e1124a8a04d68de19f49c250582a4c98fda4a961fea0cc5623511"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_adaptive.hpp",
+      "bytes": 9975,
+      "sha256": "62dd6081b34dc3a855a664d0e94e0bede96223907dd398e9e70e8930ab53336c"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_camera.hpp",
+      "bytes": 3096,
+      "sha256": "cfcef03d18fd0da741deb7ffe6b17e0a209d840f1f2abfc02b0e2be5233c65a5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cuda.cu",
+      "bytes": 6536,
+      "sha256": "7999a42f58e0c65cf7d9d5070f8270de7521828287d0edb4cf06309108c09932"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cuda.hpp",
+      "bytes": 8352,
+      "sha256": "7bc8d1e3f8ffb1c196a142ae336a457647cc7b115a01c16179bab85f77b97c52"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_cull_cuda.cu",
+      "bytes": 7163,
+      "sha256": "4a86be4bddffd9e3e637188ad5f9743e6fcb94fc8c0719a4479fcaeeaa0ce4c7"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_gather_cuda.cu",
+      "bytes": 3621,
+      "sha256": "63b1471658838f1a44fe3df742c66dfde6a5cd44007d4407bd1984fefc2a3ff5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_model.cpp",
+      "bytes": 7341,
+      "sha256": "24041f17e6316db5a2bd9186bc82aac701e9bc40950a57941ece6411cd3aec63"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_model.hpp",
+      "bytes": 2747,
+      "sha256": "1d23e5a71a90b3469f1d46beb674f64b7e5eed2b944f43eed2eb8f8cc07960e2"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_optimizer.cpp",
+      "bytes": 4554,
+      "sha256": "54e5d83e3c3230361494e5572935a9bf5281dd3ddbaeb27c97cefd1e79bde4c1"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_optimizer.hpp",
+      "bytes": 1531,
+      "sha256": "9df01017a42945e3d06d1a8d0bf7e66ab7cc5a4af06b21a836416503e291a1d0"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ply.cpp",
+      "bytes": 15777,
+      "sha256": "1d7796c45bb788707a623139f56f532b93bbcb4ca9b72bd432b6f59e9c15e1ac"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ply.hpp",
+      "bytes": 1451,
+      "sha256": "73bfcca29d96a4b04040d9bd0d31b59f1e5b00724e92697660637d427a8f72be"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_project_cuda.cu",
+      "bytes": 11948,
+      "sha256": "d270d62b18df30e59958e947ab745533a9bfb7f2287f4d22987417851a1860c9"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_raster_cuda.cu",
+      "bytes": 10301,
+      "sha256": "4a45c1373216ae4ba9350494d69f832d8305d7d5f4ea43389d27295554cf714a"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_render.cpp",
+      "bytes": 39730,
+      "sha256": "0161ddd56634cab79f9e88d570222a0d63bf7dd4d4dc620d62675671164bc4b5"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_render.hpp",
+      "bytes": 2726,
+      "sha256": "9039dd00a4088453e24f7ab3c2cf26a91f3d9a17c3f00682e0f0b5bfaf59cfbe"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_sh.cpp",
+      "bytes": 2340,
+      "sha256": "acd2412d725adc3b0e34a5320c44369948837d6037e5a8a608851e2a7c31a048"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_sh.hpp",
+      "bytes": 1004,
+      "sha256": "e9dfc198d240a2f056927d42843ebe9e582ce7b3715f74b075923e7d94d85ce4"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_ssim_cuda.cu",
+      "bytes": 8566,
+      "sha256": "67feba96d313d98abe7ba919aaa7d0076ac23acfd3811dba20bdd93bfb51eac2"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_tensor.cpp",
+      "bytes": 16158,
+      "sha256": "91db62aee8137044aa73dc324bc758ad628f379372a9cb5c6248afa5d8138719"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_tensor.hpp",
+      "bytes": 2649,
+      "sha256": "f3bdc2c38139aec60009c6abcb89beb8c98cc653b86734ae7dc750da573a7f81"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_trainer.cpp",
+      "bytes": 16959,
+      "sha256": "b6dfc42dd863bba06da1e086da7fa114f6bf2faf58052916de1c04a90b76d861"
+    },
+    {
+      "path": "MinkowskiEngine/gaussian/gaussian_trainer.hpp",
+      "bytes": 4024,
+      "sha256": "85d11a5d382de60d105403e4c498188a50d7cef5883c84376b593f31134d3f95"
+    },
+    {
+      "path": "MinkowskiEngine/kernel_generator.cpp",
+      "bytes": 6218,
+      "sha256": "193ded41363b3a2c6c9ea54971f082c1f367b5cba6a62022984218487f3ba38b"
+    },
+    {
+      "path": "MinkowskiEngine/kernel_generator.hpp",
+      "bytes": 2643,
+      "sha256": "19a77be8939d7de1678b7cf23a6d7e8eb3bf19632e774c6bbcb7eb85b1f9b7b7"
+    },
+    {
+      "path": "MinkowskiEngine/minkowski.hpp",
+      "bytes": 1689,
+      "sha256": "db3fde610d920c07944cd6196d64cdbb1f642e8825c2e08fe92b7716596d6355"
+    },
+    {
+      "path": "MinkowskiEngine/modules/broadcast.cpp",
+      "bytes": 3615,
+      "sha256": "28f79083a5423a7c42bb57e76ded36c1fa26da808551d3e9022afc90e29c4ec5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/broadcast.hpp",
+      "bytes": 2226,
+      "sha256": "277cb933aeada3ba01306cfb7f2fe75c89dd2c69ac6f7b8585bae21837112330"
+    },
+    {
+      "path": "MinkowskiEngine/modules/convolution.cpp",
+      "bytes": 5582,
+      "sha256": "5ccdebf7541df77efcca228401886a1b5c623301328928dcdb254d773977716c"
+    },
+    {
+      "path": "MinkowskiEngine/modules/convolution.hpp",
+      "bytes": 3481,
+      "sha256": "d0ba752a38513008263ac2743dad4fd6aa461629e2a5d458161c33380f77a5d5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/interpolation.cpp",
+      "bytes": 1073,
+      "sha256": "05f0c19fd11d16a344f234a906c034dc3c2a98e3c483ca7c2b72e4ac2d86550b"
+    },
+    {
+      "path": "MinkowskiEngine/modules/interpolation.hpp",
+      "bytes": 1052,
+      "sha256": "378eb386a2bb39376b316c1f396464971297888068bb2b763e45b66f511eceb2"
+    },
+    {
+      "path": "MinkowskiEngine/modules/linear.cpp",
+      "bytes": 640,
+      "sha256": "a10da40fd494edf76d57f6921bbf1c71c2f33187d3440366bd28b6aa3d90cd1a"
+    },
+    {
+      "path": "MinkowskiEngine/modules/linear.hpp",
+      "bytes": 518,
+      "sha256": "274dbee3280b63d7149ded8d959b88f6e6740450599f286dbaa50e015b8fa563"
+    },
+    {
+      "path": "MinkowskiEngine/modules/nonlinearity.cpp",
+      "bytes": 935,
+      "sha256": "29dc47c2117065bd6750556ae2eecd9f7aac4e9c577af2def3a8a877bc81645e"
+    },
+    {
+      "path": "MinkowskiEngine/modules/nonlinearity.hpp",
+      "bytes": 5236,
+      "sha256": "f6bb3bd13161940f7490be32a9249e25460d877f24b5852c23968ef1a1d34ae4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/normalization.cpp",
+      "bytes": 5010,
+      "sha256": "8ad04173298e13e762d4db84ad15266967a42562f8408c87c1a2662d1e2c43f1"
+    },
+    {
+      "path": "MinkowskiEngine/modules/normalization.hpp",
+      "bytes": 2542,
+      "sha256": "9532283772e88447440e9903b80b5ba5d88a8a4ad13d04123c79383422a03012"
+    },
+    {
+      "path": "MinkowskiEngine/modules/ops.cpp",
+      "bytes": 6784,
+      "sha256": "3bf783e0639457969c39efdb0eaa957a965311e1804386a12e1ed298bbe694b4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/ops.hpp",
+      "bytes": 1815,
+      "sha256": "0aa46946eac97eff42c66597c4ca088fb6c4267821a7b3c1fb068589f34956a4"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pooling.cpp",
+      "bytes": 6023,
+      "sha256": "7a86aeec317ae3bd192e129cb19f6d07fbf059a031840ef2b24e23c7eafd866e"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pooling.hpp",
+      "bytes": 4427,
+      "sha256": "7d5401f9e4cfc926566a65a4c07912a0aca610f9ad06bffe26458d869050221c"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pruning.cpp",
+      "bytes": 605,
+      "sha256": "ea230732ea6fcfa4cc4d9bcda68182e03127f0fd87120efe6445f5c194053952"
+    },
+    {
+      "path": "MinkowskiEngine/modules/pruning.hpp",
+      "bytes": 608,
+      "sha256": "112680914261c6a9d2ebfcfe4fd6e67b2580246bdf7a5282d8e3865ac87788a3"
+    },
+    {
+      "path": "MinkowskiEngine/modules/resnet_block.cpp",
+      "bytes": 4090,
+      "sha256": "96c2d845562340912956ba11b32bddaee629267f1bd0f70317bbb2c5d1521776"
+    },
+    {
+      "path": "MinkowskiEngine/modules/resnet_block.hpp",
+      "bytes": 2022,
+      "sha256": "b8ae474733d25ac7dfd53b41bf96d6041153445c504ace1d09f78f091a35ae20"
+    },
+    {
+      "path": "MinkowskiEngine/modules/senet_block.cpp",
+      "bytes": 5623,
+      "sha256": "483582fb7b80cc2188070b4f268b22f2d044d6b389ad5c8d63110b37a3e14f66"
+    },
+    {
+      "path": "MinkowskiEngine/modules/senet_block.hpp",
+      "bytes": 2806,
+      "sha256": "282d64464d59c9c86545a56fe678ee859d4fcdafa25ddc279596890cee0e21e5"
+    },
+    {
+      "path": "MinkowskiEngine/modules/union_op.cpp",
+      "bytes": 1408,
+      "sha256": "7868f6a49be112f6c00ff43808e66ba908726e60706082af7f8cd08cb09d0b4d"
+    },
+    {
+      "path": "MinkowskiEngine/modules/union_op.hpp",
+      "bytes": 572,
+      "sha256": "f36fff2a74a9ebf17f6c31a394316550b1da67717760b402fa2f42e87853b2cb"
+    },
+    {
+      "path": "MinkowskiEngine/serialization.cpp",
+      "bytes": 4748,
+      "sha256": "4de266b2ef5d206053499cf02f69874bbeec91fc169e3938e24411e6bcc8e8f0"
+    },
+    {
+      "path": "MinkowskiEngine/serialization.hpp",
+      "bytes": 2057,
+      "sha256": "8eb9decac556947aa90b5eb85267f64b4f8d74ffa74ab07a89a6d72df455fbc8"
+    },
+    {
+      "path": "MinkowskiEngine/sparse_tensor.cpp",
+      "bytes": 9152,
+      "sha256": "86abe1a9c8f593586554188235b38b46cf21d94b4ffdb4bd7d2aacc955c2fde3"
+    },
+    {
+      "path": "MinkowskiEngine/sparse_tensor.hpp",
+      "bytes": 2744,
+      "sha256": "34d98d21fbc8021590d059565ee9bb0e299c9a0e722f4ac56c3ea402f299f49b"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/concurrent_unordered_map.cuh",
+      "bytes": 22695,
+      "sha256": "82c04ad7bf5356e97932364e28588b5b606f4a098c9bc7413ff7af6fbaea3bbf"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/nvtx/nvtx3.hpp",
+      "bytes": 69324,
+      "sha256": "d9c4d32ee9e653b899148b427c813f1ccf4291177ec64aa3df25f05f1ffda5da"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/nvtx/ranges.hpp",
+      "bytes": 2096,
+      "sha256": "723f5f540925f79be0d9d3f5b50e596d20730af3138cbb9e177256211c96ffe5"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/device_atomics.cuh",
+      "bytes": 24557,
+      "sha256": "8e5d7ad03cbc7c008bf7a6a7a683936f9b06f5d55fbfc719b146a6ab20abe40c"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/device_operators.cuh",
+      "bytes": 3849,
+      "sha256": "5994db9ee139e12be357cd3baefd259c40d9c829b903093f169003042e1ab731"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/detail/utilities/hash_functions.cuh",
+      "bytes": 7674,
+      "sha256": "784d93ceb3201d09117b564dfd1b09d47e495876b180aae321daea189af7b7d8"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/types.h",
+      "bytes": 10874,
+      "sha256": "cf92bb96a8ced746d901cc1b841dd7befd9993b79bff835c1e9e46c563d00d28"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/types.hpp",
+      "bytes": 7364,
+      "sha256": "12d9ee37a9e5b0ce447ddd33d4a1402eae9d45a3c0c54132c71c8bd176ae8946"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/utilities/error.hpp",
+      "bytes": 4839,
+      "sha256": "32aa670e32234615b7ce24cbe23b987851b79f36dcbafdc3af3cc3bbb9cd3024"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/cudf/utilities/legacy/wrapper_types.hpp",
+      "bytes": 17929,
+      "sha256": "c51fdbffaa8ffe556a9e41aab6f780944ed80f33a9e718f6134d78ad520444ae"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/hash_allocator.cuh",
+      "bytes": 3019,
+      "sha256": "e5f5ff55bbaa54341b5cd3b5c0b00958c3f2c5ad5c6d204c697644139e580a9a"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/helper_functions.cuh",
+      "bytes": 8226,
+      "sha256": "223d17d4b906a7643fb4b2ce2c9ce8b8b4ac8fca4463a3a315dabc58fab00ac8"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/hash/managed.cuh",
+      "bytes": 1301,
+      "sha256": "1276ae19c741c8e97f940969d3e9146cf80ed5f798f9c0acea917094a87646be"
+    },
+    {
+      "path": "MinkowskiEngine/src/3rdparty/robin_hood.h",
+      "bytes": 85317,
+      "sha256": "819da77fbfac8f48e00e46e1636e76d451065f1c805e49fabecf325a6a6c38eb"
+    },
+    {
+      "path": "MinkowskiEngine/src/allocators.cuh",
+      "bytes": 6628,
+      "sha256": "7599b7aff107cef987338fcebd02b1daf34b02817d82ed348686f5a5bfa3e0e0"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_cpu.cpp",
+      "bytes": 7924,
+      "sha256": "13fe42a0f1d88ca67a10ac4c63bb47ae0cae74a4637abda8bd6cfa24c966f1cc"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_gpu.cu",
+      "bytes": 9548,
+      "sha256": "99362bccfa2615b56c5d2ea8381607ef0c9fae82d13b959753574613fadc5a37"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.cu",
+      "bytes": 22087,
+      "sha256": "55acfbbb57d9a9ebe06978529917137f7fa82a2f0565e8fa0316b1495681c012"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.cuh",
+      "bytes": 2461,
+      "sha256": "52448ed317f281b5e84c096735bb8b5711081b5bb7febb8eb300fbee7c77d038"
+    },
+    {
+      "path": "MinkowskiEngine/src/broadcast_kernel.hpp",
+      "bytes": 6959,
+      "sha256": "51debc7179bf354a1b66bf2a718629003ad3c862a31aef5a119921718fb20d79"
+    },
+    {
+      "path": "MinkowskiEngine/src/common.hpp",
+      "bytes": 1905,
+      "sha256": "b5d6d4b15b93ece222b73fc2c80f390992941036c49f9bab3fcd59105f40a650"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_cpu.cpp",
+      "bytes": 10797,
+      "sha256": "3b71a93798eac601aee89ab04220c00ed988d40ebece21b453008bc8e604d56f"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_gpu.cu",
+      "bytes": 14887,
+      "sha256": "8dbe9e593df6da2a50c18f36b148667627316a24eaea51846a90ca6ab69d971b"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.cu",
+      "bytes": 33698,
+      "sha256": "ab7d4bf041e388c72bffd9ed58131cedc0b381b8361221333be3f24b76349967"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.cuh",
+      "bytes": 3197,
+      "sha256": "7df481937b51b011e821089849b7dca7b3703da4ba0fc0def4c7d74ca1673871"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_kernel.hpp",
+      "bytes": 6750,
+      "sha256": "b93086e1d7b25aab6a98e1f20ecebabab7a5b36765c5cda043b4cae5a677cfb3"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_transpose_cpu.cpp",
+      "bytes": 10285,
+      "sha256": "56ba933e4b241746f2cae07173b444af75203b9ddeb74e50bbbf91481a2753fb"
+    },
+    {
+      "path": "MinkowskiEngine/src/convolution_transpose_gpu.cu",
+      "bytes": 14722,
+      "sha256": "af842dee1050441fa91d5264d377906b06ff9e3e88b65394e6b89ab3e8ec9f33"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate.hpp",
+      "bytes": 11947,
+      "sha256": "f63d342f5f7af9dc51ece4ea676ca2d37ef8aa5b389601f7461b563621275f3e"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map.hpp",
+      "bytes": 8062,
+      "sha256": "962a195e95a6039db340d9f1c20f2964f80d90af3c27f0a16baf3c4afa56859b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_cpu.hpp",
+      "bytes": 46304,
+      "sha256": "ad7e6b1e765ba2e96ab3931caad98f265cce4888545511f1e56e9c17d911c16b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_functors.cuh",
+      "bytes": 7699,
+      "sha256": "756b6b951c4817c768b175749fcb4c6800bf69ed1edd93e0dd43c41c2989be44"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_gpu.cu",
+      "bytes": 105192,
+      "sha256": "0fee819be8f0906624fc3f556ee3f6b5cc58a396ca52b3a5cd0ed74315fa785f"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_gpu.cuh",
+      "bytes": 13828,
+      "sha256": "2ad2b4f6ea7d120553241faa42a9c35cbaa53486a44a9eab23a6fc076bd5310b"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_key.hpp",
+      "bytes": 5979,
+      "sha256": "95bc376807cad402f025003cbbff83f14d8a82f460afa82d3c5a07f770c4e236"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.cpp",
+      "bytes": 66081,
+      "sha256": "410db9649f674e8c0d1f4a060657a6df1d333b52aca0571d9c98acc971765ebb"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.cu",
+      "bytes": 17334,
+      "sha256": "534e5e68872f6d8ac4a4b11d1525f07905a31da3f74efc11fe8367d5e4d4505d"
+    },
+    {
+      "path": "MinkowskiEngine/src/coordinate_map_manager.hpp",
+      "bytes": 30492,
+      "sha256": "35c76db953e2b768cb84a9567be6c7b873c51c2729a356341b7941b330af40d1"
+    },
+    {
+      "path": "MinkowskiEngine/src/cuda_common.hpp",
+      "bytes": 1604,
+      "sha256": "0b12d0a5b36967ac1af1cd3d03b536bf97479439d47d9e030a083f43a640d6c8"
+    },
+    {
+      "path": "MinkowskiEngine/src/direct_max_pool.cpp",
+      "bytes": 9051,
+      "sha256": "5ed806b74bc42be9e4340d267cf1b8eb365197333690fefcb8fbaf10f5c6dea8"
+    },
+    {
+      "path": "MinkowskiEngine/src/dispatcher.hpp",
+      "bytes": 1955,
+      "sha256": "07526c9520b971959b7a3ca76fb226389ffeefdb253a37a2512f50744ac2b953"
+    },
+    {
+      "path": "MinkowskiEngine/src/errors.hpp",
+      "bytes": 1679,
+      "sha256": "4c529da3047c8218c4ee07836ff344fffbb85eb3db823f5dd3d6e176d7fe45a5"
+    },
+    {
+      "path": "MinkowskiEngine/src/global_pooling_cpu.cpp",
+      "bytes": 16119,
+      "sha256": "d140a819453de6e2029886bce06277b30dabeb659ca5d27cdec921697ca3a12c"
+    },
+    {
+      "path": "MinkowskiEngine/src/global_pooling_gpu.cu",
+      "bytes": 17684,
+      "sha256": "9fe28088f55fcc88f3658797ce7335f265fca93c4beb39f737b987142deaed07"
+    },
+    {
+      "path": "MinkowskiEngine/src/gpu.cu",
+      "bytes": 4327,
+      "sha256": "2194f74d03f6263f4ce6ceea56a02a3b3122ee1dc87227d83b7368a7eaedd249"
+    },
+    {
+      "path": "MinkowskiEngine/src/gpu.cuh",
+      "bytes": 9399,
+      "sha256": "3436579e698c05cae1b241675a6c900abfaa21b76519d2f477920c3fa0ab83fa"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_cpu.cpp",
+      "bytes": 6111,
+      "sha256": "5d43ad1933b4eef4f1a803814fa2fe55254d536e56161b04407e8abafde4f2dc"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_gpu.cu",
+      "bytes": 6170,
+      "sha256": "58adb61c0a81c2a96a27235c94d239cbcdfe560e50ac8e4f0a56c62e3a998252"
+    },
+    {
+      "path": "MinkowskiEngine/src/interpolation_kernel.hpp",
+      "bytes": 5625,
+      "sha256": "d5399d0b6bef85f5c4a713dfef76f9dbd9b306da59dbcbc088a5be576b763d62"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_map.cuh",
+      "bytes": 16833,
+      "sha256": "9c838a0120d5e82caa8dec20c615034413d60b3b9cfcc5aa9ef424d218d9587f"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_map.hpp",
+      "bytes": 4207,
+      "sha256": "cc79c47eeea05b785d639c7174e7d15f2cae67585c2d79028f43ab94fa1406b8"
+    },
+    {
+      "path": "MinkowskiEngine/src/kernel_region.hpp",
+      "bytes": 16931,
+      "sha256": "88b4888f40b3a3d62cbc8a69ca7ff70b91df860d3733c39b8d14403bdc363ca2"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_cpu.cpp",
+      "bytes": 11960,
+      "sha256": "d2b9a4727621c49930c192a0202c2cb59cf5ec3186add8d0e1c2418dea3c1605"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_gpu.cu",
+      "bytes": 12308,
+      "sha256": "5f930201f435a55b57807c0dae5993e276d1d9a4ac35cff7537b1a79fe3f1c55"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_transpose_cpu.cpp",
+      "bytes": 8899,
+      "sha256": "5ed98d6bb7e347669ca5a434299368c8e151f98c86464451c8c6d26925762d3b"
+    },
+    {
+      "path": "MinkowskiEngine/src/local_pooling_transpose_gpu.cu",
+      "bytes": 11654,
+      "sha256": "907e933f441c77559825212e978545ef98c0319e06fdadec129e8318268d6e4e"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions.cuh",
+      "bytes": 6609,
+      "sha256": "848867d7d612ff9890ceb8eb32b6f1c88f3eef21ef3c1e26006a04795858b772"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions.hpp",
+      "bytes": 2246,
+      "sha256": "46fa4889eccc2ea3ed988fd15c6f1527383134aff2fca1f71dd3c05eec22a66d"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions_cpu.cpp",
+      "bytes": 7475,
+      "sha256": "45cf646f89c355d2a7bfcffe86e3164d1a09596da526fb1e8358c28c21f91cb8"
+    },
+    {
+      "path": "MinkowskiEngine/src/math_functions_gpu.cu",
+      "bytes": 8983,
+      "sha256": "94848715c2100ebeb2a30a55ac6304e7f4dc8de6aabaf028e442bfa55a06d692"
+    },
+    {
+      "path": "MinkowskiEngine/src/mkl_alternate.hpp",
+      "bytes": 3988,
+      "sha256": "b74e7da744e0bbfc317bc61a9373981485c75ecfa393cc09b85d6bb26cacbd0f"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.cu",
+      "bytes": 21490,
+      "sha256": "00c65aa42298ee8cb6d24f2c268a8d0ddf2aa84e5b8e4170bcebe86be07481b2"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.cuh",
+      "bytes": 2857,
+      "sha256": "6fab71444f8da8b4c02e418c7e4794c60b93231993c04f153f258c54f8a83881"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_avg_kernel.hpp",
+      "bytes": 6981,
+      "sha256": "ee9f3593d5557103bddb2cfcb46a401f40359a3947d2e4f6196c56d0aa4d01e5"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.cu",
+      "bytes": 16612,
+      "sha256": "186752d9a14b733e89b17d039ebf01de78365b7090160cf5726f057119e0d8fb"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.cuh",
+      "bytes": 2817,
+      "sha256": "16b82a8976c80a7fa9fc94fe974c491d5cb9c379a2fa7b5f34220a3598f606c9"
+    },
+    {
+      "path": "MinkowskiEngine/src/pooling_max_kernel.hpp",
+      "bytes": 4754,
+      "sha256": "713653bd63c4ac11a608ad5dcb7536510b9c81c569699a857c1a0c2afc5348ee"
+    },
+    {
+      "path": "MinkowskiEngine/src/primitives/small_vector.hpp",
+      "bytes": 11180,
+      "sha256": "830dc19925767344c39afb1bb885727bf8450c0f743011d1f73ce43172f217bd"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning.hpp",
+      "bytes": 2919,
+      "sha256": "8802dbcee537900b5052a52f44d416afb48b438623cd762f101ea2029158d4f7"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning_cpu.cpp",
+      "bytes": 6275,
+      "sha256": "0cc78b25dfd6f8463f4b27ea452e9589925e9d62343ac485f2fe465a3b142a95"
+    },
+    {
+      "path": "MinkowskiEngine/src/pruning_gpu.cu",
+      "bytes": 9119,
+      "sha256": "ec6cbdf8a226a016f377085071fa88d366f385c7aa62020115a048d43cba48f6"
+    },
+    {
+      "path": "MinkowskiEngine/src/quantization.cpp",
+      "bytes": 17538,
+      "sha256": "14b1f539d8b31e878173eb95d2404c2b14bb3f9cf9cceb01009dedfcaa735e4a"
+    },
+    {
+      "path": "MinkowskiEngine/src/sharedmem.cuh",
+      "bytes": 3985,
+      "sha256": "acd788e2516cc528568e903ce776fbf9d7c163d157cbae6ba117aed2f18ee005"
+    },
+    {
+      "path": "MinkowskiEngine/src/spmm.cu",
+      "bytes": 25381,
+      "sha256": "801e8dbc0ba9c4e5e9b4d5e6bc9e504be058b75958a0439640fff657c168d83b"
+    },
+    {
+      "path": "MinkowskiEngine/src/spmm.cuh",
+      "bytes": 2291,
+      "sha256": "b1debe160b1c2e31dbbb7af97fba5a3c4d073fde3e90e2627dafff153fd5d680"
+    },
+    {
+      "path": "MinkowskiEngine/src/storage.cuh",
+      "bytes": 7028,
+      "sha256": "35fad466745068f27c411f5a49ac3067587bb362b6166c278170aedae3e46a5f"
+    },
+    {
+      "path": "MinkowskiEngine/src/thrust_policy.cuh",
+      "bytes": 1428,
+      "sha256": "85739fab6ec649fd18a9cec5f1b0a4a5ea93a77a69f1f34de94cd4f9dff0157f"
+    },
+    {
+      "path": "MinkowskiEngine/src/types.hpp",
+      "bytes": 7827,
+      "sha256": "3374ec844e0c71dec4e2ef2294d817bd9dcbe64a61ff541bc450b1fcf8d44a21"
+    },
+    {
+      "path": "MinkowskiEngine/src/utils.hpp",
+      "bytes": 9605,
+      "sha256": "bd6d09991e2a15c114b9e4de6fcf47e1b39f0f57a053dbf8dfaff8a568389bdb"
+    },
+    {
+      "path": "MinkowskiEngine/tensor_field.cpp",
+      "bytes": 6192,
+      "sha256": "52270b0b73c9b4a48230087f5923eb24be8613b16eb4ffda7311cfd4bd27c6e3"
+    },
+    {
+      "path": "MinkowskiEngine/tensor_field.hpp",
+      "bytes": 1834,
+      "sha256": "e275457b79293e91f862e68b63655063912f1903dc28d68bae61d369a73c4306"
+    },
+    {
+      "path": "MinkowskiEngine/training/training.cpp",
+      "bytes": 7870,
+      "sha256": "34ac2e26254ba1cdb47bd437b589e4210ef823bd081b91d0c77d84f734f8ebcc"
+    },
+    {
+      "path": "MinkowskiEngine/training/training.hpp",
+      "bytes": 4308,
+      "sha256": "cc98882420676934650036a31f43a5f1137b977e8b782b24849e1ba252f2cb4c"
+    },
+    {
+      "path": "MinkowskiEngine/types.hpp",
+      "bytes": 514,
+      "sha256": "1f8e7aa390458428df3282281fe7cd67c568b6f5ac1640a8ecd7afbe451ec07e"
+    },
+    {
+      "path": "MinkowskiEngine/utils/collation.cpp",
+      "bytes": 6612,
+      "sha256": "324fc28e9ebe771054e51e2c9516c62525c42c544dbc1d4781ef296366ecb4e6"
+    },
+    {
+      "path": "MinkowskiEngine/utils/collation.hpp",
+      "bytes": 1445,
+      "sha256": "550c1630bef86a3cb02fb05a50881afb18934a98a007713dac6d2f8c34d653bf"
+    },
+    {
+      "path": "MinkowskiEngine/utils/init.cpp",
+      "bytes": 2242,
+      "sha256": "45ab0977865ac7b950bed9a7e889bb4a58e23322a28c6e1c1d061ed865e69634"
+    },
+    {
+      "path": "MinkowskiEngine/utils/init.hpp",
+      "bytes": 417,
+      "sha256": "6cb0685cd4a19a1f316ede5862eba573d2c2b892b4d1580c0c28e8c661b838cb"
+    },
+    {
+      "path": "MinkowskiEngine/utils/quantization.cpp",
+      "bytes": 4562,
+      "sha256": "4db3e1ebeeddb195ea1fcdc644d8169c93d6a584b0e2e649d1e896fa4027a93a"
+    },
+    {
+      "path": "MinkowskiEngine/utils/quantization.hpp",
+      "bytes": 1148,
+      "sha256": "e5939b010e95718fda53145931c6b4bc7783828eed71303d9cbc40eb72219be8"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere.cpp",
+      "bytes": 5889,
+      "sha256": "2124b4009654ea4ec2e76afe6ffb3679eb68e33fd1ed7c29151a35611242f0e9"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere.hpp",
+      "bytes": 3744,
+      "sha256": "192a382140344c0292b5feecf7537c1c5e7908fc1d4ee988f319404dbaed3f63"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere_cuda.cu",
+      "bytes": 7925,
+      "sha256": "81c1ed0fb2745cda976ae5057fcaa9d82d4d57d6bb938077be724e8062480a01"
+    },
+    {
+      "path": "MinkowskiEngine/utils/sphere_geometry.hpp",
+      "bytes": 4388,
+      "sha256": "4e00f5c1f64300b5381dc9f7f0a454a311ef47af56c096b48ae2a2d3685443ae"
+    },
+    {
+      "path": "benchmarks/CMakeLists.txt",
+      "bytes": 1554,
+      "sha256": "56c127718638375fce18576a354677722356066d60ddd0712e67201d4aa56389"
+    },
+    {
+      "path": "benchmarks/ab_compare.py",
+      "bytes": 18484,
+      "sha256": "c8c66ad0fcb35b04eba29e8cf4cf3531134725240a8c73a6e8ef0c9d7b31a06e"
+    },
+    {
+      "path": "benchmarks/adaptive_device_budget_ab.py",
+      "bytes": 3543,
+      "sha256": "43d8716afd5230b6932761f8fdbd23a3bbb16df433a5f1f1c1d40a17f918a8c7"
+    },
+    {
+      "path": "benchmarks/core_conv_bench.cpp",
+      "bytes": 7107,
+      "sha256": "d4d5bc15431af5386ec58262303887e36d8a9fa3fc8da3a39bf3285c11422f9a"
+    },
+    {
+      "path": "benchmarks/gaussian_adaptive_bench.cpp",
+      "bytes": 8241,
+      "sha256": "2d569cde1409f8434f1f0aadca723b8b86c11440979896f5866e45252bd1fb13"
+    },
+    {
+      "path": "benchmarks/gaussian_bench.cpp",
+      "bytes": 10354,
+      "sha256": "b2762d9eb194d7613af6b6648d2a91308b4828504cc6efb75f66a68358df2ef1"
+    },
+    {
+      "path": "benchmarks/gaussian_ply_bench.cpp",
+      "bytes": 10853,
+      "sha256": "e955d3350e223e6ede07f231dea560ce84efe6981aae84d799b8e1fce50d034e"
+    },
+    {
+      "path": "benchmarks/gaussian_render_bench.cpp",
+      "bytes": 20015,
+      "sha256": "d6b809f0872c6e169e835e2797a224039304d41dd46250c3f012e46add97c5ef"
+    },
+    {
+      "path": "benchmarks/ml_representations.cpp",
+      "bytes": 44250,
+      "sha256": "0cdf7998f06b1da605a70737672ebdadbb58f17f4452b24db3a2ccd05cc52338"
+    },
+    {
+      "path": "benchmarks/ml_representations_smoke.cmake",
+      "bytes": 3567,
+      "sha256": "144ca113f939a8e6a53098bf8fc53e007455abb3c3ad2a07dd09bbe2f89b1e7e"
+    },
+    {
+      "path": "benchmarks/ml_representations_summary.py",
+      "bytes": 10267,
+      "sha256": "b68321f2b839854e60a1af82b9e8182bd1de93d0d25d76e459d064d4c1feaf9d"
+    },
+    {
+      "path": "benchmarks/sphere_volume.cpp",
+      "bytes": 26461,
+      "sha256": "7fb7093e50384846eb4448f754331f74db16ed3a5f089ac3721be604559f3028"
+    },
+    {
+      "path": "benchmarks/sphere_volume_cuda.cu",
+      "bytes": 9761,
+      "sha256": "83dab6b76b2623fd5556c78714c30076e397a456e87be7553f99731e754b0e91"
+    },
+    {
+      "path": "benchmarks/sphere_volume_cuda.hpp",
+      "bytes": 1129,
+      "sha256": "b2f834a37e4e4c7248101f761ffad0d22477fae78444d540354246e5699eead2"
+    },
+    {
+      "path": "benchmarks/test_ml_representations_summary.py",
+      "bytes": 9805,
+      "sha256": "09db12f764c8293df9015f6bb8db77890aae0b94aeada43de6350f9e96dbe321"
+    },
+    {
+      "path": "detect_cuda_compute_capabilities.cu",
+      "bytes": 375,
+      "sha256": "894a0e62681396765bfb46a44d8797bb9499fb622be0495c440a47ebbb1abe9b"
+    },
+    {
+      "path": "detect_cuda_version.cc",
+      "bytes": 130,
+      "sha256": "66bdbe37b7a28beaee706d1c3a85d14506d8499c6acc59e5935a2aa19306c18a"
+    },
+    {
+      "path": "tests/adaptive/bench_adaptive.cpp",
+      "bytes": 3998,
+      "sha256": "c243371f5cac54d8136d82f172c69a6e20dfffae920f95a1ea3e35bdedb70b09"
+    },
+    {
+      "path": "tests/adaptive/bench_adaptive_interp.cpp",
+      "bytes": 15975,
+      "sha256": "37501253f3c5a5fa105792c4faedb33216dda90144286c0ea97834489dea191e"
+    },
+    {
+      "path": "tests/adaptive/bench_adaptive_kmap.cpp",
+      "bytes": 29954,
+      "sha256": "cf7e01bd1d0b9f344da5e6dfe443200b829c5472a45d56c12129d0bb74770f43"
+    },
+    {
+      "path": "tests/adaptive/bench_adaptive_vs_uniform.cpp",
+      "bytes": 39983,
+      "sha256": "a01ef2ca835be5a26955c03f144130304c8dddd429df0a4965551e491521674f"
+    },
+    {
+      "path": "tests/adaptive/interp_eval_util.hpp",
+      "bytes": 7522,
+      "sha256": "aa3d33886dc74dc0b830a311a1e33705cf403f0f5646de1b29a467a83604b7f7"
+    },
+    {
+      "path": "tests/adaptive/main.cpp",
+      "bytes": 112,
+      "sha256": "ea532a46e791f59635533078b1e14e8690a1a384494306f50831b3f75ce6f7aa"
+    },
+    {
+      "path": "tests/adaptive/run_adaptive_vs_uniform.py",
+      "bytes": 7656,
+      "sha256": "b60c09ba5524e21f21f870a23966b7ebf19c5a03cd5642031605c7a48d5d26f0"
+    },
+    {
+      "path": "tests/adaptive/test_center_averaged.cpp",
+      "bytes": 9797,
+      "sha256": "a9667c920a9e081362c8bf56129feb14280ce2b407e104309f0ff409807ff4b0"
+    },
+    {
+      "path": "tests/adaptive/test_coarsen_merge.cpp",
+      "bytes": 13235,
+      "sha256": "5beb097462ececfe4dfa8509a44dbe6b124f7cc3f3d55e855260cb199ce124f2"
+    },
+    {
+      "path": "tests/adaptive/test_continuous_interp.cpp",
+      "bytes": 16583,
+      "sha256": "a8a87aeb9639742324f6b944250f7cbc4da90e47fdc2ebaf312192b0a70f4776"
+    },
+    {
+      "path": "tests/adaptive/test_coverage.cpp",
+      "bytes": 31511,
+      "sha256": "09f9610e70b24539695ba70ba923969b2581da796adaf60e38194a612c7590cc"
+    },
+    {
+      "path": "tests/adaptive/test_device_kmap.cpp",
+      "bytes": 9549,
+      "sha256": "4e18731bdb2dbc88ac745d9b91ee34a3119bc1664e9e75d3cdd50bbc0f3455e4"
+    },
+    {
+      "path": "tests/adaptive/test_drop_empty.cpp",
+      "bytes": 8283,
+      "sha256": "0944f4292916e074f7a0eb6cfafa191a849ba63de0770471c60102c2b2aeb3ce"
+    },
+    {
+      "path": "tests/adaptive/test_fused_apply.cpp",
+      "bytes": 19501,
+      "sha256": "44c4879d02bed4644f444e8417a6a14fbf1929f9789491948a5310ed4977904a"
+    },
+    {
+      "path": "tests/adaptive/test_geometry.cpp",
+      "bytes": 10696,
+      "sha256": "2b4247e3330d216a6bef30a254382790a6eaf721c032f830032b4b0b2bd7e8a6"
+    },
+    {
+      "path": "tests/adaptive/test_gradients.cpp",
+      "bytes": 17731,
+      "sha256": "6989e74b5c0b90368eb39bde6d1e404fc15fe22d9f0e4b1e688679faf2f40129"
+    },
+    {
+      "path": "tests/adaptive/test_integer_taps.cpp",
+      "bytes": 5355,
+      "sha256": "b7f49eb51a9e763a896d0021fa94e19a40a52989a6500e9decd1456d8db090d2"
+    },
+    {
+      "path": "tests/adaptive/test_interp_fallback.cpp",
+      "bytes": 11802,
+      "sha256": "492273753d77983361c188d1df250bc528863565c1baaa97b8839c4da0d29b35"
+    },
+    {
+      "path": "tests/adaptive/test_max_quantization.cpp",
+      "bytes": 2314,
+      "sha256": "03ef643fda3ad6ea0e33df49a119e8969b6036f26af8f2a15d682c6661b4d2aa"
+    },
+    {
+      "path": "tests/adaptive/test_numerical.cpp",
+      "bytes": 16197,
+      "sha256": "8171876658135ad1b72e402c2bf92a9845fecc3a9797184a3a253ab7c9a69178"
+    },
+    {
+      "path": "tests/adaptive/test_overlap_descent.cpp",
+      "bytes": 14089,
+      "sha256": "c0571e0638d2e411c2a57516a65c712d55bfa3c26e3b629857fd898ef136a795"
+    },
+    {
+      "path": "tests/adaptive/test_parallel_kmap.cpp",
+      "bytes": 19143,
+      "sha256": "13e1272e68bc71d0f6ed0dafdb907494b4f0d9d378c098898f4b0b24f5f1b062"
+    },
+    {
+      "path": "tests/adaptive/test_part_reuse.cpp",
+      "bytes": 28642,
+      "sha256": "52114de42f8c1ff8119e4810289a6d7d491cb472f819ed80ef28ed0f1888a531"
+    },
+    {
+      "path": "tests/adaptive/test_regression.cpp",
+      "bytes": 3484,
+      "sha256": "2acbc896398c65d46c5aac13f9a9b8b336e91b09fa63256580002c034972270a"
+    },
+    {
+      "path": "tests/adaptive/test_sort_keys.cpp",
+      "bytes": 6286,
+      "sha256": "6b422bd874901d8618e9a74740692f56568d3570f3dc4151dd7bce28c4a7dcf0"
+    },
+    {
+      "path": "tests/adaptive/test_sphere.cpp",
+      "bytes": 9419,
+      "sha256": "ff9852c9e9066aa0cf6afda2b138c5b8ce181784a4656ff97d08170140a27dad"
+    },
+    {
+      "path": "tests/adaptive/test_topology.cpp",
+      "bytes": 18109,
+      "sha256": "ffbe7b0ee21ec9480aa97db5b106a26915e52a0639666452480a951fd79d60ee"
+    },
+    {
+      "path": "tests/builders/test_nvtx.cu",
+      "bytes": 223,
+      "sha256": "5b420034cb0011c151f8a1b759efbef44a82d852e337f9daafc87e0b55d7e162"
+    },
+    {
+      "path": "tests/cmake/check_source_filter.cmake",
+      "bytes": 1494,
+      "sha256": "87e1f95a4ba43eb988b08b1cf1d54b9684c94cb03c99d16e0d867724e540aca0"
+    },
+    {
+      "path": "tests/core/core_test_utils.hpp",
+      "bytes": 5070,
+      "sha256": "b3a8bad0f088ac39f133249444387ef94623178819a34e6226331a4f1483a4e0"
+    },
+    {
+      "path": "tests/core/main.cpp",
+      "bytes": 112,
+      "sha256": "ea532a46e791f59635533078b1e14e8690a1a384494306f50831b3f75ce6f7aa"
+    },
+    {
+      "path": "tests/core/test_conv_reference.cpp",
+      "bytes": 5168,
+      "sha256": "4c2957873899d03e663857ead7bb0e173b25a127c5d64f7ce0146111189ba63b"
+    },
+    {
+      "path": "tests/core/test_cpu_cuda.cpp",
+      "bytes": 3974,
+      "sha256": "c19df50d2430ede997a766114a807b4c5361d737615142cde52465677637db13"
+    },
+    {
+      "path": "tests/core/test_gemm.cpp",
+      "bytes": 6352,
+      "sha256": "03aca1678c0bdf02d4561107f4fa65591bbc85d3b8aeec124fd4e6b56cb785ed"
+    },
+    {
+      "path": "tests/core/test_gradcheck.cpp",
+      "bytes": 2832,
+      "sha256": "c9caeceffa1fda56f5c6f2643390fea8bfdbd942d5d2ce1393afa55f5267cf5f"
+    },
+    {
+      "path": "tests/core/test_manager_lifetime.cpp",
+      "bytes": 6474,
+      "sha256": "9de26b05033a31ed777106a56281f69ad8b5c5045cb4f868765032f0701383d0"
+    },
+    {
+      "path": "tests/core/test_quantization.cpp",
+      "bytes": 2790,
+      "sha256": "dfa0256a9d0a97cfc7ce2abf9285db43b6276d3eecf1ad00b9a874901db5f800"
+    },
+    {
+      "path": "tests/core/test_threads.cpp",
+      "bytes": 2717,
+      "sha256": "31be7fd4262ad66749c9c9a82ff22a2bd735099a2df9cf27496225222e9f6e94"
+    },
+    {
+      "path": "tests/data/test.ply",
+      "bytes": 32902237,
+      "sha256": "95ba6aeb2825674814543d930c1a7e1c65bbabd57a735a669ae71ca24178e1e5"
+    },
+    {
+      "path": "tests/data/test_compressed.ply",
+      "bytes": 8545036,
+      "sha256": "e39d143e507023c5bdc2e4733b4ccab6da42d042e61a6d5a073e3982cad14023"
+    },
+    {
+      "path": "tests/data/voxels/0100.json",
+      "bytes": 1442562,
+      "sha256": "0129452e0990f0f61c515e3b1efb843f982e592003dcd3a1f7fdaefe0935ba9c"
+    },
+    {
+      "path": "tests/data/voxels/0101.json",
+      "bytes": 1447783,
+      "sha256": "38a4bc0abd05b0805d9dcc6fc427ee5c0fdb1980c51f53ae5e767a21c18e5228"
+    },
+    {
+      "path": "tests/data/voxels/0102.json",
+      "bytes": 1451369,
+      "sha256": "de3f923cb4e6ebe20e06ef2a902e6594cf0a4e557afe535c8bf0b9afd265409f"
+    },
+    {
+      "path": "tests/data/voxels/0103.json",
+      "bytes": 1453239,
+      "sha256": "b83b320f96570d94f0ee4e9435d7f83054000bd85980f018511609f10318429a"
+    },
+    {
+      "path": "tests/data/voxels/0104.json",
+      "bytes": 1451602,
+      "sha256": "b98a0c7c776bff041e0d524800d0c8bcd1359e36c96062685d751f0252c7769d"
+    },
+    {
+      "path": "tests/data/voxels/0105.json",
+      "bytes": 1455703,
+      "sha256": "f7b17264098ca617c060e6e73bf02189b4c7f7b8c356fb73cfcf1e407e5a4c1f"
+    },
+    {
+      "path": "tests/data/voxels/0106.json",
+      "bytes": 1456900,
+      "sha256": "3021d30b89156f37faa91ffaf8fd6c51726fae5777c4246e2c81c2bdc41b6617"
+    },
+    {
+      "path": "tests/data/voxels/0107.json",
+      "bytes": 1455832,
+      "sha256": "f07c84471d213947f06c51a8ae6b187317ac33aa9a92585d486cccb42c4b2ad9"
+    },
+    {
+      "path": "tests/data/voxels/0108.json",
+      "bytes": 1454960,
+      "sha256": "c576f410e975fdb9b5a5fa52317e072265ee40e75926cff520f5c9f5cfdf74fc"
+    },
+    {
+      "path": "tests/data/voxels/0109.json",
+      "bytes": 1456430,
+      "sha256": "87c6cd0009cf1840a3efa251c8dad8d0a520de07e534d5941d7468ce42fa64be"
+    },
+    {
+      "path": "tests/data/voxels/0110.json",
+      "bytes": 1456469,
+      "sha256": "9829f17eb3eea5932e3ce9f2d2be2e2b9ccfa4a87fee4359156cf2e6b110da73"
+    },
+    {
+      "path": "tests/data/voxels/0111.json",
+      "bytes": 1457688,
+      "sha256": "8f1a87f31f0c787f5c585bd493df1fc8bcd129dd0bd42b145183d52c0e6946cb"
+    },
+    {
+      "path": "tests/data/voxels/0112.json",
+      "bytes": 1456011,
+      "sha256": "fdf44657ddd4d10b7a771c6cc45cbc27d43264da5c678e19c6365d508051c32e"
+    },
+    {
+      "path": "tests/data/voxels/0113.json",
+      "bytes": 1458904,
+      "sha256": "c1bceb959e37edb35f0962b28414ddfb316682e3ee0f53fadc5f74dab320d1df"
+    },
+    {
+      "path": "tests/data/voxels/0114.json",
+      "bytes": 1454287,
+      "sha256": "4a28a30b77e84398413bc102a2373f1061082485ce9caa1fd48969e7543d2088"
+    },
+    {
+      "path": "tests/data/voxels/0115.json",
+      "bytes": 1457788,
+      "sha256": "f77941df096deb2df1963cff8f4d72388afb3fd7f68e3de473bbf0bfe31a6cd2"
+    },
+    {
+      "path": "tests/data/voxels/0116.json",
+      "bytes": 1456039,
+      "sha256": "5bff58178978d5c85a88fb5deb937cc0930493034143d6db68f947ed22d0ef5b"
+    },
+    {
+      "path": "tests/data/voxels/0117.json",
+      "bytes": 1458121,
+      "sha256": "578cf7b3bd23021004bd2531061effea5e65134f40de63e805c7cdb41083ee7d"
+    },
+    {
+      "path": "tests/data/voxels/0118.json",
+      "bytes": 1455927,
+      "sha256": "d31b3671730d3553ac723ca5f0d29e93d0858b6fd09d64b8adf0820e6d19592a"
+    },
+    {
+      "path": "tests/data/voxels/0119.json",
+      "bytes": 1457040,
+      "sha256": "37c4de857fa02c34c2bdde5ce6e3404ca70a4bbc2927947aabaabc5efdff7c8d"
+    },
+    {
+      "path": "tests/data/voxels/0120.json",
+      "bytes": 1453514,
+      "sha256": "f39227ecb55ab1c560ecd6e7e4d4ddc82f4abd5112ab225ad4fe21bc54bd2994"
+    },
+    {
+      "path": "tests/gaussian/gaussian_reference.hpp",
+      "bytes": 6980,
+      "sha256": "b72c347138e8502936e6925c1a5e7a5bcdb83efd4e7aac9b32a9abe2f71f32f1"
+    },
+    {
+      "path": "tests/gaussian/main.cpp",
+      "bytes": 112,
+      "sha256": "2aa76532b1513ef344669b599a8ce573a50cd25a72ee199d7f6b8e2abcec0ac5"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian3d.cpp",
+      "bytes": 2086,
+      "sha256": "aab38116d040f207e4f30067f579337b139566c3faf56a94c8045af9b12e3846"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_adam.cpp",
+      "bytes": 8790,
+      "sha256": "7b32d332cf4f2ff775af5a4d09f7461dc6b62032ec4e9ac0a60240479d5a3a0e"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_adaptive.cpp",
+      "bytes": 30293,
+      "sha256": "0a54ea1dbfa0ae74fb0904b4ab1a91a21ea9ef41f2546d65e6ff49f93ec53af2"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_compressed_ply.cpp",
+      "bytes": 5379,
+      "sha256": "7201146631f91a40ea4cb27b20e61fde0071fa56fac278f0503fbae348e74c57"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_cpu_raster.cpp",
+      "bytes": 6153,
+      "sha256": "0e99631a36675efa74d2e55e467e206fea8c65ca6e00e7dc41453c6bd35c8f33"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_cuda_backward.cpp",
+      "bytes": 5470,
+      "sha256": "e67f7f112f43c4d7c1f91bfd86b3bda47d27643ca7229ef7f7a101cf290be9c3"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_cull.cpp",
+      "bytes": 13155,
+      "sha256": "f55348dc1d6ac9ae0b33ae999bf1080f344695f8f855a67cc2a3538cccf6865e"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_gather.cpp",
+      "bytes": 9059,
+      "sha256": "0fe18904926fa82121088ac2060f8707897b8e1fd2c90f4b52f3df9f66288137"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_gradcheck.cpp",
+      "bytes": 33523,
+      "sha256": "1fb9cf7bdf42e2fc209daee144fbb97923b65faf7b7e08f54c1cbc7ecf50735b"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_ply.cpp",
+      "bytes": 7281,
+      "sha256": "674787b759d38edce0f0a0a89689d610dc028a21ec596e53ade3e2c833149452"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_project.cpp",
+      "bytes": 11454,
+      "sha256": "2915928dc54d9809dc235848e39e77ff368ae9d595d247508b1bc478493ea79e"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_projection.cpp",
+      "bytes": 13555,
+      "sha256": "a8e1c164e502eaaaa16efb3a630b19b426c803935d4306c9258e2bef79ac9b0d"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_render.cpp",
+      "bytes": 12645,
+      "sha256": "4e18c02c69aa094bd44069530a0f5caa6008ce5019ce7242964f49bbee9c8ca8"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_ssim.cpp",
+      "bytes": 5345,
+      "sha256": "31f3d7f8fd657bc3f521f32b40284e5ed2e66b8f4fb57b0380c2009f09505ffa"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_ssim_cuda.cpp",
+      "bytes": 6504,
+      "sha256": "6413e0ea0e6230f939d72d468a31ae33e658d08a726d695b58cbe650d20df14b"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_tensor.cpp",
+      "bytes": 6331,
+      "sha256": "2eb6ba979dca6b23ea621f5bc055cf3a70269dfa8aef95ed3b8a33756c8e3e9b"
+    },
+    {
+      "path": "tests/gaussian/test_gaussian_tile_bounds.cpp",
+      "bytes": 7826,
+      "sha256": "76bb79229f3574972a0e80e1b97909ea2eb0d3fc0d8fda71076c55fe2185e684"
+    },
+    {
+      "path": "tests/memory/main.cpp",
+      "bytes": 112,
+      "sha256": "ea532a46e791f59635533078b1e14e8690a1a384494306f50831b3f75ce6f7aa"
+    },
+    {
+      "path": "tests/memory/test_memory_growth.cpp",
+      "bytes": 15362,
+      "sha256": "13a02480f757f982f0374177cfc8b2b2021f2808223b022ed8d2b21a661ba830"
+    },
+    {
+      "path": "tests/sphere.cpp",
+      "bytes": 2626,
+      "sha256": "b07c16c8af6b8038ef3756b1298d0c2de2a2f771ef941b8573f37c84a29456da"
+    },
+    {
+      "path": "tests/third_party/json.hpp",
+      "bytes": 919975,
+      "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6"
+    },
+    {
+      "path": "tests/tools/test_ab_compare.py",
+      "bytes": 5783,
+      "sha256": "32806d6bdbaef54a8db752736a41f34e2a31f5df773222c28897afe5fac5a1a5"
+    },
+    {
+      "path": "tests/train.cpp",
+      "bytes": 36480,
+      "sha256": "4a9e5dc201f2957484a327d2ec2db3732ee9b1e68416c16bf6799c661a67f617"
+    },
+    {
+      "path": "tests/utils/CMakeLists.txt",
+      "bytes": 575,
+      "sha256": "cf9ed48afb6045b8cfa0672ef981ea5ba4cd349366d1cd4edcc360632a31acea"
+    },
+    {
+      "path": "tests/utils/test_framework.hpp",
+      "bytes": 5230,
+      "sha256": "f793c6c6a5a2b93e4018a2abcbe943aa4c5b02f4b4fd4266cd318e46822475a6"
+    },
+    {
+      "path": "tests/utils/test_framework_contract.cpp",
+      "bytes": 2398,
+      "sha256": "0ad5292d989985d0704af8c4db1d29707c49f9f643a7b7b3a1ab3066a44a941b"
+    }
+  ]
+}
