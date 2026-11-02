@@ -313,9 +313,12 @@ struct Topology {
   }
 
   // `sorted_keys` must be strictly increasing under key_less. Throws
-  // std::invalid_argument on duplicates, bad levels or overlapping leaves.
+  // std::invalid_argument on duplicates, bad levels or overlapping leaves. `check_overlap =
+  // false` skips only the overlap (active ancestor) check, for callers whose keys are valid by
+  // construction (coarsening a valid topology); order and levels are still checked.
   static std::shared_ptr<const Topology> make(const AdaptiveVoxelConfig &cfg,
-                                              std::vector<Key> sorted_keys);
+                                              std::vector<Key> sorted_keys,
+                                              bool check_overlap = true);
 
   // Open-addressing table over every leaf (value = leaf index) and every strict
   // ancestor of a leaf down to the coarsest present level (value = kInternal).
