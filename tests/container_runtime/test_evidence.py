@@ -73,14 +73,16 @@ class EvidenceGuards(unittest.TestCase):
         self.assertEqual(suites, runner.EXPECTED_SUITES)
         self.assertEqual(targets, runner.TARGETS)
         for relative in ['tests/adaptive/test_part_split.cpp', 'tests/tools/point_dataset_tests.cpp',
-                         'benchmarks/test_ml_representations_summary.py']:
+                         'benchmarks/test_ml_representations_summary.py',
+                         'tests/tools/benchmark_memory_tests.cpp']:
             path = self.root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.touch()
         targets, suites, standalone = runner.configuration(self.root)
         self.assertEqual(suites - runner.EXPECTED_SUITES,
-                         {'adaptive_split_tests', 'point_dataset_tests', 'modelnet_preprocessing_tests', 'ml_summary_tests'})
-        self.assertTrue({'adaptive_split_tests', 'point_dataset_tests'} <= set(targets) & standalone)
+                         {'adaptive_split_tests', 'point_dataset_tests', 'modelnet_preprocessing_tests',
+                          'ml_summary_tests', 'benchmark_memory_tests'})
+        self.assertTrue({'adaptive_split_tests', 'point_dataset_tests', 'benchmark_memory_tests'} <= set(targets) & standalone)
 
     def test_new_suite_cannot_be_silently_omitted(self):
         path = self.root / 'ctest.xml'

@@ -48,6 +48,10 @@ def configuration(source):
         suites.add("modelnet_preprocessing_tests")
     if (source / "benchmarks/test_ml_representations_summary.py").is_file():
         suites.add("ml_summary_tests")
+    if (source / "tests/tools/benchmark_memory_tests.cpp").is_file():
+        targets.append("benchmark_memory_tests")
+        standalone.add("benchmark_memory_tests")
+        suites.add("benchmark_memory_tests")
     return targets, suites, standalone
 
 
