@@ -20,6 +20,18 @@ extractor = load('extract_evidence')
 
 
 class EvidenceGuards(unittest.TestCase):
+    def test_split_sanitizer_uses_project_cpp_standard(self):
+        # The production key uses C++20 defaulted equality. A C++17 standalone
+        # sanitizer invocation can fail after the entire real suite has passed.
+        source = Path(__file__).resolve().parents[2]
+        project = (source / 'CMakeLists.txt').read_text()
+        self.assertIn('set(CMAKE_CXX_STANDARD 20)', project)
+        command = runner.split_sanitizer_command(source, self.root / 'sanitized')
+        self.assertIn('-std=c++20', command)
+        self.assertIn('-fsanitize=address,undefined', command)
+        self.assertIn(str(source / 'tests/adaptive/test_part_split.cpp'), command)
+        self.assertNotIn('-std=c++17', command)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='mink-runtime-evidence-')
         self.root = Path(self.temp.name).resolve()

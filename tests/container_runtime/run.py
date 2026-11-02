@@ -55,6 +55,13 @@ def configuration(source):
     return targets, suites, standalone
 
 
+def split_sanitizer_command(source, executable):
+    # Match the project's C++20 source contract (AdaptiveVoxelKey equality).
+    return ["c++", "-std=c++20", "-O1", "-g", "-fsanitize=address,undefined",
+            "-fno-omit-frame-pointer", "-I" + str(source), "-I" + str(source / "tests"),
+            str(source / "tests/adaptive/test_part_split.cpp"), "-o", str(executable)]
+
+
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
@@ -192,6 +199,13 @@ def main():
         receipt["verified_source_files"] = verify_source(source, manifest)
         shutil.copy2(manifest_path, output / "source-manifest.json")
         run("versions", ["bash", "-c", "cmake --version && c++ --version && nvcc --version && df -h / && cat /proc/meminfo && cat /opt/libtorch/build-version"])
+        # This dependency-free sanitizer check runs first so a compiler/flag or
+        # standalone correctness failure does not wait for the LibTorch build.
+        if "adaptive_split_tests" in standalone:
+            sanitized = build / "adaptive_split_sanitized"
+            run("split-sanitizer-build", split_sanitizer_command(source, sanitized))
+            receipt["split_sanitizer_sha256"] = sha(sanitized)
+            run("split-sanitizer-test", [str(sanitized)])
         query = build / ".cmake/api/v1/query"
         query.mkdir(parents=True, exist_ok=True)
         (query / "codemodel-v2").touch()
@@ -213,13 +227,6 @@ def main():
         run("ctest", ["ctest", "--test-dir", str(build), "--parallel", "1", "--verbose", "--output-on-failure",
                       "--timeout", "420", "--output-junit", str(output / "ctest.xml")])
         receipt["junit"] = verify_junit(output / "ctest.xml", len(expected_suites), expected_suites)
-        if "adaptive_split_tests" in standalone:
-            sanitized = build / "adaptive_split_sanitized"
-            run("split-sanitizer-build", ["c++", "-std=c++17", "-O1", "-g", "-fsanitize=address,undefined",
-                 "-fno-omit-frame-pointer", "-I" + str(source), "-I" + str(source / "tests"),
-                 str(source / "tests/adaptive/test_part_split.cpp"), "-o", str(sanitized)])
-            receipt["split_sanitizer_sha256"] = sha(sanitized)
-            run("split-sanitizer-test", [str(sanitized)])
         require(all(sha(Path(a["path"])) == a["sha256"] for a in receipt["artifacts"]), "Built artifacts changed during tests")
         verify_source(source, manifest)
         receipt["status"] = "passed"
