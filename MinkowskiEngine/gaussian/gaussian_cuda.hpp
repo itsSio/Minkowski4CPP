@@ -112,6 +112,22 @@ void adam_update_cuda(at::Tensor &param, const at::Tensor &grad, at::Tensor &mom
 // Whether GaussianTrainer uses the fused update for CUDA parameters (default on). Process-wide
 // tuning/test hook.
 bool &cuda_fused_adam();
+// Internal renderer operation. ids is a contiguous CUDA int64 permutation
+// subset: every index is in [0,N) and occurs once. The caller constructs it
+// from nonzero(visible) followed by argsort; duplicate indices are unsupported.
+// Means is a separate input so RenderOutput::means2d retains its gradient.
+at::Tensor gather_attributes(const at::Tensor &means, const at::Tensor &proj,
+                              const at::Tensor &opacity, const at::Tensor &colors,
+                              const at::Tensor &ids);
+void gather_attributes_forward_cuda(const at::Tensor &means, const at::Tensor &proj,
+                                    const at::Tensor &opacity, const at::Tensor &colors,
+                                    const at::Tensor &ids, at::Tensor &out);
+// All gradient outputs must be zero-initialized; unique selected rows are overwritten.
+void gather_attributes_backward_cuda(const at::Tensor &ids, const at::Tensor &grad,
+                                     at::Tensor &gmeans, at::Tensor &gproj,
+                                     at::Tensor &gopacity, at::Tensor &gcolors);
+// Process-wide test/benchmark hook; only applies to the fused projection path.
+bool &cuda_fused_gather();
 
 void covariance_cuda(const at::Tensor &rotations, const at::Tensor &scales,
                      at::Tensor &output);

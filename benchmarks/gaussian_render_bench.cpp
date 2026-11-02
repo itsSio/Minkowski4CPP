@@ -244,6 +244,8 @@ int main(int argc, char **argv) {
         minkowski::gaussian::detail::cuda_fused_ssim() = std::stoi(next()) != 0;
       else if (a == "--fused-adam") // 0: LibTorch Adam ops, 1: fused CUDA kernel (default)
         minkowski::gaussian::detail::cuda_fused_adam() = std::stoi(next()) != 0;
+      else if (a == "--fused-gather") // 0: index_select + cat, 1: CUDA gather/scatter
+        minkowski::gaussian::detail::cuda_fused_gather() = std::stoi(next()) != 0;
 #endif
       else if (a == "--label")
         label = next();
