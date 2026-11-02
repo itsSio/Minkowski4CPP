@@ -1,0 +1,13 @@
+{
+  "label": "adam-stack-train_a0_r5",
+  "input": "test.ply",
+  "scene_gaussians": 139410,
+  "build_type": "Release",
+  "torch_version": "2.15.0",
+  "warmup": 3,
+  "iterations": 10,
+  "records": [
+    {"device": "cuda", "count": 139410, "size": 512, "visible": 91688, "pairs": 499846, "pairs_source": "renderer", "mean_alpha": 0.748046, "cuda_peak_allocated_forward": 105013248, "cuda_peak_allocated_backward": 206070272, "cuda_peak_reserved": 255852544, "cuda_peak_allocated_train": 241558016, "cuda_peak_reserved_train": 306184192, "process_peak_working_set": 948678656, "forward_ms": [9.3902, 9.1801, 9.8995, 10.0685, 9.2495, 10.0615, 9.6411, 9.3995, 9.4516, 9.1601], "forward_median_ms": 9.42555, "backward_ms": [14.9289, 14.5308, 14.8044, 13.2817, 14.5401, 14.1728, 14.228, 13.7761, 13.7683, 13.893], "backward_median_ms": 14.2004, "forward_backward_ms": [25.4368, 24.7496, 24.4025, 22.9178, 24.7576, 23.0149, 22.8919, 22.8846, 23.068, 23.0452], "forward_backward_median_ms": 23.0566, "train_ms": [19.7664, 20.7657, 20.8353, 18.9012, 18.8408, 19.6919, 18.7764, 18.6268, 20.7608, 19.2488], "train_median_ms": 19.4703},
+    {"device": "cuda", "count": 139410, "size": 1024, "visible": 91527, "pairs": 1242773, "pairs_source": "renderer", "mean_alpha": 0.746178, "cuda_peak_allocated_forward": 136023552, "cuda_peak_allocated_backward": 244176896, "cuda_peak_reserved": 306184192, "cuda_peak_allocated_train": 328219648, "cuda_peak_reserved_train": 381681664, "process_peak_working_set": 960442368, "forward_ms": [11.9351, 13.2709, 13.5416, 13.2872, 13.4914, 11.89, 11.3212, 12.192, 12.8513, 12.932], "forward_median_ms": 12.8917, "backward_ms": [28.6396, 26.7213, 28.5858, 26.8371, 24.6042, 25.8884, 27.0231, 27.1571, 26.6445, 26.3715], "backward_median_ms": 26.7792, "forward_backward_ms": [42.3815, 41.2463, 42.901, 41.0235, 38.9799, 39.3151, 39.7629, 41.2949, 40.2998, 41.1082], "forward_backward_median_ms": 41.0658, "train_ms": [37.8341, 35.0008, 37.0412, 38.9175, 38.754, 42.5032, 38.6069, 39.3216, 39.1419, 39.5199], "train_median_ms": 38.8357}
+  ]
+}
