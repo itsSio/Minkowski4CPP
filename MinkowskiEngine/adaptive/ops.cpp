@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>
@@ -62,25 +63,49 @@ at::Tensor apply_map(const at::Tensor &x, const at::Tensor &weight, const Kernel
     }
     return y;
   }
-  // Device path: launches per call drop from ~4 per slot to ~1 per slot + 4.
+  // Device path: one gather and one weight multiply over all pairs (split per slot with
+  // split_with_sizes, so backward is one concatenation and one input-gradient scatter), then
+  // consecutive kernel slots are grouped while their products fit the temporary budget
+  // (detail::cuda_apply_map_group_bytes): one GEMM per slot, one concatenation and one
+  // scatter-add per group. Launches per call drop from ~4 per slot to ~1 per slot + 2 per group
+  // + 2, and the [pairs, C_out] products stay bounded by the budget instead of growing with the
+  // whole map (the gathered inputs, which autograd saves for the weight gradient, scale with
+  // the map as in the per-slot loop).
   const std::vector<at::Tensor> wk = weight.to(x.scalar_type()).unbind(0);
   auto xs = x.index_select(0, from_d);
   if (weighted)
     xs = xs * arrays.weight.unsqueeze(1);
+  const auto &off = m.kernel_offsets;
   std::vector<int64_t> sizes(static_cast<size_t>(m.num_kernels));
   for (int64_t k = 0; k < m.num_kernels; ++k)
-    sizes[k] = m.kernel_offsets[k + 1] - m.kernel_offsets[k];
+    sizes[static_cast<size_t>(k)] = off[k + 1] - off[k];
   const std::vector<at::Tensor> blocks = xs.split_with_sizes(sizes, 0);
-  std::vector<at::Tensor> parts;
-  parts.reserve(static_cast<size_t>(m.num_kernels));
-  for (int64_t k = 0; k < m.num_kernels; ++k)
-    if (sizes[k] > 0)
-      parts.push_back(blocks[k].matmul(wk[k]));
+  const int64_t budget = detail::cuda_apply_map_group_bytes();
+  const int64_t row_bytes = 2 * cout * x.element_size(); // products + their concatenation
+  const int64_t cap =
+      budget > 0 ? std::max<int64_t>(1, budget / std::max<int64_t>(1, row_bytes)) : INT64_MAX;
+  bool any = false;
+  for (int64_t k0 = 0; k0 < m.num_kernels;) {
+    int64_t k1 = k0 + 1;
+    while (k1 < m.num_kernels && off[k1 + 1] - off[k0] <= cap)
+      ++k1;
+    if (off[k1] > off[k0]) {
+      any = true;
+      std::vector<at::Tensor> parts;
+      parts.reserve(static_cast<size_t>(k1 - k0));
+      for (int64_t k = k0; k < k1; ++k)
+        if (sizes[static_cast<size_t>(k)] > 0)
+          parts.push_back(blocks[static_cast<size_t>(k)].matmul(wk[k]));
+      // Slicing the (non-differentiable) index array is free.
+      y.index_add_(0, to_d.slice(0, off[k0], off[k1]),
+                   parts.size() == 1 ? parts[0] : torch::cat(parts, 0));
+    }
+    k0 = k1;
+  }
   // No pairs (e.g. an empty input): a zero-row product keeps y connected to x and weight, so
   // backward() on an empty batch yields zero gradients instead of an error.
-  if (parts.empty())
-    parts.push_back(xs.matmul(wk[0]));
-  y.index_add_(0, to_d, parts.size() == 1 ? parts[0] : torch::cat(parts, 0));
+  if (!any)
+    y.index_add_(0, to_d, xs.matmul(wk[0]));
   return y;
 }
 
