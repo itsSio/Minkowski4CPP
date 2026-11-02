@@ -1,5 +1,6 @@
 #include "adaptive_tensor.hpp"
 #include "adaptive_topology.hpp"
+#include "profile.hpp"
 
 #include <limits>
 #include <stdexcept>
@@ -43,9 +44,14 @@ at::Tensor remap_features(const at::Tensor &f, const std::vector<int64_t> &src,
   const auto dev = f.device();
   const int64_t M = static_cast<int64_t>(src.size());
   const int64_t C = f.size(1);
+  detail::ProfScope ps_up("pool.upload_idx");
   auto src_t = index_tensor(src, dev);
   auto dst_t = index_tensor(dst, dev);
+  ps_up.stop();
+  detail::ProfScope ps_sel("pool.index_select");
   auto g = f.index_select(0, src_t);
+  ps_sel.stop();
+  detail::ProfScope ps_red("pool.reduce");
   if (scale) {
     auto sc = torch::from_blob(const_cast<double *>(scale->data()), {M}, torch::kFloat64)
                   .clone()
@@ -82,6 +88,7 @@ at::Tensor remap_features(const at::Tensor &f, const std::vector<int64_t> &src,
 // Sorts entries by key, merges equal keys into one new leaf and builds features.
 StepResult finish(const AdaptiveVoxelConfig &cfg, std::vector<Entry> entries,
                   const at::Tensor &features, Reduction reduction, bool use_scale) {
+  detail::ProfScope ps_sort("pool.sort_keys");
   std::stable_sort(entries.begin(), entries.end(),
                    [](const Entry &a, const Entry &b) { return detail::key_less(a.key, b.key); });
   std::vector<Key> keys;
@@ -97,7 +104,9 @@ StepResult finish(const AdaptiveVoxelConfig &cfg, std::vector<Entry> entries,
     scale.push_back(e.scale);
   }
   const int64_t nnew = static_cast<int64_t>(keys.size());
+  ps_sort.stop();
   auto feats = remap_features(features, src, dst, use_scale ? &scale : nullptr, nnew, reduction);
+  detail::ProfScope ps_make("pool.topology_make");
   return {Topology::make(cfg, std::move(keys)), feats};
 }
 
@@ -156,6 +165,7 @@ StepResult coarsen_step(const Topology &t, const at::Tensor &f, const AxisAligne
                         uint32_t level, Reduction reduction, bool &changed) {
   std::vector<Entry> entries;
   changed = false;
+  detail::ProfScope ps_ent("pool.entries");
   for (int64_t i = 0; i < t.size(); ++i) {
     const Key &k = t.keys[i];
     if (k.level == level && level >= 1) {
@@ -168,6 +178,7 @@ StepResult coarsen_step(const Topology &t, const at::Tensor &f, const AxisAligne
     }
     entries.push_back({k, i, 1.0});
   }
+  ps_ent.stop();
   if (!changed)
     return {};
   return finish(t.config, std::move(entries), f, reduction, false);

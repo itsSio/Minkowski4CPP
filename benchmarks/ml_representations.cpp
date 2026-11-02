@@ -26,6 +26,7 @@
 #include "MinkowskiEngine/minkowski.hpp"
 #include "adaptive/adaptive_tensor.hpp"
 #include "adaptive/ops.hpp"
+#include "adaptive/profile.hpp"
 #include "gaussian/gaussian_adaptive.hpp"
 #include "third_party/json.hpp"
 
@@ -530,8 +531,11 @@ Batch make_batch(const std::string &method, const std::vector<Rep> &reps,
     b.coords = torch::cat(cs, 0).to(dev);
     b.feats = feats.to(dev);
   } else {
+    ad::detail::ProfScope ps_fv("batch.from_voxels");
     auto t = ad::AdaptiveSparseTensor::from_voxels(torch::cat(cs, 0), torch::cat(ls, 0), feats,
                                                    adaptive_cfg());
+    ps_fv.stop();
+    ad::detail::ProfScope ps_to("batch.to_device");
     b.tensor = std::make_shared<ad::AdaptiveSparseTensor>(t.to(dev));
   }
   return b;
@@ -915,6 +919,7 @@ int main(int argc, char **argv) {
       if (idx.size() < 2)
         continue; // BatchNorm needs > 1 sample
       g_prof.on = e == profile_epoch && nb < profile_steps;
+      ad::detail::profile().on = g_prof.on;
       const auto cache0 = ad::KernelMapCache::instance().stats();
       double t = prof_start(dev);
       auto b = make_batch(method, train_rep, train, idx, dev);
@@ -940,6 +945,7 @@ int main(int argc, char **argv) {
         ++prof_done;
       }
       g_prof.on = false;
+      ad::detail::profile().on = false;
       loss_sum += loss.item<double>();
       correct += logits.argmax(1).eq(b.labels).sum().item<int64_t>();
       seen += b.B;
@@ -1050,11 +1056,15 @@ int main(int argc, char **argv) {
     json ms = json::object();
     for (const auto &[k, v] : g_prof.ms)
       ms[k] = v / prof_done;
+    for (const auto &[k, v] : ad::detail::profile().ms)
+      ms["lib." + k] = v / prof_done;
     p["ms_per_step"] = ms;
     j["profile"] = p;
     std::cout << "profile (" << prof_done << " steps, ms/step):";
     for (const auto &[k, v] : g_prof.ms)
       std::cout << " " << k << "=" << v / prof_done;
+    for (const auto &[k, v] : ad::detail::profile().ms)
+      std::cout << " lib." << k << "=" << v / prof_done;
     std::cout << " kmap_misses/step=" << prof_misses / prof_done << std::endl;
   }
   std::ofstream result_file(output);

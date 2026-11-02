@@ -3,6 +3,7 @@
 #include "fused_apply.hpp"
 #endif
 #include "adaptive_topology.hpp"
+#include "profile.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -557,6 +558,7 @@ KernelMapDeviceCache::Slot &KernelMapDeviceCache::slot_for(const AdaptiveKernelM
   for (auto &s : slots_)
     if (s.device == device)
       return s;
+  detail::ProfScope ps_up("dev.index_upload");
   Slot s;
   s.device = device;
   // One upload per index array; `to` is a no-op for host maps used on the CPU.
@@ -573,6 +575,7 @@ TileTable KernelMapDeviceCache::tiles(const AdaptiveKernelMap &map, const at::De
   for (const auto &t : slot.tiles)
     if (t.rows == rows)
       return t;
+  detail::ProfScope ps_tiles("dev.tiles");
   const auto &off = map.kernel_offsets;
   std::vector<int64_t> table(off.begin(), off.end());
   table.push_back(0);
@@ -613,6 +616,7 @@ KernelMapDeviceCache::Arrays KernelMapDeviceCache::get(const AdaptiveKernelMap &
         a.weight = w.second;
     if (!a.weight.defined()) {
       // Same conversion order as before caching (move, then cast) so values are unchanged.
+      detail::ProfScope ps_w("dev.weight_upload");
       a.weight = map.weight.to(device).to(dtype);
       slot->weights.emplace_back(dtype, a.weight);
     }
@@ -655,6 +659,7 @@ bool build_from_parts(const std::shared_ptr<const Topology> &in, const AdaptiveK
   if (!part_reuse_mode(kc) || kc.kernel_size < 1 || kc.kernel_size % 2 == 0 ||
       kc.output_level_shift > 0)
     return false;
+  detail::ProfScope ps_split("kmap.split_probe");
   Split in_split = split_parts(*in, (kc.kernel_size - 1) / 2);
   if (in_split.first_x.empty())
     return false;
@@ -673,6 +678,8 @@ bool build_from_parts(const std::shared_ptr<const Topology> &in, const AdaptiveK
     }
     pm.hash = part_hash(signature, pm.keys);
   }
+  ps_split.stop();
+  detail::ProfScope ps_find("kmap.find");
   std::vector<std::shared_ptr<const PartMap>> found(np);
   size_t hits = 0;
   {
@@ -683,6 +690,8 @@ bool build_from_parts(const std::shared_ptr<const Topology> &in, const AdaptiveK
     store.hits += hits;
     store.misses += np - hits;
   }
+  ps_find.stop();
+  detail::ProfScope ps_out("kmap.out_topology");
   e.out_topology = derive_output_topology(in, kc.output_level_shift);
   Split out_split;
   out_split.first_x = in_split.first_x;
@@ -695,13 +704,18 @@ bool build_from_parts(const std::shared_ptr<const Topology> &in, const AdaptiveK
   for (size_t p = 0; p < np; ++p)
     if (!found[p])
       new_leaves += static_cast<int64_t>(in_split.leaves[p].size());
+  ps_out.stop();
   if (hits == 0 || 4 * new_leaves > in->size()) {
+    detail::ProfScope ps_full("kmap.full_build");
     e.map = build_pairs(*e.out_topology, *in, kc);
+    ps_full.stop();
+    detail::ProfScope ps_ext("kmap.extract");
     if (extract_parts(e.map, *in, *e.out_topology, in_split, out_split, probe))
       for (size_t p = 0; p < np; ++p)
         if (!found[p])
           built.push_back(std::make_shared<const PartMap>(std::move(probe[p])));
   } else {
+    detail::ProfScope ps_pw("kmap.partwise_build");
     for (size_t p = 0; p < np; ++p) {
       if (!found[p]) {
         std::shared_ptr<const Topology> part;
@@ -723,6 +737,8 @@ bool build_from_parts(const std::shared_ptr<const Topology> &in, const AdaptiveK
       if (n_out != static_cast<int64_t>(out_split.leaves[p].size()))
         return false;
     }
+    ps_pw.stop();
+    detail::ProfScope ps_comp("kmap.compose");
     e.map = compose_parts(found, in_split, out_split);
   }
   std::lock_guard<std::mutex> lock(mutex);
@@ -756,6 +772,7 @@ KernelMapEntry KernelMapCache::get_or_build(const AdaptiveSparseTensor &input,
   }
   KernelMapEntry e;
   if (!build_from_parts(input.topology(), config, impl_->mutex, impl_->parts, e)) {
+    detail::ProfScope ps_np("kmap.nonpart_build");
     e.out_topology = derive_output_topology(input.topology(), config.output_level_shift);
     e.map = build_pairs(*e.out_topology, *input.topology(), config);
   }
