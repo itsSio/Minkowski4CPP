@@ -717,7 +717,7 @@ int main(int argc, char **argv) {
       batch_size = 16, profile_steps = 0;
   uint64_t data_seed = 2026;
   int64_t density_threshold = 12;
-  double lr = 1e-3;
+  double lr = 1e-3, kmap_part_reuse_mb = 0.0;
   if ((argc - 1) % 2 != 0)
     throw std::invalid_argument("Arguments must be option/value pairs");
   for (int i = 1; i + 1 < argc; i += 2) {
@@ -748,12 +748,16 @@ int main(int argc, char **argv) {
       output = v;
     else if (a == "--profile-steps")
       profile_steps = std::stoi(v);
+    else if (a == "--kmap-part-reuse-mb") // KernelMapCache part reuse budget, 0 = off
+      kmap_part_reuse_mb = std::stod(v);
     else
       throw std::invalid_argument("unknown argument " + a);
   }
   if (method != "uniform" && method != "adaptive" && method != "gaussian" &&
       method != "adaptive_gaussian")
     throw std::invalid_argument("--method uniform|adaptive|gaussian|adaptive_gaussian");
+  ad::KernelMapCache::instance().set_part_reuse_bytes(
+      static_cast<size_t>(kmap_part_reuse_mb * 1048576.0));
   if (batch_size < 2)
     throw std::invalid_argument("--batch must be at least 2 for training with BatchNorm");
   if (device_s != "cpu" && device_s != "cuda" && device_s != "auto")
@@ -1023,7 +1027,11 @@ int main(int argc, char **argv) {
             {"active_elements_min", *std::min_element(active.begin(), active.end())},
             {"active_elements_max", *std::max_element(active.begin(), active.end())},
             {"level_histogram_train", level_hist},
-            {"curve", epochs_j}};
+            {"curve", epochs_j},
+            {"kmap_part_reuse_mb", kmap_part_reuse_mb},
+            {"kmap_part_hits", ad::KernelMapCache::instance().stats().part_hits},
+            {"kmap_part_misses", ad::KernelMapCache::instance().stats().part_misses},
+            {"kmap_part_store_mb", ad::KernelMapCache::instance().stats().part_bytes / 1048576.0}};
   if (prof_done > 0) {
     json p = {{"steps", prof_done},
               {"epoch", profile_epoch + 1},
