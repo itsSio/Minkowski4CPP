@@ -148,7 +148,10 @@ leaf, centred on the query: it is continuous inside a level and across faces
 between equal-level leaves, but the box size changes where the containing
 leaf's level changes, so values can jump there. Queries outside every leaf
 return zeros. `other.resample_to(t)` aligns another tensor to
-`t`'s leaves; addition requires identical topology.
+`t`'s leaves; addition requires identical topology. Both tensors must share
+`origin` and `base_voxel_size` (`max_depth` may differ). Finer leaves are
+reduced exactly like `coarsen` (so `Mean` averages occupied children level by
+level), coarser leaves are replicated, and uncovered leaves get zeros.
 
 Uniform resampling can expand a sparse hierarchy dramatically. The
 benchmark skips expansions above five million voxels; estimate the output
