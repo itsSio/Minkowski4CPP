@@ -32,6 +32,21 @@
         "reactionGroups": [],
         "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587414000",
         "viewerDidAuthor": true
+      },
+      {
+        "id": "IC_kwDORShwes8AAAABiKYm4g",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "The consolidated [round10 report](https://github.com/itsSio/Minkowski4CPP/blob/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10/REPORT.md)\nand [checksummed evidence](https://github.com/itsSio/Minkowski4CPP/tree/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10)\nare published at immutable commit e25aaef. All73 GitHub file/blob identities were\nread back and matched to the committed evidence. The package includes full\nnative CPU/CUDA receipts, the original EAGER timeout, the unchanged-binary LAZY\nretry, all four container run histories, decoded evidence archives, source\nequivalence, sanitizer results, Linux RSS measurements and the PR index.\n\nFrom that integration checkout, `python -I -B benchmarks/round10/verify.py`\nverifies72 evidence hashes,159 archived members and the native/three-job Docker\ngates without model execution. The per-improvement raw benchmark and ML evidence\npackages retain their own portable verifiers. No earlier measurements or failures\nwere replaced. Upstream compilation checks remain separate from these completed\nruntime gates and are being monitored at the current PR heads.\n",
+        "createdAt": "2026-11-02T20:21:45Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587557602",
+        "viewerDidAuthor": true
       }
     ],
     "headRefName": "fix/cpu-coordinate-manager-link",
@@ -52,22 +67,22 @@
       },
       {
         "__typename": "CheckRun",
-        "completedAt": "0001-01-01T00:00:00Z",
-        "conclusion": "",
+        "completedAt": "2026-11-02T20:28:44Z",
+        "conclusion": "SUCCESS",
         "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870494",
         "name": "build-and-publish (132)",
         "startedAt": "2026-11-02T20:13:40Z",
-        "status": "IN_PROGRESS",
+        "status": "COMPLETED",
         "workflowName": "CI"
       },
       {
         "__typename": "CheckRun",
-        "completedAt": "0001-01-01T00:00:00Z",
-        "conclusion": "",
+        "completedAt": "2026-11-02T20:29:00Z",
+        "conclusion": "SUCCESS",
         "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870782",
         "name": "build-and-publish (134)",
         "startedAt": "2026-11-02T20:13:40Z",
-        "status": "IN_PROGRESS",
+        "status": "COMPLETED",
         "workflowName": "CI"
       },
       {
@@ -101,6 +116,21 @@
         "minimizedReason": "",
         "reactionGroups": [],
         "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55#issuecomment-6587409934",
+        "viewerDidAuthor": true
+      },
+      {
+        "id": "IC_kwDORShwes8AAAABiKYnxw",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "The consolidated [round10 report](https://github.com/itsSio/Minkowski4CPP/blob/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10/REPORT.md)\nand [checksummed evidence](https://github.com/itsSio/Minkowski4CPP/tree/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10)\nare published at immutable commit e25aaef. All73 GitHub file/blob identities were\nread back and matched to the committed evidence. The package includes full\nnative CPU/CUDA receipts, the original EAGER timeout, the unchanged-binary LAZY\nretry, all four container run histories, decoded evidence archives, source\nequivalence, sanitizer results, Linux RSS measurements and the PR index.\n\nFrom that integration checkout, `python -I -B benchmarks/round10/verify.py`\nverifies72 evidence hashes,159 archived members and the native/three-job Docker\ngates without model execution. The per-improvement raw benchmark and ML evidence\npackages retain their own portable verifiers. No earlier measurements or failures\nwere replaced. Upstream compilation checks remain separate from these completed\nruntime gates and are being monitored at the current PR heads.\n",
+        "createdAt": "2026-11-02T20:21:45Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55#issuecomment-6587557831",
         "viewerDidAuthor": true
       }
     ],
@@ -192,10 +222,25 @@
         "reactionGroups": [],
         "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587410031",
         "viewerDidAuthor": true
+      },
+      {
+        "id": "IC_kwDORShwes8AAAABiKYpBg",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "The consolidated [round10 report](https://github.com/itsSio/Minkowski4CPP/blob/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10/REPORT.md)\nand [checksummed evidence](https://github.com/itsSio/Minkowski4CPP/tree/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10)\nare published at immutable commit e25aaef. All73 GitHub file/blob identities were\nread back and matched to the committed evidence. The package includes full\nnative CPU/CUDA receipts, the original EAGER timeout, the unchanged-binary LAZY\nretry, all four container run histories, decoded evidence archives, source\nequivalence, sanitizer results, Linux RSS measurements and the PR index.\n\nFrom that integration checkout, `python -I -B benchmarks/round10/verify.py`\nverifies72 evidence hashes,159 archived members and the native/three-job Docker\ngates without model execution. The per-improvement raw benchmark and ML evidence\npackages retain their own portable verifiers. No earlier measurements or failures\nwere replaced. Upstream compilation checks remain separate from these completed\nruntime gates and are being monitored at the current PR heads.\n",
+        "createdAt": "2026-11-02T20:21:46Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587558150",
+        "viewerDidAuthor": true
       }
     ],
     "headRefName": "perf/gaussian-backward-parallel-atomics",
-    "headRefOid": "8641c440bd0932d593dc22365a456dd2b43ccc66",
+    "headRefOid": "348e6b83da8bb068274ac02288f01defdbeaf5a3",
     "number": 56,
     "reviewDecision": "",
     "state": "OPEN",
@@ -204,19 +249,19 @@
         "__typename": "CheckRun",
         "completedAt": "0001-01-01T00:00:00Z",
         "conclusion": "",
-        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372473",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532822691",
         "name": "build-and-publish (124)",
-        "startedAt": "2026-11-02T20:14:37Z",
+        "startedAt": "2026-11-02T20:30:53Z",
         "status": "IN_PROGRESS",
         "workflowName": "CI"
       },
       {
         "__typename": "CheckRun",
-        "completedAt": "2026-11-02T20:15:01Z",
+        "completedAt": "2026-11-02T20:31:15Z",
         "conclusion": "SUCCESS",
-        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524372938",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874049/job/125532822680",
         "name": "build",
-        "startedAt": "2026-11-02T20:14:37Z",
+        "startedAt": "2026-11-02T20:30:53Z",
         "status": "COMPLETED",
         "workflowName": "Documentation"
       },
@@ -224,9 +269,9 @@
         "__typename": "CheckRun",
         "completedAt": "0001-01-01T00:00:00Z",
         "conclusion": "",
-        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372801",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823032",
         "name": "build-and-publish (132)",
-        "startedAt": "2026-11-02T20:14:37Z",
+        "startedAt": "2026-11-02T20:30:53Z",
         "status": "IN_PROGRESS",
         "workflowName": "CI"
       },
@@ -234,29 +279,29 @@
         "__typename": "CheckRun",
         "completedAt": "0001-01-01T00:00:00Z",
         "conclusion": "",
-        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372649",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823114",
         "name": "build-and-publish (134)",
-        "startedAt": "2026-11-02T20:14:40Z",
+        "startedAt": "2026-11-02T20:30:54Z",
         "status": "IN_PROGRESS",
         "workflowName": "CI"
       },
       {
         "__typename": "CheckRun",
-        "completedAt": "2026-11-02T20:15:01Z",
+        "completedAt": "2026-11-02T20:31:15Z",
         "conclusion": "SKIPPED",
-        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524615531",
+        "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874049/job/125533045195",
         "name": "deploy",
-        "startedAt": "2026-11-02T20:15:01Z",
+        "startedAt": "2026-11-02T20:31:15Z",
         "status": "COMPLETED",
         "workflowName": "Documentation"
       },
       {
         "__typename": "CheckRun",
-        "completedAt": "2026-11-02T20:15:07Z",
+        "completedAt": "2026-11-02T20:31:21Z",
         "conclusion": "SUCCESS",
         "detailsUrl": "https://dashboard.gitguardian.com",
         "name": "GitGuardian Security Checks",
-        "startedAt": "2026-11-02T20:14:34Z",
+        "startedAt": "2026-11-02T20:30:48Z",
         "status": "COMPLETED",
         "workflowName": ""
       }
@@ -281,6 +326,21 @@
         "minimizedReason": "",
         "reactionGroups": [],
         "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57#issuecomment-6587409941",
+        "viewerDidAuthor": true
+      },
+      {
+        "id": "IC_kwDORShwes8AAAABiKYm5w",
+        "author": {
+          "login": "itsSio"
+        },
+        "authorAssociation": "CONTRIBUTOR",
+        "body": "The consolidated [round10 report](https://github.com/itsSio/Minkowski4CPP/blob/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10/REPORT.md)\nand [checksummed evidence](https://github.com/itsSio/Minkowski4CPP/tree/e25aaefbecbc16f10e18223fafc78ae6a288b877/benchmarks/round10)\nare published at immutable commit e25aaef. All73 GitHub file/blob identities were\nread back and matched to the committed evidence. The package includes full\nnative CPU/CUDA receipts, the original EAGER timeout, the unchanged-binary LAZY\nretry, all four container run histories, decoded evidence archives, source\nequivalence, sanitizer results, Linux RSS measurements and the PR index.\n\nFrom that integration checkout, `python -I -B benchmarks/round10/verify.py`\nverifies72 evidence hashes,159 archived members and the native/three-job Docker\ngates without model execution. The per-improvement raw benchmark and ML evidence\npackages retain their own portable verifiers. No earlier measurements or failures\nwere replaced. Upstream compilation checks remain separate from these completed\nruntime gates and are being monitored at the current PR heads.\n",
+        "createdAt": "2026-11-02T20:21:45Z",
+        "includesCreatedEdit": false,
+        "isMinimized": false,
+        "minimizedReason": "",
+        "reactionGroups": [],
+        "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57#issuecomment-6587557607",
         "viewerDidAuthor": true
       }
     ],

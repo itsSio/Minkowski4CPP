@@ -1,0 +1,217 @@
+{
+  "kind": "exploratory_derived_analysis",
+  "inputs": [
+    {
+      "path": "..\\adaptive_part_split_results\\map-cpu\\receipt.json",
+      "sha256": "27e09c472612cccf973fc2f05ec43aa45ba10b79a9a51d361b0215e3d00f0353"
+    },
+    {
+      "path": "..\\adaptive_part_split_results\\map-cuda\\receipt.json",
+      "sha256": "7c450c02ba28ae2af44f4cf4ee927bb283f266593495e17c5e6c132636f4d7c0"
+    },
+    {
+      "path": "..\\gaussian_parallel_atomics_results\\ab\\summary.json",
+      "sha256": "9ce8405acbf97e07914392094024f734dcabe3a8040bd23d4807b34ae8a8f1ac"
+    }
+  ],
+  "bootstrap_draws": 20000,
+  "seed_base": 2026,
+  "limits": "Exploratory analysis of existing trials, not an additional timed benchmark.\nBootstrap resamples whole A/B pairs with replacement (20,000 draws, deterministic\nseeds) and uses percentile intervals for median(B)/median(A)-1. Small cohorts,\nfixed alternating order and nonstationary background load limit interpretation.\nBootstrap blocks are assumed approximately independent/representative; serial\nload can violate that assumption. The sign test targets paired win probability\n0.5, not the ratio of marginal medians used by the bootstrap interval.\nThe exact sign calculation discards ties and assumes independent exchangeable\nsigns under the null. P values are unadjusted across multiple workloads/metrics;\nnone is a confirmatory claim. Original reported point estimates and raw evidence\nremain unchanged. Intervals/p values do not establish real-training benefit or\nuniversal superiority.",
+  "rows": [
+    {
+      "workload": "adaptive/cpu/center/kmap_batch_first_epoch_ms",
+      "pairs": 6,
+      "lower_pairs": 6,
+      "ties": 0,
+      "bootstrap_seed": 2026,
+      "median_ratio_change_percent": -7.370340042526379,
+      "exploratory_pair_bootstrap_95pct": [
+        -12.19422354651355,
+        -2.9407358633207648
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.03125
+    },
+    {
+      "workload": "adaptive/cpu/center/kmap_batch_later_epochs_ms",
+      "pairs": 6,
+      "lower_pairs": 6,
+      "ties": 0,
+      "bootstrap_seed": 2027,
+      "median_ratio_change_percent": -19.157297467689393,
+      "exploratory_pair_bootstrap_95pct": [
+        -41.82277864083584,
+        -8.024037575980847
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.03125
+    },
+    {
+      "workload": "adaptive/cpu/volume/kmap_batch_first_epoch_ms",
+      "pairs": 6,
+      "lower_pairs": 4,
+      "ties": 0,
+      "bootstrap_seed": 2028,
+      "median_ratio_change_percent": -2.0454925033769333,
+      "exploratory_pair_bootstrap_95pct": [
+        -15.426361925742349,
+        13.695639423108275
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.6875
+    },
+    {
+      "workload": "adaptive/cpu/volume/kmap_batch_later_epochs_ms",
+      "pairs": 6,
+      "lower_pairs": 5,
+      "ties": 0,
+      "bootstrap_seed": 2029,
+      "median_ratio_change_percent": -11.83703614986925,
+      "exploratory_pair_bootstrap_95pct": [
+        -26.325747976956738,
+        3.861963261419832
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.21875
+    },
+    {
+      "workload": "adaptive/cuda/center/kmap_batch_first_epoch_ms",
+      "pairs": 6,
+      "lower_pairs": 4,
+      "ties": 0,
+      "bootstrap_seed": 2030,
+      "median_ratio_change_percent": 1.4460814127378319,
+      "exploratory_pair_bootstrap_95pct": [
+        -21.60224979684263,
+        23.756636145124933
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.6875
+    },
+    {
+      "workload": "adaptive/cuda/center/kmap_batch_later_epochs_ms",
+      "pairs": 6,
+      "lower_pairs": 6,
+      "ties": 0,
+      "bootstrap_seed": 2031,
+      "median_ratio_change_percent": -10.928757926146982,
+      "exploratory_pair_bootstrap_95pct": [
+        -15.845514580396236,
+        -9.164107246617426
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.03125
+    },
+    {
+      "workload": "adaptive/cuda/volume/kmap_batch_first_epoch_ms",
+      "pairs": 6,
+      "lower_pairs": 3,
+      "ties": 0,
+      "bootstrap_seed": 2032,
+      "median_ratio_change_percent": 0.5773552184851205,
+      "exploratory_pair_bootstrap_95pct": [
+        -28.58094910423783,
+        18.870105883514032
+      ],
+      "unadjusted_exact_two_sided_sign_p": 1.0
+    },
+    {
+      "workload": "adaptive/cuda/volume/kmap_batch_later_epochs_ms",
+      "pairs": 6,
+      "lower_pairs": 5,
+      "ties": 0,
+      "bootstrap_seed": 2033,
+      "median_ratio_change_percent": -9.680631361557756,
+      "exploratory_pair_bootstrap_95pct": [
+        -21.033710913653948,
+        12.178247284630261
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.21875
+    },
+    {
+      "workload": "gaussian/1024/backward_median_ms",
+      "pairs": 10,
+      "lower_pairs": 7,
+      "ties": 0,
+      "bootstrap_seed": 2034,
+      "median_ratio_change_percent": -0.7665498749988231,
+      "exploratory_pair_bootstrap_95pct": [
+        -5.163280157153139,
+        3.0682770310708207
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.34375
+    },
+    {
+      "workload": "gaussian/1024/train_median_ms",
+      "pairs": 10,
+      "lower_pairs": 6,
+      "ties": 0,
+      "bootstrap_seed": 2035,
+      "median_ratio_change_percent": 0.7601170589282225,
+      "exploratory_pair_bootstrap_95pct": [
+        -4.9355365871663786,
+        4.028049686213286
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.75390625
+    },
+    {
+      "workload": "gaussian/512/backward_median_ms",
+      "pairs": 10,
+      "lower_pairs": 5,
+      "ties": 0,
+      "bootstrap_seed": 2036,
+      "median_ratio_change_percent": -2.1066732032687607,
+      "exploratory_pair_bootstrap_95pct": [
+        -7.491282079224105,
+        4.993250498013135
+      ],
+      "unadjusted_exact_two_sided_sign_p": 1.0
+    },
+    {
+      "workload": "gaussian/512/train_median_ms",
+      "pairs": 10,
+      "lower_pairs": 6,
+      "ties": 0,
+      "bootstrap_seed": 2037,
+      "median_ratio_change_percent": -0.070258807899648,
+      "exploratory_pair_bootstrap_95pct": [
+        -3.5922032121582594,
+        4.094147997632747
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.75390625
+    },
+    {
+      "workload": "gaussian/dense/gpu_ms",
+      "pairs": 10,
+      "lower_pairs": 8,
+      "ties": 0,
+      "bootstrap_seed": 2038,
+      "median_ratio_change_percent": -3.1815887302194423,
+      "exploratory_pair_bootstrap_95pct": [
+        -6.509445180441706,
+        0.18715476274930865
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.109375
+    },
+    {
+      "workload": "gaussian/row-groups/gpu_ms",
+      "pairs": 10,
+      "lower_pairs": 10,
+      "ties": 0,
+      "bootstrap_seed": 2039,
+      "median_ratio_change_percent": -29.27033136899757,
+      "exploratory_pair_bootstrap_95pct": [
+        -30.74418916203363,
+        -26.55577860625179
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.001953125
+    },
+    {
+      "workload": "gaussian/sparse/gpu_ms",
+      "pairs": 10,
+      "lower_pairs": 9,
+      "ties": 0,
+      "bootstrap_seed": 2040,
+      "median_ratio_change_percent": -10.988666019091154,
+      "exploratory_pair_bootstrap_95pct": [
+        -17.39393144685427,
+        -7.004766628759473
+      ],
+      "unadjusted_exact_two_sided_sign_p": 0.021484375
+    }
+  ]
+}

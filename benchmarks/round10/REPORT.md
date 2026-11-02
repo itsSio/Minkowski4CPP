@@ -53,6 +53,12 @@ than0.04%; CUDA allocated/reserved peaks are identical. No material memory gain
 or isolated CUDA kernel improvement is claimed. Background load was high.
 Cursor scans can lose against binary searches for other sparse-level layouts.
 
+Exploratory whole-pair bootstrap analysis (20,000 draws) puts CenterSampled warm
+CPU/CUDA median-change intervals at [-41.82,-8.02]% and [-15.85,-9.16]%.
+VolumeWeighted intervals cross zero: CPU [-26.33,+3.86]%, CUDA [-21.03,+12.18]%.
+Those VolumeWeighted point estimates remain inconclusive. Small cohorts,
+serial load and uncertain pair independence limit these descriptive intervals.
+
 ## Gaussian backward atomics
 
 Preserve the ten existing warp reduction trees, broadcast their sums and issue
@@ -71,11 +77,23 @@ forward-control noise. No demonstrated training or memory gain is claimed.
 Static generated code uses58 rather than62 registers, ten extra shuffles and
 one rather than ten atomic instructions; these are not dynamic occupancy metrics.
 
+Exploratory paired-bootstrap intervals are [-30.74,-26.56]% for row groups and
+[-17.39,-7.00]% for sparse controls. Dense [-6.51,+0.19]% crosses zero, so its
+3.18% point estimate is inconclusive. Real training intervals also cross zero:
+512px [-3.59,+4.09]%, 1024px [-4.94,+4.03]%. The supplement retains all original
+measurements and reports unadjusted descriptive sign tests, whose paired-win
+null differs from the ratio-of-medians estimand. Nothing is confirmatory.
+
 Full native branch CTest passes4/4 on both CPU and CUDA; CUDA Gaussian71/0.
 Three focused cases include ten finite differences, edge tiles, contribution
 counts0..513, nondefault streams and zero gradients. Memcheck/initcheck report
 zero errors; racecheck zero hazards/errors/warnings, without exclusions.
 The frozen203-file evidence package passes its portable verifier.
+Committed Git-blob verification initially found94 ignored JSON/log/manifest
+files missing from that publication. Metadata-only commit348e6b8 adds them;
+all203 hashes and the manifest now match committed blobs. Adaptive134 and ML46
+evidence files passed the same audit without missing files. No runtime source
+or measured output changed in this correction.
 
 ## Real-object ML pilot
 

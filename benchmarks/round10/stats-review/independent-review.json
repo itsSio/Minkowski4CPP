@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "rows": [
+    {
+      "workload": "adaptive/cpu/center/kmap_batch_first_epoch_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cpu/center/kmap_batch_later_epochs_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cpu/volume/kmap_batch_first_epoch_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cpu/volume/kmap_batch_later_epochs_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cuda/center/kmap_batch_first_epoch_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cuda/center/kmap_batch_later_epochs_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cuda/volume/kmap_batch_first_epoch_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "adaptive/cuda/volume/kmap_batch_later_epochs_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/1024/backward_median_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/1024/train_median_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/512/backward_median_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/512/train_median_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/dense/gpu_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/row-groups/gpu_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    },
+    {
+      "workload": "gaussian/sparse/gpu_ms",
+      "pair_cardinality": "passed",
+      "exact_sign_enumeration": "passed",
+      "deterministic_bootstrap": "passed"
+    }
+  ],
+  "checks": [
+    "sign function exhaustively checked for effective n0through12",
+    "all3 input SHA256 identities",
+    "exact15workload cohort",
+    "pair cardinality and tie counts",
+    "all sign assignments enumerated",
+    "ratio-of-medians estimands",
+    "all20k-draw intervals independently reproduced"
+  ]
+}

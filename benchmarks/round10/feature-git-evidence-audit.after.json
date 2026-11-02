@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "packages": [
+    {
+      "worktree": "device-compose",
+      "expected_files": 134,
+      "missing": [],
+      "mismatches": []
+    },
+    {
+      "worktree": "gauss-cull",
+      "expected_files": 203,
+      "missing": [],
+      "mismatches": []
+    },
+    {
+      "worktree": "gaussian-adaptive-bridge",
+      "expected_files": 46,
+      "missing": [],
+      "mismatches": []
+    }
+  ]
+}

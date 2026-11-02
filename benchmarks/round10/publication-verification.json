@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "checked_utc": "2026-11-02T20:17:20.941156+00:00",
+  "checked_utc": "2026-11-02T20:32:36.688754+00:00",
   "validation": "Exact heads, open state, base main, full body and comprehensive comment read back",
   "pull_requests": [
     {
@@ -21,14 +21,14 @@
         },
         {
           "name": "build-and-publish (132)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870494"
         },
         {
           "name": "build-and-publish (134)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870782"
         },
         {
@@ -91,7 +91,7 @@
       "number": 56,
       "title": "perf(gaussian): parallelize reduced raster gradient atomics",
       "url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56",
-      "head": "8641c440bd0932d593dc22365a456dd2b43ccc66",
+      "head": "348e6b83da8bb068274ac02288f01defdbeaf5a3",
       "state": "OPEN",
       "reviewDecision": "review pending",
       "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587410031",
@@ -101,31 +101,31 @@
           "name": "build-and-publish (124)",
           "status": "IN_PROGRESS",
           "conclusion": "",
-          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372473"
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532822691"
         },
         {
           "name": "build",
           "status": "COMPLETED",
           "conclusion": "SUCCESS",
-          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524372938"
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874049/job/125532822680"
         },
         {
           "name": "build-and-publish (132)",
           "status": "IN_PROGRESS",
           "conclusion": "",
-          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372801"
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823032"
         },
         {
           "name": "build-and-publish (134)",
           "status": "IN_PROGRESS",
           "conclusion": "",
-          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410121/job/125524372649"
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823114"
         },
         {
           "name": "deploy",
           "status": "COMPLETED",
           "conclusion": "SKIPPED",
-          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517410107/job/125524615531"
+          "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874049/job/125533045195"
         },
         {
           "name": "GitGuardian Security Checks",
