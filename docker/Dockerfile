@@ -18,7 +18,7 @@ RUN python3 -B tests/container_runtime/test_evidence.py && \
       --source /opt/minkowski-runtime/source \
       --build /opt/minkowski-runtime/build \
       --output /opt/minkowski-runtime/evidence \
-      --jobs ${JOBS} --expected-tests 9 \
+      --jobs ${JOBS} \
       --image-digest sha256:a4bf4c4e91ef5f4e50089f435005ca07f1a0a48deeeb9814ca4b526974de79ba
 
 WORKDIR /workspace

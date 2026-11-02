@@ -33,6 +33,24 @@ EXPECTED_SUITES = {"cmake_source_filter", "ab_compare_selftest", "adaptive_tests
                    "ml_representations_smoke", "memory_growth_tests", "test_framework_contract"}
 
 
+def configuration(source):
+    """Require known optional suites from source presence, never from CTest output."""
+    targets, suites = list(TARGETS), set(EXPECTED_SUITES)
+    standalone = {"test_framework_contract"}
+    if (source / "tests/adaptive/test_part_split.cpp").is_file():
+        targets.append("adaptive_split_tests")
+        standalone.add("adaptive_split_tests")
+        suites.add("adaptive_split_tests")
+    if (source / "tests/tools/point_dataset_tests.cpp").is_file():
+        targets.append("point_dataset_tests")
+        standalone.add("point_dataset_tests")
+        suites.add("point_dataset_tests")
+        suites.add("modelnet_preprocessing_tests")
+    if (source / "benchmarks/test_ml_representations_summary.py").is_file():
+        suites.add("ml_summary_tests")
+    return targets, suites, standalone
+
+
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
@@ -62,7 +80,9 @@ def verify_source(source, manifest):
     return len(paths)
 
 
-def check_codemodel(source, build):
+def check_codemodel(source, build, target_names=None, standalone=None):
+    target_names = TARGETS if target_names is None else target_names
+    standalone = {"test_framework_contract"} if standalone is None else standalone
     replies = build / ".cmake/api/v1/reply"
     indices = sorted(replies.glob("index-*.json"))
     require(bool(indices), "CMake codemodel index missing")
@@ -72,31 +92,37 @@ def check_codemodel(source, build):
     targets = {t["name"]: read(replies / t["jsonFile"]) for t in model["configurations"][0]["targets"]}
     library = targets["minkowski_cpp"]
     require(library["type"] == "STATIC_LIBRARY", "Expected a source-built static library")
+    manager_sources = {Path(item["path"]).name for item in library.get("sources", [])
+                       if Path(item["path"]).stem == "coordinate_manager"}
+    require(manager_sources == {"coordinate_manager.cu"}, "Legacy or missing CoordinateManager source: " + str(manager_sources))
     archive = (build / library["artifacts"][0]["path"]).resolve()
     require(archive.is_relative_to(build), "Minkowski archive is outside this build")
     artifacts = {"minkowski_cpp": archive}
     linkage = {}
-    for name in LIBRARY_TARGETS:
+    for name in target_names:
         target = targets[name]
+        artifacts[name] = (build / target["artifacts"][0]["path"]).resolve()
+        require(artifacts[name].is_relative_to(build), "Executable is outside this build: " + name)
+        if name in standalone:
+            continue
         dependency_ids = {item["id"] for item in target.get("dependencies", [])}
         require(library["id"] in dependency_ids, "Target does not depend on rebuilt library: " + name)
         fragments = [f["fragment"] for f in target.get("link", {}).get("commandFragments", [])]
         require(any(archive.name in f for f in fragments), "Rebuilt archive missing from linker command: " + name)
         require(not any("/usr/local/lib/libminkowski_cpp" in f for f in fragments), "Installed stale archive linked: " + name)
-        artifacts[name] = (build / target["artifacts"][0]["path"]).resolve()
         linkage[name] = dict(dependency=library["id"], fragments=fragments)
-    artifacts["test_framework_contract"] = (build / targets["test_framework_contract"]["artifacts"][0]["path"]).resolve()
     return dict(source=str(source), build=str(build), archive=str(archive), targets=linkage), artifacts
 
 
-def verify_junit(path, count):
+def verify_junit(path, count, expected_suites=None):
+    expected_suites = EXPECTED_SUITES if expected_suites is None else expected_suites
     root = ET.parse(path).getroot()
     cases = root.findall(".//testcase")
     require(int(root.attrib["tests"]) == len(cases) == count, "JUnit test count differs")
     require(int(root.attrib["failures"]) == 0 and not root.findall(".//failure") and not root.findall(".//error"), "JUnit contains failures")
     require(int(root.attrib.get("skipped", "0")) == 0 and not root.findall(".//skipped"), "A registered suite was skipped")
-    require({case.attrib["name"] for case in cases} == EXPECTED_SUITES, "JUnit did not execute complete suite set")
-    return dict(tests=len(cases), failures=0, suites=sorted(EXPECTED_SUITES))
+    require({case.attrib["name"] for case in cases} == expected_suites, "JUnit did not execute complete suite set")
+    return dict(tests=len(cases), failures=0, suites=sorted(expected_suites))
 
 
 def emit_evidence(output):
@@ -122,10 +148,12 @@ def main():
     parser.add_argument("--build", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--jobs", type=int, default=2)
-    parser.add_argument("--expected-tests", type=int, default=9)
+    parser.add_argument("--expected-tests", type=int, help="Optional assertion; suites are required from source presence")
     parser.add_argument("--image-digest", required=True)
     args = parser.parse_args()
     source, build, output = (p.resolve() for p in (args.source, args.build, args.output))
+    target_names, expected_suites, standalone = configuration(source)
+    require(args.expected_tests is None or args.expected_tests == len(expected_suites), "Requested suite count differs from source profile")
     build.mkdir(parents=True, exist_ok=True)
     output.mkdir(parents=True, exist_ok=True)
     receipt = dict(status="running", started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -167,20 +195,27 @@ def main():
                           "-DCMAKE_PREFIX_PATH=/opt/libtorch", "-DCMAKE_CUDA_ARCHITECTURES=75", "-DCPU_ONLY=ON",
                           "-DMINK_BUILD_TESTS=ON", "-DMINK_BUILD_ADAPTIVE_TESTS=ON", "-DMINK_BUILD_ML_EXPERIMENTS=ON",
                           "-DMINKOWSKI_ENABLE_GAUSSIAN=ON", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"])
-        linkage, artifacts = check_codemodel(source, build)
+        linkage, artifacts = check_codemodel(source, build, target_names, standalone)
         (output / "linkage.json").write_text(json.dumps(linkage, indent=2) + "\n")
         shutil.copy2(build / "compile_commands.json", output / "compile_commands.json")
         shutil.copy2(build / "CMakeCache.txt", output / "CMakeCache.txt")
-        run("build", ["cmake", "--build", str(build), "--parallel", str(args.jobs), "--target", *TARGETS])
+        run("build", ["cmake", "--build", str(build), "--parallel", str(args.jobs), "--target", *target_names])
         receipt["artifacts"] = [{"target": name, "path": str(path), "sha256": sha(path), "bytes": path.stat().st_size}
                                 for name, path in artifacts.items()]
         run("ctest-list", ["ctest", "--test-dir", str(build), "--show-only=json-v1"])
         discovered = read(output / "ctest-list.log")
-        require(len(discovered["tests"]) == args.expected_tests, "Wrong number of registered CTest suites")
-        require({t["name"] for t in discovered["tests"]} == EXPECTED_SUITES, "Registered CTest suite set differs")
+        require(len(discovered["tests"]) == len(expected_suites), "Wrong number of registered CTest suites")
+        require({t["name"] for t in discovered["tests"]} == expected_suites, "Registered CTest suite set differs")
         run("ctest", ["ctest", "--test-dir", str(build), "--parallel", "1", "--verbose", "--output-on-failure",
                       "--timeout", "420", "--output-junit", str(output / "ctest.xml")])
-        receipt["junit"] = verify_junit(output / "ctest.xml", args.expected_tests)
+        receipt["junit"] = verify_junit(output / "ctest.xml", len(expected_suites), expected_suites)
+        if "adaptive_split_tests" in standalone:
+            sanitized = build / "adaptive_split_sanitized"
+            run("split-sanitizer-build", ["c++", "-std=c++17", "-O1", "-g", "-fsanitize=address,undefined",
+                 "-fno-omit-frame-pointer", "-I" + str(source), "-I" + str(source / "tests"),
+                 str(source / "tests/adaptive/test_part_split.cpp"), "-o", str(sanitized)])
+            receipt["split_sanitizer_sha256"] = sha(sanitized)
+            run("split-sanitizer-test", [str(sanitized)])
         require(all(sha(Path(a["path"])) == a["sha256"] for a in receipt["artifacts"]), "Built artifacts changed during tests")
         verify_source(source, manifest)
         receipt["status"] = "passed"

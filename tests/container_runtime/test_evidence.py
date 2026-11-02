@@ -68,12 +68,35 @@ class EvidenceGuards(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'complete suite'):
             runner.verify_junit(path, 1)
 
+    def test_source_profile_requires_new_suites_and_targets(self):
+        targets, suites, standalone = runner.configuration(self.root)
+        self.assertEqual(suites, runner.EXPECTED_SUITES)
+        self.assertEqual(targets, runner.TARGETS)
+        for relative in ['tests/adaptive/test_part_split.cpp', 'tests/tools/point_dataset_tests.cpp',
+                         'benchmarks/test_ml_representations_summary.py']:
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        targets, suites, standalone = runner.configuration(self.root)
+        self.assertEqual(suites - runner.EXPECTED_SUITES,
+                         {'adaptive_split_tests', 'point_dataset_tests', 'modelnet_preprocessing_tests', 'ml_summary_tests'})
+        self.assertTrue({'adaptive_split_tests', 'point_dataset_tests'} <= set(targets) & standalone)
+
+    def test_new_suite_cannot_be_silently_omitted(self):
+        path = self.root / 'ctest.xml'
+        names = sorted(runner.EXPECTED_SUITES)
+        path.write_text('<testsuite tests="9" failures="0">' +
+                        ''.join('<testcase name="' + name + '"/>' for name in names) + '</testsuite>')
+        with self.assertRaisesRegex(RuntimeError, 'complete suite'):
+            runner.verify_junit(path, 9, runner.EXPECTED_SUITES | {'adaptive_split_tests'})
+
     def test_installed_archive_link_rejected(self):
         build = self.root / 'build'
         replies = build / '.cmake/api/v1/reply'
         replies.mkdir(parents=True)
         targets = [{'name': 'minkowski_cpp', 'jsonFile': 'library.json'}]
-        library = dict(id='library', type='STATIC_LIBRARY', artifacts=[dict(path='libminkowski_cpp.a')])
+        library = dict(id='library', type='STATIC_LIBRARY', artifacts=[dict(path='libminkowski_cpp.a')],
+                       sources=[dict(path='MinkowskiEngine/coordinate_manager.cu')])
         (replies / 'library.json').write_text(json.dumps(library))
         for name in runner.TARGETS:
             targets.append(dict(name=name, jsonFile=name + '.json'))
@@ -88,6 +111,14 @@ class EvidenceGuards(unittest.TestCase):
         target['link']['commandFragments'] = [dict(fragment='/usr/local/lib/libminkowski_cpp.a')]
         path.write_text(json.dumps(target))
         with self.assertRaisesRegex(RuntimeError, 'Installed stale archive'):
+            runner.check_codemodel(self.root, build)
+
+        # Preserve the discovered Linux static-link failure as a configure-time guard.
+        target['link']['commandFragments'] = [dict(fragment='libminkowski_cpp.a')]
+        path.write_text(json.dumps(target))
+        library['sources'].append(dict(path='MinkowskiEngine/coordinate_manager.cpp'))
+        (replies / 'library.json').write_text(json.dumps(library))
+        with self.assertRaisesRegex(RuntimeError, 'Legacy or missing CoordinateManager'):
             runner.check_codemodel(self.root, build)
 
     def test_bundle_roundtrip_preserves_failed_receipt(self):
