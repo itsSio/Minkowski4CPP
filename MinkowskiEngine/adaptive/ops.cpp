@@ -237,7 +237,7 @@ AdaptiveSparseTensor adaptive_convolution_transpose(const AdaptiveSparseTensor &
 at::Tensor adaptive_global_avg_pool(const AdaptiveSparseTensor &input, bool volume_weighted) {
   const auto &f = input.features();
   if (input.size() == 0)
-    return torch::zeros({f.size(1)}, f.options());
+    return f.sum(0); // zeros, but still part of the autograd graph
   if (!volume_weighted)
     return f.mean(0);
   auto v = input.volumes().to(f.device()).to(f.scalar_type());
@@ -452,8 +452,10 @@ at::Tensor interpolate(const AdaptiveSparseTensor &input, const at::Tensor &poin
       y = y.index_add(0, to_dev(miss_pt), means.index_select(0, to_dev(miss_row)));
     }
   }
-  if (pt_idx.empty())
-    return y;
+  if (pt_idx.empty()) { // no query hits a leaf: zeros that stay connected to the features
+    auto none = torch::empty({0}, torch::TensorOptions(torch::kInt64).device(x.device()));
+    return y.index_add_(0, none, x.index_select(0, none));
+  }
   const int64_t n = static_cast<int64_t>(pt_idx.size());
   auto pt_t = torch::from_blob(pt_idx.data(), {n}, torch::kInt64).clone().to(x.device());
   auto lf_t = torch::from_blob(leaf_idx.data(), {n}, torch::kInt64).clone().to(x.device());
