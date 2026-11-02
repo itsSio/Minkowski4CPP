@@ -600,6 +600,7 @@ if(MINK_BUILD_TESTS AND MINKOWSKI_ENABLE_GAUSSIAN)
         tests/gaussian/test_gaussian_cuda_backward.cpp
         tests/gaussian/test_gaussian_adaptive.cpp
         tests/gaussian/test_gaussian_adam.cpp
+        tests/gaussian/test_gaussian_parallel_atomics.cpp
     )
 
     target_compile_definitions(gaussian_tests PRIVATE
