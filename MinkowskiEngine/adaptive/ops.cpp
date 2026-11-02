@@ -322,7 +322,7 @@ at::Tensor interpolate_tent(const AdaptiveSparseTensor &input, const at::Tensor 
 AdaptiveSparseTensor adaptive_convolution(const AdaptiveSparseTensor &input,
                                           const at::Tensor &weight,
                                           const AdaptiveKernelConfig &config) {
-  auto entry = KernelMapCache::instance().get_or_build(input, config);
+  auto entry = KernelMapCache::instance().get_or_build(input, config, /*host_arrays=*/false);
   check_weight(weight, entry.map, input.channels());
   auto y = apply_map(input.features(), weight, entry, /*transpose=*/false,
                      entry.out_topology->size(), config.mode != AdaptiveConvMode::CenterSampled);
@@ -334,7 +334,7 @@ AdaptiveSparseTensor adaptive_convolution_transpose(const AdaptiveSparseTensor &
                                                     const AdaptiveKernelConfig &config,
                                                     const AdaptiveSparseTensor &reference) {
   // The forward convolution applied to `reference` defines the pairs.
-  auto entry = KernelMapCache::instance().get_or_build(reference, config);
+  auto entry = KernelMapCache::instance().get_or_build(reference, config, /*host_arrays=*/false);
   if (!detail::same_topology(*entry.out_topology, *input.topology()))
     throw std::invalid_argument(
         "transposed convolution input does not match the forward convolution output topology");
