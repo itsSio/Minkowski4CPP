@@ -1,11 +1,11 @@
 {
-  "source_base_commit": "701b599b5fb39d1bfb7310b3d691079b2a91067f",
+  "source_base_commit": "1c9ac2a8704c40b6e608e8cd2833e40c9cc2647f",
   "format": "Canonical Git blob bytes; Linux checkout",
   "files": [
     {
       "path": "CMakeLists.txt",
-      "bytes": 35663,
-      "sha256": "6a67b9cd417f5c818aecbde4112b61eb92b02d1c2f99560e5bc4b291d6816ca2"
+      "bytes": 36690,
+      "sha256": "1e08223a1665df6e33ce48f1cb2675cf1c85a4dc2580e9955a64e9443f02e243"
     },
     {
       "path": "MinkowskiEngine/adaptive/adaptive.hpp",
@@ -229,8 +229,8 @@
     },
     {
       "path": "MinkowskiEngine/gaussian/gaussian_cuda.hpp",
-      "bytes": 8352,
-      "sha256": "7bc8d1e3f8ffb1c196a142ae336a457647cc7b115a01c16179bab85f77b97c52"
+      "bytes": 8555,
+      "sha256": "55b943b58086ea80b2040210e093b6f7f172f1641124f1a7a0f17c4d7a39bcfc"
     },
     {
       "path": "MinkowskiEngine/gaussian/gaussian_cull_cuda.cu",
@@ -279,8 +279,8 @@
     },
     {
       "path": "MinkowskiEngine/gaussian/gaussian_raster_cuda.cu",
-      "bytes": 10301,
-      "sha256": "4a45c1373216ae4ba9350494d69f832d8305d7d5f4ea43389d27295554cf714a"
+      "bytes": 11612,
+      "sha256": "27dc5c3143e5e7ce4e4f7e94ccf6bfaeb3abfb0866eaed924c9bd3ee32a673db"
     },
     {
       "path": "MinkowskiEngine/gaussian/gaussian_render.cpp",
@@ -988,6 +988,11 @@
       "sha256": "3c2bc30b2437473d2e179789dbff12c870517eb749bb54800f78ad959c882156"
     },
     {
+      "path": "benchmarks/benchmark_memory.hpp",
+      "bytes": 1254,
+      "sha256": "1778586a1e9052463641b76e819eda646c9b713cd6331814c1e830c0112d1758"
+    },
+    {
       "path": "benchmarks/core_conv_bench.cpp",
       "bytes": 7107,
       "sha256": "d4d5bc15431af5386ec58262303887e36d8a9fa3fc8da3a39bf3285c11422f9a"
@@ -1013,14 +1018,19 @@
       "sha256": "e955d3350e223e6ede07f231dea560ce84efe6981aae84d799b8e1fce50d034e"
     },
     {
+      "path": "benchmarks/gaussian_raster_backward_bench.cpp",
+      "bytes": 6675,
+      "sha256": "7f8f1db60a3ed0a6dc55beb59fe944f548b7310fefdfe3bb2907b19ce482f0f5"
+    },
+    {
       "path": "benchmarks/gaussian_render_bench.cpp",
-      "bytes": 20015,
-      "sha256": "d6b809f0872c6e169e835e2797a224039304d41dd46250c3f012e46add97c5ef"
+      "bytes": 20160,
+      "sha256": "b7c9b065532e242cb4366dddb79d1bd4e1e4ca7c0eace3e88e54b250c6f81975"
     },
     {
       "path": "benchmarks/ml_representations.cpp",
-      "bytes": 45835,
-      "sha256": "8fba6cba5419c73ca225e3d1fc72ec38226b8ddb1d5cdc7c39b890ddf7e6e052"
+      "bytes": 45804,
+      "sha256": "7a6c690bddcd30b4e5fd676c42416262782a2b3ee0e6d26deefa2b62f3ee2d7f"
     },
     {
       "path": "benchmarks/ml_representations_smoke.cmake",
@@ -2238,6 +2248,11 @@
       "sha256": "1fb9cf7bdf42e2fc209daee144fbb97923b65faf7b7e08f54c1cbc7ecf50735b"
     },
     {
+      "path": "tests/gaussian/test_gaussian_parallel_atomics.cpp",
+      "bytes": 5228,
+      "sha256": "480a0c8527e3b85d595d9d00ef921d4afbe50bdec96e03800a8f5c41c64bba2a"
+    },
+    {
       "path": "tests/gaussian/test_gaussian_ply.cpp",
       "bytes": 7281,
       "sha256": "674787b759d38edce0f0a0a89689d610dc028a21ec596e53ade3e2c833149452"
@@ -2301,6 +2316,11 @@
       "path": "tests/third_party/json.hpp",
       "bytes": 919975,
       "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6"
+    },
+    {
+      "path": "tests/tools/benchmark_memory_tests.cpp",
+      "bytes": 1400,
+      "sha256": "21a86b1920863104ed2ff7310290836f237e2c447500194e04f9dfbb6a823efa"
     },
     {
       "path": "tests/tools/point_dataset_tests.cpp",
