@@ -150,6 +150,242 @@ TEST(gradient_refine_split_and_coarsen_sum_are_linear) {
     CHECK(torch::isfinite(f.grad()).all().item<bool>());
 }
 
+TEST(gradient_resample_to_all_reductions) {
+    // Source with uneven depth and partial occupancy inside level-0 cell (1,0,0): one level-1
+    // leaf, two level-2 leaves of a second level-1 cell and one level-1 leaf elsewhere.
+    std::vector<std::array<int64_t, 4>> v = {{0, 0, 0, 0}, {2, 0, 0, 1}, {6, 0, 0, 2},
+                                             {7, 1, 1, 2}, {3, 1, 1, 1}, {0, 1, 0, 0}};
+    const int64_t n = v.size();
+    auto c = torch::zeros({n, 3}, torch::kInt64);
+    auto l = torch::zeros({n}, torch::kInt32);
+    for (int64_t i = 0; i < n; ++i) {
+        for (int d = 0; d < 3; ++d) c[i][d] = v[i][d];
+        l[i] = int(v[i][3]);
+    }
+    torch::manual_seed(9);
+    auto src = AdaptiveSparseTensor::from_voxels(c, l, torch::randn({n, 2}, torch::kFloat64),
+                                                 make_config());
+    // Reference: (1,0,0)@0 reduces four finer leaves, the children of (0,0,0)@0 replicate it,
+    // (0,1,0)@0 matches exactly and (5,0,0)@0 is uncovered.
+    std::vector<std::array<int64_t, 4>> rv = {{1, 0, 0, 0}, {0, 1, 0, 0}, {5, 0, 0, 0}};
+    for (int i = 0; i < 8; ++i) rv.push_back({i & 1, (i >> 1) & 1, (i >> 2) & 1, 1});
+    const int64_t m = rv.size();
+    auto rc = torch::zeros({m, 3}, torch::kInt64);
+    auto rl = torch::zeros({m}, torch::kInt32);
+    for (int64_t i = 0; i < m; ++i) {
+        for (int d = 0; d < 3; ++d) rc[i][d] = rv[i][d];
+        rl[i] = int(rv[i][3]);
+    }
+    auto ref = AdaptiveSparseTensor::from_voxels(rc, rl, torch::zeros({m, 1}, torch::kFloat64),
+                                                 make_config());
+    auto probe = torch::randn({m, 2}, torch::kFloat64);
+    auto feats0 = src.features().clone();
+    for (auto r : {Reduction::Mean, Reduction::Sum, Reduction::Max}) {
+        auto f = feats0.clone().set_requires_grad(true);
+        (src.with_features(f).resample_to(ref, r).features() * probe).sum().backward();
+        auto num = numerical_grad(
+            [&](const at::Tensor& x) {
+                return (src.with_features(x).resample_to(ref, r).features() * probe)
+                    .sum()
+                    .item<double>();
+            },
+            feats0.clone());
+        CHECK_ALLCLOSE(f.grad(), num, 1e-5, 1e-6);
+    }
+    // Mean weights of the four leaves under (1,0,0)@0 follow coarsen(): (2,0,0)@1 and (3,1,1)@1
+    // and the level-1 cell (3,0,0)@1 holding (6,0,0)@2 and (7,1,1)@2 each count 1/3, the two
+    // level-2 leaves 1/6 each.
+    auto f = feats0.clone().set_requires_grad(true);
+    auto out = src.with_features(f).resample_to(ref, Reduction::Mean);
+    out.features()[ref.index_of({1, 0, 0}, 0)][0].backward();
+    auto g = f.grad().select(1, 0);
+    CHECK_NEAR(g[src.index_of({2, 0, 0}, 1)].item<double>(), 1.0 / 3.0, 1e-12);
+    CHECK_NEAR(g[src.index_of({3, 1, 1}, 1)].item<double>(), 1.0 / 3.0, 1e-12);
+    CHECK_NEAR(g[src.index_of({6, 0, 0}, 2)].item<double>(), 1.0 / 6.0, 1e-12);
+    CHECK_NEAR(g[src.index_of({7, 1, 1}, 2)].item<double>(), 1.0 / 6.0, 1e-12);
+}
+
+// docs/adaptive.md: "Feature computations are built from torch operations and support
+// autograd". revoxelize_from_points rebuilds leaf features from the source point features, so
+// gradients must reach them (they used to be detached in from_points).
+namespace {
+
+// The autograd-contract checks below run with features (and weights) on `dev`; the CUDA variants
+// skip when no GPU is present. Points and topology always stay on the host.
+void check_revoxelize_gradient(torch::Device dev) {
+    torch::manual_seed(6);
+    auto pts = torch::rand({40, 3}, torch::kFloat64) * 16.0;
+    auto f0 = torch::randn({40, 2}, torch::kFloat64).to(dev);
+    const AxisAlignedRegion roi{{0, 0, 0}, {8, 8, 8}};
+    auto shape = AdaptiveSparseTensor::from_points(pts, f0, make_config());
+    shape.refine(roi, 2);
+    auto probe = torch::randn({shape.size(), 2}, torch::kFloat64).to(dev);
+    auto loss = [&](const at::Tensor& f) {
+        auto t = AdaptiveSparseTensor::from_points(pts, f, make_config());
+        t.refine(roi, 2);
+        t.revoxelize_from_points();
+        CHECK(t.features().device().type() == dev.type());
+        return (t.features() * probe).sum();
+    };
+    auto f = f0.clone().set_requires_grad(true);
+    loss(f).backward();
+    CHECK(f.grad().defined());
+    CHECK(f.grad().device().type() == dev.type());
+    auto num = numerical_grad([&](const at::Tensor& x) { return loss(x).item<double>(); },
+                              f0.clone());
+    CHECK_ALLCLOSE(f.grad().cpu(), num.cpu(), 1e-5, 1e-6);
+    CHECK(f.grad().abs().sum().item<double>() > 0.0);
+}
+
+void check_empty_inputs_connected(torch::Device dev) {
+    auto opt = torch::TensorOptions(torch::kFloat64).device(dev);
+    auto w = torch::randn({27, 4, 5}, opt).set_requires_grad(true);
+    auto wt = torch::randn({27, 5, 4}, opt).set_requires_grad(true);
+    auto f = torch::zeros({0, 4}, opt).set_requires_grad(true);
+    const auto empty_points = torch::zeros({0, 3}, torch::kFloat64);
+    for (auto mode : {AdaptiveConvMode::CenterSampled, AdaptiveConvMode::VolumeWeighted,
+                      AdaptiveConvMode::OverlapWeighted}) {
+        for (int shift : {0, -1}) {
+            auto t = AdaptiveSparseTensor::from_points(empty_points, f, make_config());
+            CHECK(t.features().requires_grad());
+            CHECK(t.features().device().type() == dev.type());
+            AdaptiveKernelConfig kc;
+            kc.mode = mode;
+            kc.output_level_shift = shift;
+            w.mutable_grad() = at::Tensor();
+            wt.mutable_grad() = at::Tensor();
+            auto out = adaptive_convolution(t, w, kc);
+            auto back = adaptive_convolution_transpose(out, wt, kc, t);
+            CHECK(back.features().requires_grad());
+            CHECK(back.features().device().type() == dev.type());
+            (adaptive_global_avg_pool(back).sum() +
+             interpolate(out, torch::rand({3, 3}, torch::kFloat64)).sum())
+                .backward();
+            CHECK(w.grad().defined() && wt.grad().defined() && f.grad().defined());
+            CHECK(w.grad().device().type() == dev.type());
+            CHECK_NEAR(w.grad().abs().sum().item<double>(), 0.0, 0.0);
+            CHECK_NEAR(wt.grad().abs().sum().item<double>(), 0.0, 0.0);
+        }
+    }
+    auto t = AdaptiveSparseTensor::from_points(empty_points, f, make_config());
+    CHECK(t.resample_to(t).features().requires_grad());
+    CHECK(t.resample_uniform(1).features().requires_grad());
+}
+
+void check_interpolation_without_hits(torch::Device dev) {
+    auto base = make_mixed(2);
+    auto f = base.features().to(dev).clone().set_requires_grad(true);
+    auto far = torch::full({2, 3}, 1000.0, torch::kFloat64);
+    for (auto mode : {InterpMode::Nearest, InterpMode::Multilinear}) {
+        auto y = interpolate(base.with_features(f), far, mode);
+        CHECK(y.device().type() == dev.type());
+        CHECK_NEAR(y.abs().sum().item<double>(), 0.0, 0.0);
+        y.sum().backward();
+        CHECK(f.grad().defined());
+        CHECK_NEAR(f.grad().abs().sum().item<double>(), 0.0, 0.0);
+        f.mutable_grad() = at::Tensor();
+    }
+}
+
+void require_cuda() {
+    if (!torch::cuda::is_available()) throw mink_test::Skip("CUDA not available");
+}
+
+}  // namespace
+
+TEST(gradient_revoxelize_from_points_reaches_point_features) {
+    check_revoxelize_gradient(torch::kCPU);
+}
+
+TEST(gradient_revoxelize_from_points_reaches_point_features_cuda) {
+    require_cuda();
+    check_revoxelize_gradient(torch::kCUDA);
+}
+
+// Point-driven refinement reads the (now attached) source features only to make topology
+// decisions; that must neither need nor break autograd.
+TEST(gradient_refine_by_variance_with_attached_point_features) {
+    torch::manual_seed(7);
+    auto pts = torch::rand({40, 3}, torch::kFloat64) * 16.0;
+    auto f = torch::randn({40, 2}, torch::kFloat64).set_requires_grad(true);
+    auto t = AdaptiveSparseTensor::from_points(pts, f * 2.0, make_config());
+    const auto before = t.size();
+    t.refine_by_variance(0.1);
+    t.refine_by_density(1);
+    CHECK(t.size() > before);
+    t.features().sum().backward();
+    CHECK(f.grad().defined());
+}
+
+// An empty batch must not break a training step: outputs stay in the graph, so backward()
+// runs and yields zero gradients for the weight and the input features.
+TEST(gradient_empty_inputs_stay_connected_to_the_graph) { check_empty_inputs_connected(torch::kCPU); }
+
+TEST(gradient_empty_inputs_stay_connected_to_the_graph_cuda) {
+    require_cuda();
+    check_empty_inputs_connected(torch::kCUDA);
+}
+
+// Queries that miss every leaf of a non-empty tensor return zeros that are still differentiable.
+TEST(gradient_interpolation_without_hits_is_connected) {
+    check_interpolation_without_hits(torch::kCPU);
+}
+
+TEST(gradient_interpolation_without_hits_is_connected_cuda) {
+    require_cuda();
+    check_interpolation_without_hits(torch::kCUDA);
+}
+
+// A maximum of exactly 0 keeps the whole gradient (torch's amax backward also counted the
+// zero-initialised output as a tied maximum and halved it at every pooling step).
+TEST(gradient_max_pool_at_zero_keeps_unit_gradient) {
+    auto base = make_mixed(1);
+    // Children of (1,0,0)@0: values 0 and negatives; level-0 leaves: 0 and 3.
+    auto f0 = -torch::rand({base.size(), 1}, torch::kFloat64) - 0.5;
+    const int64_t z_child = base.index_of({2, 0, 0}, 1);
+    const int64_t z_leaf = base.index_of({0, 1, 0}, 0);
+    const int64_t pos_leaf = base.index_of({0, 0, 0}, 0);
+    CHECK(z_child >= 0 && z_leaf >= 0 && pos_leaf >= 0);
+    f0[z_child][0] = 0.0;
+    f0[z_leaf][0] = 0.0;
+    f0[pos_leaf][0] = 3.0;
+    for (const at::Device dev : {at::Device(at::kCPU), at::Device(at::kCUDA)}) {
+        if (dev.is_cuda() && !torch::cuda::is_available())
+            continue;
+        auto f = f0.to(dev).detach().clone().requires_grad_(true);
+        auto t = base.with_features(f);
+        auto pooled = adaptive_pool(t, 0, Reduction::Max);
+        CHECK_EQ(pooled.size(), int64_t(3));
+        pooled.features().sum().backward();
+        auto g = f.grad().cpu();
+        CHECK_NEAR(g[z_child][0].item<double>(), 1.0, 0.0); // the parent's maximum is 0
+        CHECK_NEAR(g[z_leaf][0].item<double>(), 1.0, 0.0);  // an unmerged leaf holding 0
+        CHECK_NEAR(g[pos_leaf][0].item<double>(), 1.0, 0.0);
+        CHECK_NEAR(g.sum().item<double>(), 3.0, 0.0);
+        // The same through resample_to (a reference cell without inputs stays 0).
+        auto coarse = adaptive_pool(base, 0, Reduction::Max);
+        auto f2 = f0.to(dev).detach().clone().requires_grad_(true);
+        auto r = base.with_features(f2).resample_to(coarse, Reduction::Max);
+        CHECK(torch::equal(r.features().detach().cpu(), pooled.features().detach().cpu()));
+        r.features().sum().backward();
+        CHECK_NEAR(f2.grad().cpu()[z_child][0].item<double>(), 1.0, 0.0);
+    }
+}
+
+TEST(gradient_max_pool_rows_without_entries_stay_zero) {
+    // resample_to onto a reference with a cell no input overlaps: that row is 0, not -inf.
+    auto base = make_mixed(2);
+    auto ref = base;
+    ref.refine(AxisAlignedRegion{{0, 8, 0}, {8, 16, 8}}, 1); // (0,1,0)@0 -> 8 children
+    auto shifted = AdaptiveSparseTensor::from_voxels(
+        base.coordinates().index_select(0, torch::tensor({int64_t(0)})),
+        base.levels().index_select(0, torch::tensor({int64_t(0)})),
+        torch::full({1, 2}, -2.0, torch::kFloat64), base.config());
+    auto r = shifted.resample_to(ref, Reduction::Max);
+    CHECK(torch::isfinite(r.features()).all().item<bool>());
+    CHECK_NEAR(r.features().abs().sum().item<double>(), 4.0, 0.0); // only (0,0,0)@0 holds -2
+}
+
 TEST(gradient_topology_decisions_are_not_differentiable) {
     auto base = make_mixed(2);
     CHECK(!base.coordinates().requires_grad());

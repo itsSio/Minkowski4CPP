@@ -1,5 +1,6 @@
 #include "adaptive_topology.hpp"
 
+#include <array>
 #include <atomic>
 #include <exception>
 #include <mutex>
@@ -16,6 +17,11 @@ namespace {
 constexpr int64_t kMinDeviceKeys = 1 << 14;
 
 constexpr int64_t kParallelThreshold = 32768;
+
+// |finest-level coordinate| < 2^52: see Topology::make.
+constexpr uint32_t kMaxFinestCoordinateBits = 52;
+static_assert(AdaptiveVoxelConfig::kMaxSupportedDepth < kMaxFinestCoordinateBits,
+              "every level needs a non-empty coordinate range");
 
 // Plain std::thread workers on purpose: LibTorch's OpenMP runtime can clash with the
 // application's OpenMP runtime on Windows, so no OpenMP / at::parallel_for here.
@@ -98,14 +104,7 @@ void parallel_sort(std::vector<KeyIdx> &v) {
   }
 }
 
-inline uint64_t fast_hash(const Key &k) {
-  uint64_t h = k.level;
-  for (int d = 0; d < kMaxDim; ++d)
-    h = (h ^ static_cast<uint64_t>(k.coordinates[d])) * 0x9e3779b97f4a7c15ULL;
-  h ^= h >> 32;
-  h *= 0xd6e8feb86659fd93ULL;
-  return h ^ (h >> 32);
-}
+inline uint64_t fast_hash(const Key &k) { return Topology::NodeTable::hash(k); }
 
 // Open-addressing set of the keys in one level's range of the sorted key array.
 struct LevelSet {
@@ -193,15 +192,54 @@ void parallel_blocks(int64_t n, const std::function<void(int64_t, int64_t)> &f) 
   for_blocks(n, f);
 }
 
+int parallel_block_count(int64_t n, int64_t work) {
+  return static_cast<int>(std::max<int64_t>(1, std::min<int64_t>(thread_count(work), n)));
+}
+
+void run_parallel_blocks(int64_t n, int blocks,
+                         const std::function<void(int, int64_t, int64_t)> &f) {
+  run_tasks(blocks, [&](int b) { f(b, n * b / blocks, n * (b + 1) / blocks); });
+}
+
+namespace {
+
+// If the keys of every level are already strictly increasing (e.g. per-sample sorted pieces
+// concatenated along the first axis, as a batch is built), a stable counting sort by level is
+// the whole sort: O(n) instead of O(n log n), and no device round trip. Keys are distinct, so
+// the result (keys and order) is the one the full sort produces. False (nothing changed) if
+// some level is out of order or repeats a key.
+bool sort_by_level_if_levels_sorted(std::vector<Key> &keys, std::vector<int64_t> &order) {
+  constexpr size_t kLevels = AdaptiveVoxelConfig::kMaxSupportedDepth + 1;
+  const int64_t n = static_cast<int64_t>(keys.size());
+  std::array<int64_t, kLevels> count{}, last;
+  last.fill(-1);
+  for (int64_t i = 0; i < n; ++i) {
+    const uint32_t l = keys[i].level;
+    if (l >= kLevels || (last[l] >= 0 && !key_less(keys[last[l]], keys[i])))
+      return false;
+    last[l] = i;
+    ++count[l];
+  }
+  std::array<int64_t, kLevels> pos{};
+  for (size_t l = 1; l < kLevels; ++l)
+    pos[l] = pos[l - 1] + count[l - 1];
+  order.resize(static_cast<size_t>(n));
+  for (int64_t i = 0; i < n; ++i)
+    order[static_cast<size_t>(pos[keys[i].level]++)] = i;
+  std::vector<Key> sorted(static_cast<size_t>(n));
+  for_blocks(n, [&](int64_t b, int64_t e) {
+    for (int64_t j = b; j < e; ++j)
+      sorted[j] = keys[order[j]];
+  });
+  keys.swap(sorted);
+  return true;
+}
+
+} // namespace
+
 void sort_keys(std::vector<Key> &keys, std::vector<int64_t> &order) {
   order.clear();
   const int64_t n = static_cast<int64_t>(keys.size());
-#ifdef USE_CUDA
-  if (n >= kMinDeviceKeys && cuda_topology_available()) {
-    cuda_sort_keys(keys, order);
-    return;
-  }
-#endif
   std::atomic<bool> sorted{true};
   for_blocks(n, [&](int64_t b, int64_t e) {
     // Each block also compares against the key just before it.
@@ -213,6 +251,14 @@ void sort_keys(std::vector<Key> &keys, std::vector<int64_t> &order) {
   });
   if (sorted.load())
     return;
+  if (sort_by_level_if_levels_sorted(keys, order))
+    return;
+#ifdef USE_CUDA
+  if (n >= kMinDeviceKeys && cuda_topology_available()) {
+    cuda_sort_keys(keys, order);
+    return;
+  }
+#endif
   std::vector<KeyIdx> items(static_cast<size_t>(n));
   for_blocks(n, [&](int64_t b, int64_t e) {
     for (int64_t i = b; i < e; ++i)
@@ -253,12 +299,24 @@ std::shared_ptr<const Topology> Topology::make(const AdaptiveVoxelConfig &cfg,
     std::mutex counts_mutex;
     const Key *kd = t->keys.data();
     const uint32_t max_level = t->max_depth;
+    // A level-l coordinate spans finest-level coordinates c * 2^(max_depth - l). Keeping those
+    // in [-2^52, 2^52) means refinement (2c + bit) never overflows and every cell bound and
+    // centre (c + 0.5) * size is an exact double, so point location and overlap tests agree
+    // with the integer keys.
+    std::vector<int64_t> limit(max_level + 1);
+    for (uint32_t l = 0; l <= max_level; ++l)
+      limit[l] = int64_t(1) << (kMaxFinestCoordinateBits - (max_level - l));
     for_blocks(N, [&](int64_t b, int64_t e) {
       std::vector<int64_t> local(max_level + 1, 0);
       for (int64_t i = b; i < e; ++i) {
         const Key &k = kd[i];
         if (k.level > max_level)
           throw std::invalid_argument("adaptive voxel level exceeds max_depth");
+        for (int d = 0; d < D; ++d)
+          if (k.coordinates[d] < -limit[k.level] || k.coordinates[d] >= limit[k.level])
+            throw std::invalid_argument(
+                "adaptive voxel coordinate out of range: level-l coordinates must lie in "
+                "[-2^(52 - max_depth + l), 2^(52 - max_depth + l))");
         if (i > 0 && !key_less(kd[i - 1], k))
           throw std::invalid_argument("duplicate or unsorted adaptive voxel keys");
         ++local[k.level];
@@ -313,6 +371,66 @@ const std::unordered_map<Key, int64_t, KeyHash> &Topology::index_map() const {
       index_.emplace(keys[i], static_cast<int64_t>(i));
   });
   return index_;
+}
+
+const Topology::NodeTable &Topology::node_table() const {
+  std::call_once(nodes_once_, [this] {
+    NodeTable &t = nodes_;
+    const int64_t N = size();
+    if (N == 0) {
+      t.slots.assign(1, NodeTable::Slot{Key{}, NodeTable::kEmpty});
+      t.mask = 0;
+      return;
+    }
+    const uint32_t lmin = present_levels.front();
+    // Ancestors of sorted keys come in runs, so consecutive leaves mostly stop after one probe.
+    // Load factor stays <= 0.7 (full 2^D trees add ~N/(2^D-1) internal nodes to N leaves).
+    size_t cap = 16;
+    while (cap < static_cast<size_t>(N) * 2)
+      cap <<= 1;
+    t.slots.assign(cap, NodeTable::Slot{Key{}, NodeTable::kEmpty});
+    t.mask = cap - 1;
+    int64_t used = 0;
+    // Inserts k with value v unless present; returns false if it was already there.
+    auto insert = [&](const Key &k, int64_t v) {
+      for (uint64_t h = NodeTable::hash(k) & t.mask;; h = (h + 1) & t.mask) {
+        NodeTable::Slot &s = t.slots[h];
+        if (s.value == NodeTable::kEmpty) {
+          s.key = k;
+          s.value = v;
+          ++used;
+          return true;
+        }
+        if (s.key == k)
+          return false;
+      }
+    };
+    auto grow = [&] {
+      std::vector<NodeTable::Slot> old;
+      old.swap(t.slots);
+      const size_t ncap = old.size() * 2;
+      t.slots.assign(ncap, NodeTable::Slot{Key{}, NodeTable::kEmpty});
+      t.mask = ncap - 1;
+      used = 0;
+      for (const auto &s : old)
+        if (s.value != NodeTable::kEmpty)
+          insert(s.key, s.value);
+    };
+    for (int64_t i = 0; i < N; ++i) {
+      // Room for the leaf and all its ancestors at load <= 0.7.
+      if (static_cast<size_t>(used + keys[i].level - lmin + 1) * 10 > t.slots.size() * 7)
+        grow();
+      insert(keys[i], i);
+      Key a = keys[i];
+      while (a.level > lmin) {
+        a = parent_key(a);
+        if (!insert(a, NodeTable::kInternal))
+          break; // its ancestors are already in the table
+        ++t.internal_count;
+      }
+    }
+  });
+  return nodes_;
 }
 
 void Topology::build_geometry() const {

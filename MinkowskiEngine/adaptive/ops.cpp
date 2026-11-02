@@ -1,12 +1,24 @@
 #include "ops.hpp"
 #include "adaptive_topology.hpp"
+#ifdef USE_CUDA
+#include "fused_apply.hpp"
+#endif
 
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <memory>
 #include <stdexcept>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 namespace minkowski {
 namespace adaptive {
 
 using detail::DVec;
+using detail::Key;
 using detail::Topology;
 
 namespace {
@@ -16,29 +28,292 @@ void check_weight(const at::Tensor &weight, const AdaptiveKernelMap &m, int64_t 
     throw std::invalid_argument("weight must have shape [kernel_size^D, in_channels, out_channels]");
 }
 
-// Gather -> (optional per-pair weight) -> GEMM per kernel slot -> scatter-add.
-// `from`/`to` select the direction so the transposed convolution reuses the map.
-at::Tensor apply_map(const at::Tensor &x, const at::Tensor &weight, const AdaptiveKernelMap &m,
-                     const at::Tensor &from, const at::Tensor &to, int64_t n_out,
-                     bool weighted) {
-  const auto dev = x.device();
-  const int64_t cout = weight.size(2);
-  auto from_d = from.to(dev);
-  auto to_d = to.to(dev);
-  at::Tensor w_d;
-  if (weighted)
-    w_d = m.weight.to(dev).to(x.scalar_type());
-  auto wt = weight.to(x.scalar_type());
-  auto y = torch::zeros({n_out, cout}, x.options());
-  for (int64_t k = 0; k < m.num_kernels; ++k) {
-    const int64_t b = m.kernel_offsets[k], e = m.kernel_offsets[k + 1];
-    if (b == e)
-      continue;
-    auto xs = x.index_select(0, from_d.slice(0, b, e));
-    if (weighted)
-      xs = xs * w_d.slice(0, b, e).unsqueeze(1);
-    y.index_add_(0, to_d.slice(0, b, e), xs.matmul(wt[k]));
+#ifdef USE_CUDA
+// Pairs per atomic partial of the fused weight gradient (one block per chunk and channel tile).
+constexpr int64_t kFusedChunkRows = 256;
+
+// Autograd wrapper of the fused CUDA kernels (fused_apply_cuda.cu): forward, input gradient
+// and weight gradient are one launch each. Only x, the weight and the non-differentiable
+// index arrays are saved, so backward keeps no [pairs, C] gather alive.
+struct FusedApplyMap : public torch::autograd::Function<FusedApplyMap> {
+  static at::Tensor forward(torch::autograd::AutogradContext *ctx, const at::Tensor &x,
+                            const at::Tensor &w, const at::Tensor &from, const at::Tensor &to,
+                            const at::Tensor &pw, const TileTable &tiles,
+                            const TileTable &chunks, int64_t n_out,
+                            const std::vector<int64_t> &offsets) {
+    auto y = torch::zeros({n_out, w.size(2)}, x.options());
+    detail::cuda_fused_gather_gemm_scatter(x, w, from, to, pw, tiles, /*trans_w=*/false, y);
+    ctx->save_for_backward({x, w, from, to, pw, tiles.blocks, chunks.blocks});
+    ctx->saved_data["offsets"] = offsets;
+    ctx->saved_data["tiles"] = std::vector<int64_t>{tiles.count, tiles.rows};
+    ctx->saved_data["chunks"] = std::vector<int64_t>{chunks.count, chunks.rows};
+    return y;
   }
+
+  static torch::autograd::variable_list backward(torch::autograd::AutogradContext *ctx,
+                                                 torch::autograd::variable_list grads) {
+    const auto s = ctx->get_saved_variables();
+    const at::Tensor &x = s[0], &w = s[1], &from = s[2], &to = s[3], &pw = s[4];
+    const auto tn = ctx->saved_data["tiles"].toIntVector();
+    const auto cn = ctx->saved_data["chunks"].toIntVector();
+    const TileTable tiles{at::Tensor(), s[5], tn[0], tn[1]}, chunks{at::Tensor(), s[6], cn[0], cn[1]};
+    if (!grads[0].defined())
+      return {torch::zeros_like(x), torch::zeros_like(w), {}, {}, {}, {}, {}, {}, {}};
+    const at::Tensor gy = grads[0].contiguous();
+    at::Tensor gx, gw;
+    if (torch::GradMode::is_enabled()) {
+      // create_graph=true: differentiable formulation (same math) so higher-order gradients
+      // work as on the per-slot path.
+      if (ctx->needs_input_grad(0))
+        gx = FusedApplyMap::apply(gy, w.transpose(1, 2).contiguous(), to, from, pw, tiles, chunks,
+                                  x.size(0), ctx->saved_data["offsets"].toIntVector());
+      if (ctx->needs_input_grad(1)) {
+        const auto off = ctx->saved_data["offsets"].toIntVector();
+        std::vector<int64_t> sizes(off.size() - 1);
+        for (size_t k = 0; k + 1 < off.size(); ++k)
+          sizes[k] = off[k + 1] - off[k];
+        auto xs = x.index_select(0, from);
+        if (pw.numel() > 0)
+          xs = xs * pw.unsqueeze(1);
+        auto xb = xs.split_with_sizes(sizes, 0);
+        auto gb = gy.index_select(0, to).split_with_sizes(sizes, 0);
+        std::vector<at::Tensor> parts;
+        for (size_t k = 0; k < sizes.size(); ++k)
+          parts.push_back(xb[k].t().matmul(gb[k]));
+        gw = torch::stack(parts, 0);
+      }
+      return {gx, gw, {}, {}, {}, {}, {}, {}, {}};
+    }
+    if (ctx->needs_input_grad(0)) {
+      gx = torch::zeros_like(x);
+      detail::cuda_fused_gather_gemm_scatter(gy, w, to, from, pw, tiles, /*trans_w=*/true, gx);
+    }
+    if (ctx->needs_input_grad(1)) {
+      gw = torch::zeros_like(w);
+      detail::cuda_fused_weight_grad(x, gy, from, to, pw, chunks, gw);
+    }
+    return {gx, gw, {}, {}, {}, {}, {}, {}, {}};
+  }
+};
+#endif
+
+// Gather -> (optional per-pair weight) -> GEMM per kernel slot -> scatter-add.
+// `transpose` swaps the direction so the transposed convolution reuses the map.
+// The map's index/weight arrays come from the entry's device cache (uploaded once per
+// device/dtype). On CUDA one gather, one weight multiply and one scatter-add cover all kernel
+// slots; only the GEMM runs per slot, on row blocks of the gathered features. The pairs are sorted by
+// slot, so the scatter-add sees the same rows in the same order as one scatter per slot did.
+// split_with_sizes / unbind (not per-slot slice / select) keep the backward pass to one
+// concatenation each instead of one full-size zero-filled gradient per slot.
+at::Tensor apply_map(const at::Tensor &x, const at::Tensor &weight, const KernelMapEntry &entry,
+                     bool transpose, int64_t n_out, bool weighted) {
+  const AdaptiveKernelMap &m = entry.map;
+  const int64_t cout = weight.size(2);
+  auto arrays = entry.device->get(m, x.device(), x.scalar_type(), weighted);
+  const at::Tensor &from_d = transpose ? arrays.out_index : arrays.in_index;
+  const at::Tensor &to_d = transpose ? arrays.in_index : arrays.out_index;
+#ifdef USE_CUDA
+  // Fused path: one launch per direction for all kernel slots (see FusedApplyMap). Not used
+  // in deterministic mode (its atomics make float sums order-dependent).
+  if (x.is_cuda() && detail::cuda_apply_map_fused() &&
+      !at::globalContext().deterministicAlgorithms() &&
+      (x.scalar_type() == at::kFloat || x.scalar_type() == at::kDouble)) {
+    auto tiles = entry.device->tiles(m, x.device(), detail::fused_tile_rows(x.size(1), cout));
+    auto chunks = entry.device->tiles(m, x.device(), kFusedChunkRows);
+    auto pw = weighted ? arrays.weight : at::empty({0}, x.options());
+    return FusedApplyMap::apply(x.contiguous(), weight.to(x.scalar_type()).contiguous(), from_d,
+                                to_d, pw, tiles, chunks, n_out, m.kernel_offsets);
+  }
+#endif
+  auto y = torch::zeros({n_out, cout}, x.options());
+  if (!x.is_cuda()) {
+    // Host path: the per-slot formulation. Its temporaries stay small (one slot at a time),
+    // which measured faster on the CPU than materialising the full [P, C] gather/products
+    // (large fresh allocations), and it keeps CPU results bit-identical to earlier versions.
+    auto wt = weight.to(x.scalar_type());
+    bool any = false;
+    for (int64_t k = 0; k < m.num_kernels; ++k) {
+      const int64_t b = m.kernel_offsets[k], e = m.kernel_offsets[k + 1];
+      if (b == e)
+        continue;
+      any = true;
+      auto xs = x.index_select(0, from_d.slice(0, b, e));
+      if (weighted)
+        xs = xs * arrays.weight.slice(0, b, e).unsqueeze(1);
+      y.index_add_(0, to_d.slice(0, b, e), xs.matmul(wt[k]));
+    }
+    if (!any) { // keep y connected to x and weight (empty batch -> zero gradients)
+      auto none = from_d.slice(0, 0, 0);
+      y.index_add_(0, none, x.index_select(0, none).matmul(wt[0]));
+    }
+    return y;
+  }
+  // Device path: one gather and one weight multiply over all pairs (split per slot with
+  // split_with_sizes, so backward is one concatenation and one input-gradient scatter), then
+  // consecutive kernel slots are grouped while their products fit the temporary budget
+  // (detail::cuda_apply_map_group_bytes): one GEMM per slot, one concatenation and one
+  // scatter-add per group. Launches per call drop from ~4 per slot to ~1 per slot + 2 per group
+  // + 2, and the [pairs, C_out] products stay bounded by the budget instead of growing with the
+  // whole map (the gathered inputs, which autograd saves for the weight gradient, scale with
+  // the map as in the per-slot loop).
+  const std::vector<at::Tensor> wk = weight.to(x.scalar_type()).unbind(0);
+  auto xs = x.index_select(0, from_d);
+  if (weighted)
+    xs = xs * arrays.weight.unsqueeze(1);
+  const auto &off = m.kernel_offsets;
+  std::vector<int64_t> sizes(static_cast<size_t>(m.num_kernels));
+  for (int64_t k = 0; k < m.num_kernels; ++k)
+    sizes[static_cast<size_t>(k)] = off[k + 1] - off[k];
+  const std::vector<at::Tensor> blocks = xs.split_with_sizes(sizes, 0);
+  const int64_t budget = detail::cuda_apply_map_group_bytes();
+  const int64_t row_bytes = 2 * cout * x.element_size(); // products + their concatenation
+  const int64_t cap =
+      budget > 0 ? std::max<int64_t>(1, budget / std::max<int64_t>(1, row_bytes)) : INT64_MAX;
+  bool any = false;
+  for (int64_t k0 = 0; k0 < m.num_kernels;) {
+    int64_t k1 = k0 + 1;
+    while (k1 < m.num_kernels && off[k1 + 1] - off[k0] <= cap)
+      ++k1;
+    if (off[k1] > off[k0]) {
+      any = true;
+      std::vector<at::Tensor> parts;
+      parts.reserve(static_cast<size_t>(k1 - k0));
+      for (int64_t k = k0; k < k1; ++k)
+        if (sizes[static_cast<size_t>(k)] > 0)
+          parts.push_back(blocks[static_cast<size_t>(k)].matmul(wk[k]));
+      // Slicing the (non-differentiable) index array is free.
+      y.index_add_(0, to_d.slice(0, off[k0], off[k1]),
+                   parts.size() == 1 ? parts[0] : torch::cat(parts, 0));
+    }
+    k0 = k1;
+  }
+  // No pairs (e.g. an empty input): a zero-row product keeps y connected to x and weight, so
+  // backward() on an empty batch yields zero gradients instead of an error.
+  if (!any)
+    y.index_add_(0, to_d, xs.matmul(wk[0]));
+  return y;
+}
+
+// InterpMode::ContinuousMultilinear: weights phi_i(q) / sum_j phi_j(q) with the tent
+// phi_i(q) = prod_d max(0, 1 - |q_d - c_id| / s_id) of every leaf i (centre c_i, edge s_i).
+// At level l the tents that reach q belong to the cells overlapping the open box q +- s_l / 2:
+// with a = (q - origin) / s_l - 1/2 per axis these are cells floor(a) and floor(a) + 1, with
+// tent factors 1 - frac(a) and frac(a). The descent starts at the coarsest present level and
+// stops below a level where none of the (at most 2^D) candidate cells is an ancestor of a
+// leaf: every finer candidate lies inside a candidate of the level above.
+at::Tensor interpolate_tent(const AdaptiveSparseTensor &input, const at::Tensor &points) {
+  const Topology &t = *input.topology();
+  auto pts = points.to(torch::kFloat64).cpu().contiguous();
+  if (pts.dim() != 2 || pts.size(1) != t.D)
+    throw std::invalid_argument("points must have shape [M, D]");
+  const int64_t M = pts.size(0);
+  const int D = t.D;
+  const double *p = pts.data_ptr<double>();
+
+  struct Pairs {
+    std::vector<int64_t> pt_idx, leaf_idx;
+    std::vector<double> w;
+  };
+  int64_t n_levels = 0;
+  if (M > 0 && t.size() > 0) {
+    t.node_table(); // build the shared lookup table once, before the workers start
+    n_levels = static_cast<int64_t>(t.present_levels.back() - t.present_levels.front()) + 1;
+  }
+  const int blocks = detail::parallel_block_count(M, M * (n_levels << D));
+  std::vector<Pairs> parts(static_cast<size_t>(blocks));
+  detail::run_parallel_blocks(M, blocks, [&](int b, int64_t m_begin, int64_t m_end) {
+    auto &pt_idx = parts[b].pt_idx, &leaf_idx = parts[b].leaf_idx;
+    auto &w = parts[b].w;
+    if (n_levels == 0)
+      return;
+    const Topology::NodeTable &nodes = t.node_table();
+    const uint32_t lmin = t.present_levels.front(), lmax = t.present_levels.back();
+    const uint32_t corners = 1u << D;
+    std::vector<std::pair<int64_t, double>> hits;
+    for (int64_t m = m_begin; m < m_end; ++m) {
+      DVec q{};
+      for (int d = 0; d < D; ++d)
+        q[d] = p[m * D + d];
+      const int64_t j = t.find_containing(q);
+      if (j < 0)
+        continue;
+      hits.clear();
+      double total = 0.0;
+      for (uint32_t l = lmin; l <= lmax; ++l) {
+        const DVec s = t.size_at(l);
+        std::array<int64_t, detail::kMaxDim> i0{};
+        std::array<std::array<double, 2>, detail::kMaxDim> tent{};
+        bool ok = true;
+        for (int d = 0; d < D; ++d) {
+          const double a = (q[d] - t.origin[d]) / s[d] - 0.5;
+          const double fl = std::floor(a);
+          if (!std::isfinite(fl) || std::fabs(fl) > 4e18) {
+            ok = false; // not representable here, nor at any finer level
+            break;
+          }
+          i0[d] = static_cast<int64_t>(fl);
+          const double f = a - fl;
+          tent[d] = {1.0 - f, f};
+        }
+        if (!ok)
+          break;
+        bool internal = false;
+        Key k{};
+        k.level = l;
+        for (uint32_t c = 0; c < corners; ++c) {
+          double phi = 1.0;
+          for (int d = 0; d < D; ++d) {
+            const uint32_t bit = (c >> d) & 1u;
+            k.coordinates[d] = i0[d] + bit;
+            phi *= tent[d][bit];
+          }
+          const int64_t v = nodes.lookup(k);
+          if (v == Topology::NodeTable::kInternal) {
+            internal = true;
+          } else if (v >= 0 && phi > 0.0) {
+            hits.emplace_back(v, phi);
+            total += phi;
+          }
+        }
+        if (!internal)
+          break;
+      }
+      if (!(total > 0.0)) { // unreachable in exact arithmetic (phi_j >= 2^-D); be safe
+        hits.assign(1, {j, 1.0});
+        total = 1.0;
+      }
+      std::sort(hits.begin(), hits.end(),
+                [](const auto &x, const auto &y) { return x.first < y.first; });
+      for (auto &h : hits) {
+        pt_idx.push_back(m);
+        leaf_idx.push_back(h.first);
+        w.push_back(h.second / total);
+      }
+    }
+  });
+  std::vector<int64_t> pt_idx, leaf_idx;
+  std::vector<double> w;
+  for (auto &part : parts) {
+    pt_idx.insert(pt_idx.end(), part.pt_idx.begin(), part.pt_idx.end());
+    leaf_idx.insert(leaf_idx.end(), part.leaf_idx.begin(), part.leaf_idx.end());
+    w.insert(w.end(), part.w.begin(), part.w.end());
+  }
+
+  const auto &x = input.features();
+  auto y = torch::zeros({M, x.size(1)}, x.options());
+  const int64_t n = static_cast<int64_t>(pt_idx.size());
+  if (n == 0) { // empty input or no point inside a leaf: zeros still connected to the features
+    auto none = torch::empty({0}, torch::TensorOptions(torch::kInt64).device(x.device()));
+    return y.index_add_(0, none, x.index_select(0, none));
+  }
+  auto pt_t = torch::from_blob(pt_idx.data(), {n}, torch::kInt64).clone().to(x.device());
+  auto lf_t = torch::from_blob(leaf_idx.data(), {n}, torch::kInt64).clone().to(x.device());
+  auto w_t = torch::from_blob(w.data(), {n}, torch::kFloat64)
+                 .clone()
+                 .to(x.scalar_type())
+                 .to(x.device())
+                 .unsqueeze(1);
+  y.index_add_(0, pt_t, x.index_select(0, lf_t) * w_t);
   return y;
 }
 
@@ -47,11 +322,10 @@ at::Tensor apply_map(const at::Tensor &x, const at::Tensor &weight, const Adapti
 AdaptiveSparseTensor adaptive_convolution(const AdaptiveSparseTensor &input,
                                           const at::Tensor &weight,
                                           const AdaptiveKernelConfig &config) {
-  auto entry = KernelMapCache::instance().get_or_build(input, config);
+  auto entry = KernelMapCache::instance().get_or_build(input, config, /*host_arrays=*/false);
   check_weight(weight, entry.map, input.channels());
-  auto y = apply_map(input.features(), weight, entry.map, entry.map.in_index,
-                     entry.map.out_index, entry.out_topology->size(),
-                     config.mode != AdaptiveConvMode::CenterSampled);
+  auto y = apply_map(input.features(), weight, entry, /*transpose=*/false,
+                     entry.out_topology->size(), config.mode != AdaptiveConvMode::CenterSampled);
   return AdaptiveSparseTensor::from_topology(entry.out_topology, y);
 }
 
@@ -60,13 +334,12 @@ AdaptiveSparseTensor adaptive_convolution_transpose(const AdaptiveSparseTensor &
                                                     const AdaptiveKernelConfig &config,
                                                     const AdaptiveSparseTensor &reference) {
   // The forward convolution applied to `reference` defines the pairs.
-  auto entry = KernelMapCache::instance().get_or_build(reference, config);
+  auto entry = KernelMapCache::instance().get_or_build(reference, config, /*host_arrays=*/false);
   if (!detail::same_topology(*entry.out_topology, *input.topology()))
     throw std::invalid_argument(
         "transposed convolution input does not match the forward convolution output topology");
   check_weight(weight, entry.map, input.channels());
-  auto y = apply_map(input.features(), weight, entry.map, entry.map.out_index,
-                     entry.map.in_index, reference.size(),
+  auto y = apply_map(input.features(), weight, entry, /*transpose=*/true, reference.size(),
                      config.mode != AdaptiveConvMode::CenterSampled);
   return AdaptiveSparseTensor::from_topology(reference.topology(), y);
 }
@@ -74,7 +347,7 @@ AdaptiveSparseTensor adaptive_convolution_transpose(const AdaptiveSparseTensor &
 at::Tensor adaptive_global_avg_pool(const AdaptiveSparseTensor &input, bool volume_weighted) {
   const auto &f = input.features();
   if (input.size() == 0)
-    return torch::zeros({f.size(1)}, f.options());
+    return f.sum(0); // zeros, but still part of the autograd graph
   if (!volume_weighted)
     return f.mean(0);
   auto v = input.volumes().to(f.device()).to(f.scalar_type());
@@ -89,8 +362,63 @@ AdaptiveSparseTensor adaptive_pool(const AdaptiveSparseTensor &input, uint32_t t
   return out;
 }
 
+namespace {
+
+// InterpFallback::CoarserAncestor support. A cell "holds data" when at least one active leaf
+// lies strictly inside it. Cells at or below the coarsest present level are answered by the
+// topology's node table (kInternal); coarser cells by `coarse`, the set of leaf ancestors
+// above that level (small: at most one entry per occupied cell of each coarse level).
+struct AncestorIndex {
+  const Topology &t;
+  std::unordered_set<detail::Key, detail::KeyHash> coarse;
+
+  explicit AncestorIndex(const Topology &topo) : t(topo) {
+    if (t.keys.empty() || t.present_levels.front() == 0)
+      return;
+    const uint32_t lmin = t.present_levels.front();
+    for (const auto &k : t.keys) {
+      detail::Key a = detail::ancestor_at(k, lmin - 1);
+      while (coarse.insert(a).second && a.level > 0)
+        a = detail::parent_key(a);
+    }
+  }
+
+  bool holds_data(const detail::Key &k) const {
+    if (k.level < t.present_levels.front())
+      return coarse.count(k) != 0;
+    return t.node_table().lookup(k) == Topology::NodeTable::kInternal;
+  }
+
+  // The finest cell that contains q and holds data; false when no cell does (q is in an
+  // unoccupied level-0 cell or outside the representable range). Holding data is
+  // inherited by every coarser cell, so the walk stops at the first cell without data.
+  bool deepest(const DVec &q, detail::Key &out) const {
+    bool found = false;
+    detail::Key k;
+    for (uint32_t l = 0; l <= t.max_depth; ++l) {
+      if (!t.locate(q, l, k) || !holds_data(k))
+        break;
+      out = k;
+      found = true;
+    }
+    return found;
+  }
+};
+
+} // namespace
+
 at::Tensor interpolate(const AdaptiveSparseTensor &input, const at::Tensor &points,
-                       InterpMode mode) {
+                       InterpMode mode, InterpFallback fallback) {
+  if (mode == InterpMode::ContinuousMultilinear) {
+    auto y = interpolate_tent(input, points);
+    if (fallback == InterpFallback::CoarserAncestor) {
+      // Uncovered points (zeros above) take the ancestor mean: covered points give identical
+      // rows in both Nearest calls, so the difference is exactly zero there.
+      y = y + (interpolate(input, points, InterpMode::Nearest, InterpFallback::CoarserAncestor) -
+               interpolate(input, points, InterpMode::Nearest, InterpFallback::Zero));
+    }
+    return y;
+  }
   const Topology &t = *input.topology();
   auto pts = points.to(torch::kFloat64).cpu().contiguous();
   if (pts.dim() != 2 || pts.size(1) != t.D)
@@ -98,45 +426,146 @@ at::Tensor interpolate(const AdaptiveSparseTensor &input, const at::Tensor &poin
   const int64_t M = pts.size(0);
   const double *p = pts.data_ptr<double>();
 
+  // Points are split into contiguous blocks handled on separate threads; concatenating the
+  // blocks in order gives exactly the serial (point, then leaf) order.
+  struct Pairs {
+    std::vector<int64_t> pt_idx, leaf_idx;
+    std::vector<double> w;
+    std::vector<int64_t> miss_pt;      // CoarserAncestor: uncovered points ...
+    std::vector<detail::Key> miss_key; // ... and the cell whose leaves they average
+  };
+  if (M > 0 && t.size() > 0)
+    t.node_table(); // build the shared lookup table once, before the workers start
+  const bool use_fallback =
+      fallback == InterpFallback::CoarserAncestor && M > 0 && t.size() > 0;
+  std::unique_ptr<AncestorIndex> ancestors;
+  if (use_fallback)
+    ancestors = std::make_unique<AncestorIndex>(t);
+  const int blocks = detail::parallel_block_count(
+      M, M * (mode == InterpMode::Nearest ? 1 : 8));
+  std::vector<Pairs> parts(static_cast<size_t>(blocks));
+  detail::run_parallel_blocks(M, blocks, [&](int b, int64_t m_begin, int64_t m_end) {
+    auto &pt_idx = parts[b].pt_idx, &leaf_idx = parts[b].leaf_idx;
+    auto &w = parts[b].w;
+    std::vector<std::pair<int64_t, double>> hits;
+    for (int64_t m = m_begin; m < m_end; ++m) {
+      DVec q{};
+      for (int d = 0; d < t.D; ++d)
+        q[d] = p[m * t.D + d];
+      const int64_t j = t.find_containing(q);
+      if (j < 0) {
+        detail::Key a;
+        if (use_fallback && ancestors->deepest(q, a)) {
+          parts[b].miss_pt.push_back(m);
+          parts[b].miss_key.push_back(a);
+        }
+        continue;
+      }
+      if (mode == InterpMode::Nearest) {
+        pt_idx.push_back(m);
+        leaf_idx.push_back(j);
+        w.push_back(1.0);
+        continue;
+      }
+      const DVec s = t.size_at(t.keys[j].level);
+      DVec lo{}, hi{};
+      for (int d = 0; d < t.D; ++d) {
+        lo[d] = q[d] - 0.5 * s[d];
+        hi[d] = q[d] + 0.5 * s[d];
+      }
+      hits.clear();
+      double total = 0.0;
+      t.for_each_overlap(lo, hi, [&](int64_t leaf, double ov) {
+        hits.emplace_back(leaf, ov);
+        total += ov;
+      });
+      for (auto &h : hits) {
+        pt_idx.push_back(m);
+        leaf_idx.push_back(h.first);
+        w.push_back(h.second / total);
+      }
+    }
+  });
   std::vector<int64_t> pt_idx, leaf_idx;
   std::vector<double> w;
-  std::vector<std::pair<int64_t, double>> hits;
-  for (int64_t m = 0; m < M; ++m) {
-    DVec q{};
-    for (int d = 0; d < t.D; ++d)
-      q[d] = p[m * t.D + d];
-    const int64_t j = t.find_containing(q);
-    if (j < 0)
-      continue;
-    if (mode == InterpMode::Nearest) {
-      pt_idx.push_back(m);
-      leaf_idx.push_back(j);
-      w.push_back(1.0);
-      continue;
-    }
-    const DVec s = t.size_at(t.keys[j].level);
-    DVec lo{}, hi{};
-    for (int d = 0; d < t.D; ++d) {
-      lo[d] = q[d] - 0.5 * s[d];
-      hi[d] = q[d] + 0.5 * s[d];
-    }
-    hits.clear();
-    double total = 0.0;
-    t.for_each_overlap(lo, hi, [&](int64_t leaf, double ov) {
-      hits.emplace_back(leaf, ov);
-      total += ov;
-    });
-    for (auto &h : hits) {
-      pt_idx.push_back(m);
-      leaf_idx.push_back(h.first);
-      w.push_back(h.second / total);
+  if (blocks == 1) {
+    pt_idx.swap(parts[0].pt_idx);
+    leaf_idx.swap(parts[0].leaf_idx);
+    w.swap(parts[0].w);
+  } else {
+    for (auto &part : parts) {
+      pt_idx.insert(pt_idx.end(), part.pt_idx.begin(), part.pt_idx.end());
+      leaf_idx.insert(leaf_idx.end(), part.leaf_idx.begin(), part.leaf_idx.end());
+      w.insert(w.end(), part.w.begin(), part.w.end());
     }
   }
 
   const auto &x = input.features();
   auto y = torch::zeros({M, x.size(1)}, x.options());
-  if (pt_idx.empty())
-    return y;
+  if (use_fallback) {
+    // Uncovered point -> volume-weighted mean of the leaves inside its cell. Cells get rows
+    // in first-use order (serial point order), leaves contribute in index order: the result
+    // does not depend on the number of worker blocks.
+    std::unordered_map<detail::Key, int64_t, detail::KeyHash> row_of;
+    std::vector<detail::Key> cells;
+    std::vector<int64_t> miss_pt, miss_row;
+    uint32_t lo_level = AdaptiveVoxelConfig::kMaxSupportedDepth, hi_level = 0;
+    for (auto &part : parts)
+      for (size_t i = 0; i < part.miss_pt.size(); ++i) {
+        const detail::Key &k = part.miss_key[i];
+        auto it = row_of.try_emplace(k, static_cast<int64_t>(cells.size())).first;
+        if (it->second == static_cast<int64_t>(cells.size())) {
+          cells.push_back(k);
+          lo_level = std::min(lo_level, k.level);
+          hi_level = std::max(hi_level, k.level);
+        }
+        miss_pt.push_back(part.miss_pt[i]);
+        miss_row.push_back(it->second);
+      }
+    if (!cells.empty()) {
+      std::vector<int64_t> cell_row, cell_leaf;
+      std::vector<double> cell_w, total(cells.size(), 0.0);
+      const double *vol = t.volumes.data_ptr<double>();
+      for (int64_t i = 0; i < t.size(); ++i) {
+        const detail::Key &k = t.keys[static_cast<size_t>(i)];
+        if (k.level <= lo_level)
+          continue; // a cell only averages leaves strictly inside it
+        detail::Key a = detail::ancestor_at(k, std::min(hi_level, k.level - 1));
+        while (true) {
+          auto it = row_of.find(a);
+          if (it != row_of.end()) {
+            cell_row.push_back(it->second);
+            cell_leaf.push_back(i);
+            cell_w.push_back(vol[i]);
+            total[static_cast<size_t>(it->second)] += vol[i];
+          }
+          if (a.level <= lo_level)
+            break;
+          a = detail::parent_key(a);
+        }
+      }
+      for (size_t e = 0; e < cell_w.size(); ++e)
+        cell_w[e] /= total[static_cast<size_t>(cell_row[e])];
+      const auto to_dev = [&](std::vector<int64_t> &v) {
+        return torch::from_blob(v.data(), {static_cast<int64_t>(v.size())}, torch::kInt64)
+            .clone()
+            .to(x.device());
+      };
+      auto w_c = torch::from_blob(cell_w.data(), {static_cast<int64_t>(cell_w.size())},
+                                  torch::kFloat64)
+                     .clone()
+                     .to(x.scalar_type())
+                     .to(x.device())
+                     .unsqueeze(1);
+      auto means = torch::zeros({static_cast<int64_t>(cells.size()), x.size(1)}, x.options())
+                       .index_add(0, to_dev(cell_row), x.index_select(0, to_dev(cell_leaf)) * w_c);
+      y = y.index_add(0, to_dev(miss_pt), means.index_select(0, to_dev(miss_row)));
+    }
+  }
+  if (pt_idx.empty()) { // no query hits a leaf: zeros that stay connected to the features
+    auto none = torch::empty({0}, torch::TensorOptions(torch::kInt64).device(x.device()));
+    return y.index_add_(0, none, x.index_select(0, none));
+  }
   const int64_t n = static_cast<int64_t>(pt_idx.size());
   auto pt_t = torch::from_blob(pt_idx.data(), {n}, torch::kInt64).clone().to(x.device());
   auto lf_t = torch::from_blob(leaf_idx.data(), {n}, torch::kInt64).clone().to(x.device());

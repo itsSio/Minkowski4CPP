@@ -75,8 +75,10 @@ measurements, not general performance guarantees.
 
 ## Scope and limitations
 
-This remains a partial Gaussian subsystem. There is not yet a
-Gaussian-to-sparse-voxel bridge or adaptive spatial index. Rendering
+This remains a partial Gaussian subsystem. `gaussian_adaptive.hpp` bridges
+Gaussians and adaptive sparse voxels (`gaussians_to_adaptive`,
+`adaptive_to_gaussians`, `refine_by_gaussian_density`, `find_leaves` as a
+spatial index); there is no bridge to the uniform `SparseTensor` yet. Rendering
 (`gaussian_render.hpp`) is a differentiable tile rasterizer. On CUDA it runs
 fused forward/backward kernels in `gaussian_raster_cuda.cu` (tile lists built
 with LibTorch sorts, one 16x16 block per tile, back-to-front backward pass that
@@ -98,5 +100,5 @@ repository currently has no shared SE(3) module to integrate with.
 
 ## PLY loading and saving
 
-`load_gaussian_ply(path)` (`gaussian_ply.hpp`) loads binary little-endian 3DGS PLY files and PlayCanvas/SuperSplat compressed PLY files into a float32 CPU `GaussianTensor` (SH rest coefficients are skipped). `load_gaussian_model_ply` keeps raw parameters and SH, and `save_gaussian_ply` writes the standard layout. In compressed files the packed color is already RGB, so `f_dc = (rgb - 0.5) / C0`; the compressed SH byte decode is unverified against reference output. `tests/gaussian/test_gaussian_ply.cpp` exercises `tests/data/test.ply` (override with `MINK_TEST_DATA_DIR`); `gaussian_ply_bench` benchmarks loading, operations, rendering and training steps on it (`--input`, `--output`, `--iterations`).
+`load_gaussian_ply(path)` (`gaussian_ply.hpp`) loads binary little-endian 3DGS PLY files and PlayCanvas/SuperSplat compressed PLY files into a float32 CPU `GaussianTensor` (SH rest coefficients are skipped). `load_gaussian_model_ply` keeps raw parameters and SH, and `save_gaussian_ply` writes the standard layout. In compressed files the packed color is already RGB, so `f_dc = (rgb - 0.5) / C0`; the compressed decode (SH bytes included) is verified against the uncompressed scene by `tests/gaussian/test_gaussian_compressed_ply.cpp`. `tests/gaussian/test_gaussian_ply.cpp` exercises `tests/data/test.ply` (override with `MINK_TEST_DATA_DIR`); `gaussian_ply_bench` benchmarks loading, operations, rendering and training steps on it (`--input`, `--output`, `--iterations`).
 

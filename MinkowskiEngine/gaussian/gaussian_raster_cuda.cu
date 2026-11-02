@@ -120,12 +120,16 @@ __device__ __forceinline__ float warp_sum(float v) {
   return v;
 }
 
+template <bool ParallelAtomics>
 __global__ void raster_backward_kernel(
     const float *attrs, const int32_t *ids, const int32_t *ranges,
     const float *background, int height, int width, int tiles_x,
     const float *grad_out, const float *final_t, const int32_t *last_index,
     float *grad_attrs) {
   __shared__ Shared s;
+  // Gaussian row of every batch entry, so lane 0 does not re-read ids from
+  // global memory for each atomic.
+  __shared__ int32_t batch_ids[kBlock];
   __shared__ int block_last;
   const int t = threadIdx.y * kTile + threadIdx.x;
   const int lane = t & 31;
@@ -163,18 +167,26 @@ __global__ void raster_backward_kernel(
        base -= kBlock) {
     __syncthreads();
     load_batch(s, attrs, ids + begin, base, total);
+    if (base + t < total)
+      batch_ids[t] = ids[begin + base + t];
     __syncthreads();
     const int n = min(kBlock, total - base);
     for (int j = n - 1; j >= 0; --j) {
-      float v[kAttrs];
-#pragma unroll
-      for (int k = 0; k < kAttrs; ++k)
-        v[k] = 0.0f;
-
       float dx, dy, gauss;
       float alpha = -1.0f;
       if (inside && base + j < my_last)
         alpha = eval_alpha(s, j, px, py, &dx, &dy, &gauss);
+      // Most (pixel, Gaussian) pairs of a tile fall below the 1/255 cut-off.
+      // When none of the 32 lanes is hit, every v[k] below would be zero:
+      // skip the 10 warp reductions and the atomics (warp-uniform branch, so
+      // the full-mask shuffles stay valid).
+      if (!__any_sync(0xffffffffu, alpha >= 0.0f))
+        continue;
+
+      float v[kAttrs];
+#pragma unroll
+      for (int k = 0; k < kAttrs; ++k)
+        v[k] = 0.0f;
       if (alpha >= 0.0f) {
         T = T / (1.0f - alpha);
         const float4 co = s.conic_opacity[j];
@@ -211,17 +223,32 @@ __global__ void raster_backward_kernel(
         }
       }
 
-      // Whole warp reduces, then one lane issues the atomics.
+      if (ParallelAtomics) {
+        // Preserve the existing shuffle reduction order exactly. Broadcasting
+        // lane zero's ten sums costs ten shuffles, but lets lanes 0..9 issue
+        // adjacent attribute atomics together instead of ten serial instructions.
+        float assigned = 0.0f;
 #pragma unroll
-      for (int k = 0; k < kAttrs; ++k)
-        v[k] = warp_sum(v[k]);
-      if (lane == 0) {
-        float *dst = grad_attrs + static_cast<int64_t>(ids[begin + base + j]) *
-                                      kAttrs;
+        for (int k = 0; k < kAttrs; ++k) {
+          const float sum = __shfl_sync(0xffffffffu, warp_sum(v[k]), 0);
+          if (lane == k) assigned = sum;
+        }
+        if (lane < kAttrs && assigned != 0.0f) {
+          float *dst = grad_attrs + static_cast<int64_t>(batch_ids[j]) * kAttrs;
+          atomicAdd(dst + lane, assigned);
+        }
+      } else {
+        // Reference: whole warp reduces, then one lane issues the atomics.
 #pragma unroll
         for (int k = 0; k < kAttrs; ++k)
-          if (v[k] != 0.0f)
-            atomicAdd(dst + k, v[k]);
+          v[k] = warp_sum(v[k]);
+        if (lane == 0) {
+          float *dst = grad_attrs + static_cast<int64_t>(batch_ids[j]) * kAttrs;
+#pragma unroll
+          for (int k = 0; k < kAttrs; ++k)
+            if (v[k] != 0.0f)
+              atomicAdd(dst + k, v[k]);
+        }
       }
     }
   }
@@ -247,6 +274,11 @@ void rasterize_forward_cuda(const at::Tensor &attrs, const at::Tensor &ids,
   C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 
+bool &cuda_raster_backward_parallel_atomics() {
+  static bool on = true;
+  return on;
+}
+
 void rasterize_backward_cuda(const at::Tensor &attrs, const at::Tensor &ids,
                              const at::Tensor &ranges,
                              const at::Tensor &background,
@@ -258,12 +290,21 @@ void rasterize_backward_cuda(const at::Tensor &attrs, const at::Tensor &ids,
   const int tiles_x = static_cast<int>((width + kTile - 1) / kTile);
   const int tiles_y = static_cast<int>((height + kTile - 1) / kTile);
   const dim3 grid(tiles_x, tiles_y), block(kTile, kTile);
-  raster_backward_kernel<<<grid, block, 0, at::cuda::getCurrentCUDAStream()>>>(
+  if (cuda_raster_backward_parallel_atomics()) {
+  raster_backward_kernel<true><<<grid, block, 0, at::cuda::getCurrentCUDAStream()>>>(
       attrs.data_ptr<float>(), ids.data_ptr<int32_t>(),
       ranges.data_ptr<int32_t>(), background.data_ptr<float>(),
       static_cast<int>(height), static_cast<int>(width), tiles_x,
       grad_out.data_ptr<float>(), final_t.data_ptr<float>(),
       last_index.data_ptr<int32_t>(), grad_attrs.data_ptr<float>());
+  } else {
+  raster_backward_kernel<false><<<grid, block, 0, at::cuda::getCurrentCUDAStream()>>>(
+      attrs.data_ptr<float>(), ids.data_ptr<int32_t>(),
+      ranges.data_ptr<int32_t>(), background.data_ptr<float>(),
+      static_cast<int>(height), static_cast<int>(width), tiles_x,
+      grad_out.data_ptr<float>(), final_t.data_ptr<float>(),
+      last_index.data_ptr<int32_t>(), grad_attrs.data_ptr<float>());
+  }
   C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 

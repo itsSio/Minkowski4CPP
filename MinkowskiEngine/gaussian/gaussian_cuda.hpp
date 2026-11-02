@@ -2,6 +2,7 @@
 #define MINKOWSKI_GAUSSIAN_GAUSSIAN_CUDA_HPP
 
 #include <ATen/ATen.h>
+#include <torch/version.h>
 
 namespace minkowski {
 namespace gaussian {
@@ -27,6 +28,110 @@ void rasterize_backward_cuda(const at::Tensor &attrs, const at::Tensor &ids,
                              const at::Tensor &final_t,
                              const at::Tensor &last_index, int64_t height,
                              int64_t width, at::Tensor &grad_attrs);
+
+// Distribute reduced backward attributes over ten lanes while preserving the
+// reduction order. Internal process-wide benchmark/test switch, default on.
+bool &cuda_raster_backward_parallel_atomics();
+
+// Fused projection of render_gaussians (gaussian_project_cuda.cu). Per Gaussian, out [N, 10]:
+// x2, y2 (pixel mean), conic a, b, c, camera-space z (differentiable), then a, b, c (2D covariance
+// with the low-pass term) and its determinant (for culling). world_to_camera is the [3, 4]
+// rotation | translation block, float32, contiguous, on the device.
+constexpr int kProjectColumns = 10;
+struct ProjectParams {
+  float fx, fy, cx, cy, near_plane;
+  float tx_lo, tx_hi, ty_lo, ty_hi; // clamped-frustum limits of x/z and y/z for the Jacobian
+};
+void project_forward_cuda(const at::Tensor &positions, const at::Tensor &rotations,
+                          const at::Tensor &scales, const at::Tensor &world_to_camera,
+                          const ProjectParams &params, at::Tensor &out);
+// Gradients of positions [N,3], rotations [N,4] and scales [N,3] from grad_out [N,10] (only the
+// first 6 columns carry gradient); outputs are overwritten.
+void project_backward_cuda(const at::Tensor &positions, const at::Tensor &rotations,
+                           const at::Tensor &scales, const at::Tensor &world_to_camera,
+                           const ProjectParams &params, const at::Tensor &grad_out,
+                           at::Tensor &grad_positions, at::Tensor &grad_rotations,
+                           at::Tensor &grad_scales);
+// Whether render_gaussians uses the fused projection for CUDA inputs (default on; the LibTorch
+// path is used when the camera pose requires grad). Process-wide tuning/test hook.
+bool &cuda_fused_projection();
+
+// Fused culling and tile lists of render_gaussians (gaussian_cull_cuda.cu); same float32 math as the
+// LibTorch path. cull_cuda reads proj [N,10] (the fused projection's output) and opacity [N] and
+// writes visible [N] bool, radius [N] int64 (0 when culled), bounds [N,4] int64 (first/last tile
+// column, first/last tile row; zeros when culled) and counts [N] int64 (tiles touched, 0 when culled).
+struct CullParams {
+  float near_plane, min_alpha, extent_slack, width, height;
+  int64_t tile, max_col, max_row;
+};
+void cull_cuda(const at::Tensor &proj, const at::Tensor &opacity, const CullParams &params,
+               at::Tensor &visible, at::Tensor &radius, at::Tensor &bounds, at::Tensor &counts);
+// Tile lists from depth-ordered bounds [M,4]: counts [M] = tiles per Gaussian; keys [total] =
+// tile * M + row at each Gaussian's exclusive prefix offset; after sorting the keys,
+// finish_tile_lists_cuda writes ids [total] int32 and ranges [tiles,2] int32.
+void tile_counts_cuda(const at::Tensor &bounds, at::Tensor &counts);
+void tile_keys_cuda(const at::Tensor &bounds, const at::Tensor &offsets, int64_t cols,
+                    at::Tensor &keys);
+void finish_tile_lists_cuda(const at::Tensor &keys, int64_t m, int64_t tiles, at::Tensor &ids,
+                            at::Tensor &ranges);
+// Whether render_gaussians uses these kernels for CUDA inputs (default on). Process-wide
+// tuning/test hook.
+bool &cuda_fused_tiles();
+
+// Fused SSIM of the trainer (gaussian_ssim_cuda.cu). x (prediction) and y (target) are contiguous
+// float32 [H, W, 3]; window.w holds the 2 * radius + 1 normalised 1-D Gaussian taps. The forward
+// writes the SSIM map [3, H, W] and partials [3, 3, H, W] (dS/dmu_x, dS/dsigma_xx, dS/dsigma_xy per
+// channel); the backward writes grad_x [H, W, 3] = d(sum S * grad_out * inv_count)/dx.
+constexpr int kSsimMaxWindow = 15;
+struct SsimWindow {
+  int radius;
+  float w[kSsimMaxWindow];
+};
+void ssim_forward_cuda(const at::Tensor &x, const at::Tensor &y, const SsimWindow &window,
+                       at::Tensor &map, at::Tensor &partials);
+void ssim_backward_cuda(const at::Tensor &x, const at::Tensor &y, const at::Tensor &partials,
+                        const SsimWindow &window, const at::Tensor &grad_out, double inv_count,
+                        at::Tensor &grad_x);
+// Whether ssim() uses the fused kernels for CUDA inputs (default on; the LibTorch filters are used
+// when the target requires grad or the window exceeds kSsimMaxWindow). Process-wide tuning/test hook.
+bool &cuda_fused_ssim();
+// Fused Adam update of GaussianTrainer (gaussian_adam_cuda.cu), in place on contiguous float32
+// CUDA tensors of one size:
+//   m1 = beta1 m1 + (1 - beta1) g,  m2 = beta2 m2 + (1 - beta2) g^2,
+//   p += step * m1 / (sqrt(m2 * inv_bias2) + epsilon)  with step = -lr / bias1.
+struct AdamParams {
+  float beta1, one_minus_beta1, beta2, one_minus_beta2, inv_bias2, epsilon, step;
+};
+// Match ATen's CUDA division by a CPU scalar. LibTorch 2.10 changed the reciprocal
+// calculation from float32 to float64 before casting to the tensor's scalar type.
+inline float adam_inverse_bias2(double bias2) {
+#if TORCH_VERSION_MAJOR > 2 || (TORCH_VERSION_MAJOR == 2 && TORCH_VERSION_MINOR >= 10)
+  return static_cast<float>(1.0 / bias2);
+#else
+  return 1.0f / static_cast<float>(bias2);
+#endif
+}
+void adam_update_cuda(at::Tensor &param, const at::Tensor &grad, at::Tensor &moment1,
+                      at::Tensor &moment2, const AdamParams &params);
+// Whether GaussianTrainer uses the fused update for CUDA parameters (default on). Process-wide
+// tuning/test hook.
+bool &cuda_fused_adam();
+// Internal renderer operation. ids is a contiguous CUDA int64 permutation
+// subset: every index is in [0,N) and occurs once. The caller constructs it
+// from nonzero(visible) followed by argsort; duplicate indices are unsupported.
+// Means is a separate input so RenderOutput::means2d retains its gradient.
+at::Tensor gather_attributes(const at::Tensor &means, const at::Tensor &proj,
+                              const at::Tensor &opacity, const at::Tensor &colors,
+                              const at::Tensor &ids);
+void gather_attributes_forward_cuda(const at::Tensor &means, const at::Tensor &proj,
+                                    const at::Tensor &opacity, const at::Tensor &colors,
+                                    const at::Tensor &ids, at::Tensor &out);
+// All gradient outputs must be zero-initialized; unique selected rows are overwritten.
+void gather_attributes_backward_cuda(const at::Tensor &ids, const at::Tensor &grad,
+                                     at::Tensor &gmeans, at::Tensor &gproj,
+                                     at::Tensor &gopacity, at::Tensor &gcolors);
+// Process-wide test/benchmark hook; only applies to the fused projection path.
+bool &cuda_fused_gather();
 
 void covariance_cuda(const at::Tensor &rotations, const at::Tensor &scales,
                      at::Tensor &output);

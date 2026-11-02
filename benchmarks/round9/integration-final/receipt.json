@@ -1,0 +1,102 @@
+{
+  "started": "2026-11-02T18:55:02.6000633+01:00",
+  "source": "C:\\Users\\User\\Work\\mink-wt\\integration",
+  "head": "f3f74919a64bede57fab7d5f303e94ca188c931a",
+  "tag": "integration-final",
+  "status": "passed",
+  "configurations": [
+    {
+      "kind": "cpu",
+      "build": "C:\\Users\\User\\Work\\mink-build\\integration-cpu",
+      "started": "2026-11-02T18:55:02.7828765+01:00",
+      "build_exit": 0,
+      "test_exit": 0,
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "D7371DDB151A6B2070954479E71048807DAD5479122342B409297E9D49CEF012",
+          "bytes": 1695232,
+          "modified": "2026-11-02T19:00:07.4830306+01:00"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "E9B8B0C51D13646497B7A25364CAF0A94A42974368A2872F7CA005C81665B5D1",
+          "bytes": 1213440,
+          "modified": "2026-11-02T19:00:09.2960470+01:00"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "1CD952EFEEBCAD42006945E3C380BD356C83ABA69D084345028F4F04F17AA4BB",
+          "bytes": 951808,
+          "modified": "2026-11-02T19:00:11.0285063+01:00"
+        },
+        {
+          "name": "memory_growth_tests",
+          "sha256": "2105ECAF366BB3AFF345259E29865AA08BD2E297B4FA1118122BDAD4BE572039",
+          "bytes": 780800,
+          "modified": "2026-11-02T19:00:23.7398811+01:00"
+        },
+        {
+          "name": "gaussian_render_bench",
+          "sha256": "16BDC4785E58A2B29B67CF9DEF4AAB53E713CD8C55B8A096C98478F18C7F9C25",
+          "bytes": 451584,
+          "modified": "2026-11-02T19:00:09.6061768+01:00"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "E0B9F1B8CD1F0EC653285D99A2342F2FE5BA4C6D9C556717F85E21D44C0753E8",
+          "bytes": 912384,
+          "modified": "2026-11-02T19:00:17.8191960+01:00"
+        }
+      ],
+      "completed": "2026-11-02T19:02:02.0662042+01:00"
+    },
+    {
+      "kind": "cuda",
+      "build": "C:\\Users\\User\\Work\\mink-build\\integration-cuda",
+      "started": "2026-11-02T19:02:02.2246100+01:00",
+      "build_exit": 0,
+      "test_exit": 0,
+      "binaries": [
+        {
+          "name": "adaptive_tests",
+          "sha256": "9450EB221E93ABE6BF17168A562E5B9B36836F55161F2EF92AEC4845C31DD579",
+          "bytes": 4956672,
+          "modified": "2026-11-02T19:12:42.6008465+01:00"
+        },
+        {
+          "name": "gaussian_tests",
+          "sha256": "DA8A9D533CC8F1976FECCBA44884E31B2D78136091B086228320328BBB487DC2",
+          "bytes": 2593280,
+          "modified": "2026-11-02T19:12:47.8208475+01:00"
+        },
+        {
+          "name": "core_tests",
+          "sha256": "B7C2D69A1B5488384179A3E9D570765DD8395213765ED98493B6BD59370338E4",
+          "bytes": 6151168,
+          "modified": "2026-11-02T19:12:50.3294272+01:00"
+        },
+        {
+          "name": "memory_growth_tests",
+          "sha256": "A2FF714089D067AE612861402DFBC7545E7EE7DE244981186160C911C25E72D0",
+          "bytes": 4144128,
+          "modified": "2026-11-02T19:13:36.6966959+01:00"
+        },
+        {
+          "name": "gaussian_render_bench",
+          "sha256": "0DB5966C8CE7A14162B6E9D80E582053FCB3136FD9F150EA9D04E29CC1CFD331",
+          "bytes": 870400,
+          "modified": "2026-11-02T19:12:48.8487129+01:00"
+        },
+        {
+          "name": "ml_representations",
+          "sha256": "F66BB23A370DA9C7F4AF3BB5647C34337AE49A2BF7A093765B482280020DB35A",
+          "bytes": 5911552,
+          "modified": "2026-11-02T19:13:37.3750847+01:00"
+        }
+      ],
+      "completed": "2026-11-02T19:16:44.5312422+01:00"
+    }
+  ],
+  "completed": "2026-11-02T19:16:44.6538284+01:00"
+}

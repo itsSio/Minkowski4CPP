@@ -39,26 +39,31 @@ struct Registrar {
 
 inline int run_all(int argc, char** argv) {
     std::string filter = argc > 1 ? argv[1] : "";
-    int passed = 0, failed = 0, skipped = 0;
+    int passed = 0, failed = 0, skipped = 0, selected = 0;
     for (auto& t : registry()) {
         if (!filter.empty() && t.name.find(filter) == std::string::npos) {
             ++skipped;
             continue;
         }
+        ++selected;
         try {
             t.fn();
-            std::cout << "[ PASS ] " << t.name << "\n";
+            std::cout << "[ PASS ] " << t.name << std::endl;
             ++passed;
         } catch (const Skip& e) {
-            std::cout << "[ SKIP ] " << t.name << "\n         " << e.what() << "\n";
+            std::cout << "[ SKIP ] " << t.name << "\n         " << e.what() << std::endl;
             ++skipped;
         } catch (const std::exception& e) {
-            std::cout << "[ FAIL ] " << t.name << "\n         " << e.what() << "\n";
+            std::cout << "[ FAIL ] " << t.name << "\n         " << e.what() << std::endl;
             ++failed;
         }
     }
     std::cout << "\n" << passed << " passed, " << failed << " failed, " << skipped
-              << " skipped\n";
+              << " skipped" << std::endl;
+    if (!filter.empty() && selected == 0) {
+        std::cerr << "[ ERROR ] No tests matched filter: " << filter << "\n";
+        return 1;
+    }
     return failed == 0 ? 0 : 1;
 }
 

@@ -55,7 +55,10 @@ auto explicit_tensor = AdaptiveSparseTensor::from_voxels(
     coords, leaf_levels, values, cfg);
 ```
 
-Leaves must not overlap.
+Leaves must not overlap. Coordinates must stay in the exactly representable
+range: a level-`l` coordinate `c` needs `-2^52 <= c * 2^(max_depth - l) < 2^52`
+(for example `|c| < 2^48` at level 0 with `max_depth = 4`). `from_voxels`,
+`from_points` and every topology edit throw `std::invalid_argument` outside it.
 
 ## Refinement and coarsening
 
@@ -92,7 +95,10 @@ t.refine_if([](int64_t, const std::array<double, 4>& lo,
 ```
 
 Topology decisions are not differentiable. Feature computations are built
-from torch operations and support autograd.
+from torch operations and support autograd: `revoxelize_from_points` is
+differentiable with respect to the point features given to `from_points`
+(detach them first to opt out), and empty tensors or queries that hit no leaf
+return zeros that stay connected to the graph, so `backward()` still runs.
 
 ## Mixed-resolution convolution
 
@@ -116,6 +122,20 @@ with the first axis varying slowest.
 | `CenterSampled` | Sample the neighbor at the kernel query center |
 | `VolumeWeighted` | Volume-aware contribution |
 | `OverlapWeighted` | Weight by overlap volume / output volume |
+| `CenterAveraged` | Opt-in. `CenterSampled`, except where the tap cell is split into finer leaves: then the overlap-volume-weighted average of those leaves |
+
+With `CenterSampled`, a tap of a coarse output leaf lands on a corner shared by
+the finer leaves below it and reads only the one leaf whose lower corner is the
+tap point; with `output_level_shift = -1` on a fully refined region only one of
+the 2^D children under each output reaches it (the others get zero gradient).
+`CenterAveraged` reads all of them and equals `CenterSampled` on uniform grids.
+
+`CenterSampled` and `VolumeWeighted` resolve each tap on the integer grid: the tap is the
+centre of the neighbouring output-level cell, and where that cell is split into finer leaves
+it reads the leaf whose lower corner the centre is (cells are half-open). The map therefore
+depends only on the leaf keys, not on where the grid sits in space, also for voxel sizes and
+origins that are not binary fractions (earlier versions located the tap as a floating-point
+point there, and rounding decided between the leaves touching it).
 
 Coarsen output resolution with `output_level_shift = -1`:
 
@@ -128,6 +148,26 @@ auto restored = adaptive_convolution_transpose(coarse, up_weight, down, t);
 ```
 
 Transpose convolution uses the reference tensor's leaves.
+
+Kernel maps are built on the host once per (topology, kernel size, mode, shift) and cached;
+their index and weight arrays are uploaded once per device and dtype and reused by later
+calls. `KernelMapCache::instance().clear()` releases both. On CUDA the scatter-add uses
+`index_add_`, whose floating-point atomics make results vary in the last bits between runs;
+call `torch::globalContext().setDeterministicAlgorithms(true, false)` for bit-reproducible
+outputs (slower), as for any PyTorch scatter.
+On CUDA, float and double convolutions run as fused gather-GEMM-scatter kernels: one launch
+covers every kernel slot for the forward pass, one for the input gradient and one for the
+weight gradient (`MinkowskiEngine/adaptive/fused_apply_cuda.cu`). No `[pairs, C]` gather or
+product is allocated or kept for backward, so peak memory is the inputs, outputs and the
+index arrays. Each map's pairs are cut into per-slot row tiles once per device (cached with the
+index arrays). Narrow channels (up to ~16) use small square tiles; wider ones use
+register-blocked 64 x 64 tiles. Results are accumulated atomically, so, as with `index_add_`,
+the last bits vary between runs (the tests check that float32 errors against float64 stay
+within twice those of the per-slot path). `detail::cuda_apply_map_fused() = false` turns the
+fused kernels off. Deterministic mode, other dtypes and the CPU always use the per-slot path:
+consecutive kernel slots are processed in groups whose temporaries fit 32 MiB
+(`detail::cuda_apply_map_group_bytes()`, 0 = one group), so peak memory does not grow with the
+whole kernel map.
 `output_level_shift > 0` is currently unsupported.
 
 ## Pooling, interpolation, and resampling
@@ -139,12 +179,34 @@ auto query = torch::tensor({{1.0, 2.0, 3.0}, {40.0, 5.0, 5.0}},
                            torch::kFloat64);
 auto nearest = interpolate(t, query);
 auto smooth = interpolate(t, query, InterpMode::Multilinear);
+auto seamless = interpolate(t, query, InterpMode::ContinuousMultilinear);
 auto uniform = t.resample_uniform(2);
 ```
 
-Nearest interpolation returns the containing leaf's value. Queries outside
-every leaf return zeros. `other.resample_to(t)` aligns another tensor to
-`t`'s leaves; addition requires identical topology.
+Nearest interpolation returns the containing leaf's value. Multilinear
+interpolation averages the leaves overlapping a box the size of the containing
+leaf, centred on the query: it is continuous inside a level and across faces
+between equal-level leaves, but the box size changes where the containing
+leaf's level changes, so values can jump there. Queries outside every leaf
+return zeros, or with
+`interpolate(t, query, mode, InterpFallback::CoarserAncestor)` the
+volume-weighted mean of the leaves inside the finest cell that contains the
+query and at least one leaf (useful after `drop_empty` refinement, which leaves
+point-free children uncovered). `other.resample_to(t)` aligns another tensor to
+`t`'s leaves; addition requires identical topology. Both tensors must share
+`origin` and `base_voxel_size` (`max_depth` may differ). Finer leaves are
+reduced exactly like `coarsen` (so `Mean` averages occupied children level by
+level), coarser leaves are replicated, and uncovered leaves get zeros.
+
+`ContinuousMultilinear` (opt-in) gives every leaf a tent
+`phi_i(x) = prod_d max(0, 1 - |x_d - c_id| / s_id)` (centre `c_i`, edge `s_i`)
+and returns `sum_i phi_i(x) v_i / sum_i phi_i(x)` for queries inside a leaf.
+Unlike `Multilinear`, whose averaging box takes the containing leaf's size and
+can jump where that level changes, it is continuous everywhere inside the
+leaves, including across level changes. It reproduces constants, equals
+`Multilinear` where all nearby leaves share one level, and is differentiable in
+the features. Near level changes it is a weighted average that does not
+reproduce linear fields exactly.
 
 Uniform resampling can expand a sparse hierarchy dramatically. The
 benchmark skips expansions above five million voxels; estimate the output
@@ -191,6 +253,59 @@ topology pipeline.
 Kernel maps are cached per topology. Inspect
 `KernelMapCache::instance().stats()` and use `.clear()` when intentionally
 resetting the cache.
+
+Training batches usually put each sample next to the others along the first axis,
+so every batch is a new topology and its kernel maps are built from scratch, although
+each sample's share of them is the same every epoch. Part reuse keeps those shares:
+
+```cpp
+KernelMapCache::instance().set_part_reuse_bytes(size_t(512) << 20); // 0 = off (default)
+```
+
+A topology whose leaves form groups separated along the first axis by at least
+`(kernel_size - 1) / 2` empty level-0 cells is split into those groups (a topology that does
+not split is one group, so single samples seen again, such as a validation set, are reused too); each group is
+matched by content (its keys moved to start at level-0 x 0) against the groups of earlier
+batches, and the batch map is assembled from their maps. The result equals a full
+build exactly. It applies to `CenterSampled` and `VolumeWeighted`; stored groups are
+dropped least recently used first beyond the byte budget. `stats()` reports
+`part_hits`, `part_misses` and `part_bytes`. Pooled batches (`adaptive_pool`) split the
+same way, so every layer of an encoder benefits. Moving samples by whole level-0 cells
+keeps them identical; any other offset makes them new content.
+
+The host part budget does not include CUDA uploads. CUDA composition packs multiple parts
+into shared backing allocations; an individual part's tensor view can therefore keep an
+entire upload alive. Set an independent retention budget when device memory is constrained:
+
+```cpp
+auto &cache = KernelMapCache::instance();
+cache.set_part_device_bytes(size_t(32) << 20); // cap retained upload storage at 32 MiB
+// cache.set_part_device_bytes(0);            // compose without retaining part uploads
+// cache.set_part_device_bytes(size_t(-1));   // unlimited retention (backward-compatible default)
+```
+
+The budget is shared across CUDA devices and evicts least recently used **upload groups**,
+so every view of the same allocation is removed together. Host part maps remain available;
+evicted data are uploaded again when needed. An upload larger than the budget is used for
+the current composition without retention. Repeated references to a stored part share one upload.
+`stats()` reports `part_device_bytes`, `part_device_peak_bytes`, `part_device_groups`,
+`part_device_hits`, and `part_device_misses`; hit/miss counters count distinct parts per
+composition. Clearing the cache resets these counters; changing a budget does not reset
+the historical peak. Host cache eviction also releases device ownership.
+
+This cap covers live tensor storage retained for part reuse, counted once per backing
+allocation. A partially expired upload group is charged in full until eviction, so
+reported retention can conservatively exceed its remaining live tensor payload. It excludes composed batch maps, CUDA allocator reservation, and active
+operation temporaries. A running composition retains its source tensors until its CUDA
+stream finishes, so reducing a budget is not a global instantaneous VRAM limit. Allocator
+stream tracking keeps source storage valid when another stream uses an upload that is
+evicted immediately after kernel launch. Smaller budgets can trade training throughput
+for memory; compare synchronized measurements for the actual sample distribution.
+
+The batch kernel-map benchmark accepts `--part-device-mb M` (`-1` unlimited, `0` no
+retention). It reports retained device bytes, allocator peak allocated/reserved memory,
+first-epoch and later-epoch latency, and peak process working set. Use matched sample
+counts, seeds, modes, batch sizes and devices when comparing budgets.
 
 ## Limits and measurements
 

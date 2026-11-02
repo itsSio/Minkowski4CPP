@@ -1,9 +1,12 @@
 #include "adaptive_tensor.hpp"
 #include "adaptive_topology.hpp"
 
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace minkowski {
 namespace adaptive {
@@ -53,8 +56,8 @@ at::Tensor remap_features(const at::Tensor &f, const std::vector<int64_t> &src,
     g = g * sc;
   }
   auto out = torch::zeros({nnew, C}, f.options());
-  if (M == 0)
-    return out;
+  if (M == 0) // still record the (empty) dependency on f so the output stays in the graph
+    return out.index_add_(0, dst_t, g);
   switch (reduction) {
   case Reduction::Sum:
     return out.index_add_(0, dst_t, g);
@@ -71,8 +74,27 @@ at::Tensor remap_features(const at::Tensor &f, const std::vector<int64_t> &src,
                      .unsqueeze(1);
     return out.index_add_(0, dst_t, g) / cnt_t;
   }
-  case Reduction::Max:
-    return torch::scatter_reduce(out, 0, dst_t.unsqueeze(1).expand({M, C}), g, "amax", false);
+  case Reduction::Max: {
+    if (!f.is_floating_point())
+      return torch::scatter_reduce(out, 0, dst_t.unsqueeze(1).expand({M, C}), g, "amax", false);
+    // scatter_reduce's backward splits the gradient among every entry equal to the maximum,
+    // including the initial value of `out` even with include_self=false. Starting from 0, a
+    // maximum of exactly 0 (e.g. ReLU outputs) then lost half of its gradient at every pooling
+    // step. Start from -inf instead, and give rows without entries their 0 back.
+    auto mx = torch::scatter_reduce(
+        torch::full({nnew, C}, -std::numeric_limits<double>::infinity(), f.options()), 0,
+        dst_t.unsqueeze(1).expand({M, C}), g, "amax", false);
+    std::vector<uint8_t> empty(static_cast<size_t>(nnew), 1);
+    for (int64_t d : dst)
+      empty[static_cast<size_t>(d)] = 0;
+    if (std::find(empty.begin(), empty.end(), uint8_t(1)) == empty.end())
+      return mx;
+    auto mask = torch::from_blob(empty.data(), {nnew}, torch::kUInt8)
+                    .to(torch::kBool)
+                    .to(dev)
+                    .unsqueeze(1);
+    return mx.masked_fill(mask, 0.0);
+  }
   }
   return out;
 }
@@ -122,45 +144,146 @@ void check_region(const Topology &t, const AxisAlignedRegion &r) {
     throw std::invalid_argument("region dimension does not match the tensor dimension");
 }
 
-// Replaces every selected leaf by its 2^D children.
+// Replaces every selected leaf by its 2^D children. With `keep` (drop_empty), only the
+// children whose bit is set are created (bit i = i-th child of child_keys); Split then
+// divides by the number of kept children so sums are still conserved.
 StepResult refine_step(const Topology &t, const at::Tensor &f, const std::vector<char> &sel,
-                       RefinePolicy policy) {
+                       RefinePolicy policy, const std::vector<uint32_t> *keep = nullptr) {
   std::vector<Entry> entries;
   std::vector<Key> kids;
-  const double split = policy == RefinePolicy::Split ? 1.0 / double(1u << t.D) : 1.0;
+  const bool split = policy == RefinePolicy::Split;
   for (int64_t i = 0; i < t.size(); ++i) {
-    if (!sel[static_cast<size_t>(i)]) {
+    const uint32_t mask = keep ? (*keep)[static_cast<size_t>(i)] : ~0u;
+    if (!sel[static_cast<size_t>(i)] || mask == 0) {
       entries.push_back({t.keys[i], i, 1.0});
       continue;
     }
     kids.clear();
     detail::child_keys(t.keys[i], t.D, kids);
-    for (const Key &c : kids)
-      entries.push_back({c, i, split});
+    int kept = 0;
+    for (size_t c = 0; c < kids.size(); ++c)
+      kept += (mask >> c) & 1u;
+    const double scale = split ? 1.0 / double(kept) : 1.0;
+    for (size_t c = 0; c < kids.size(); ++c)
+      if ((mask >> c) & 1u)
+        entries.push_back({kids[c], i, scale});
   }
-  return finish(t.config, std::move(entries), f, Reduction::Sum, policy == RefinePolicy::Split);
+  return finish(t.config, std::move(entries), f, Reduction::Sum, split);
 }
 
 // Merges leaves at `level` into their parents when the parent box is inside region.
+//
+// Keys are sorted by level first, so only two runs change: the merged leaves leave the
+// `level` run and their parents join the `level - 1` run; every other leaf keeps its order,
+// and the features of untouched runs are sliced instead of gathered. No sort is needed: the
+// leaves of one parity class (coordinate & 1 per axis) have strictly increasing parents in
+// key order (c -> c >> 1 is monotone and one-to-one within a parity), so the parents in
+// (key, index) order are a merge of 2^D sorted lists, done in D rounds of pairwise merges. Keys, features and the reduction order (children of a parent in
+// index order) are those of sorting all entries (finish()); the only bit-level difference is
+// that untouched leaves keep -0.0 where 0 + x gave +0.0.
 StepResult coarsen_step(const Topology &t, const at::Tensor &f, const AxisAlignedRegion &region,
                         uint32_t level, Reduction reduction, bool &changed) {
-  std::vector<Entry> entries;
   changed = false;
-  for (int64_t i = 0; i < t.size(); ++i) {
-    const Key &k = t.keys[i];
-    if (k.level == level && level >= 1) {
-      const Key p = detail::parent_key(k);
-      if (inside(t, p, region)) {
-        entries.push_back({p, i, 1.0});
-        changed = true;
-        continue;
-      }
-    }
-    entries.push_back({k, i, 1.0});
-  }
-  if (!changed)
+  if (level < 1 || level >= t.counts.size() || t.counts[level] == 0)
     return {};
-  return finish(t.config, std::move(entries), f, reduction, false);
+  int64_t b0 = 0; // first leaf of the level - 1 run
+  for (uint32_t l = 0; l + 1 < level; ++l)
+    b0 += t.counts[l];
+  const int64_t b1 = b0 + t.counts[level - 1]; // first leaf of the level run
+  const int64_t e1 = b1 + t.counts[level];
+  const int64_t N = t.size();
+  struct Child {
+    Key parent;
+    int64_t src;
+  };
+  std::vector<std::vector<Child>> lists(size_t(1) << t.D); // per parity class
+  std::vector<int64_t> kept; // leaves of the level run that stay
+  for (int64_t i = b1; i < e1; ++i) {
+    const Key &k = t.keys[i];
+    const Key p = detail::parent_key(k);
+    if (!inside(t, p, region)) {
+      kept.push_back(i);
+      continue;
+    }
+    size_t cls = 0;
+    for (int d = 0; d < t.D; ++d)
+      cls |= static_cast<size_t>(k.coordinates[d] & 1) << d;
+    lists[cls].push_back({p, i});
+  }
+  const auto before = [](const Child &a, const Child &b) {
+    if (detail::key_less(a.parent, b.parent))
+      return true;
+    if (detail::key_less(b.parent, a.parent))
+      return false;
+    return a.src < b.src;
+  };
+  for (size_t half = lists.size() / 2; half > 0; half /= 2)
+    for (size_t c = 0; c < half; ++c) {
+      std::vector<Child> m(lists[c].size() + lists[c + half].size());
+      std::merge(lists[c].begin(), lists[c].end(), lists[c + half].begin(),
+                 lists[c + half].end(), m.begin(), before);
+      lists[c] = std::move(m);
+      lists[c + half] = {};
+    }
+  const std::vector<Child> &merged = lists[0];
+  if (merged.empty())
+    return {};
+  changed = true;
+  std::vector<Key> parents;
+  std::vector<int64_t> src, dst;
+  src.reserve(merged.size());
+  dst.reserve(merged.size());
+  for (const Child &c : merged) {
+    if (parents.empty() || !(parents.back() == c.parent))
+      parents.push_back(c.parent);
+    src.push_back(c.src);
+    dst.push_back(static_cast<int64_t>(parents.size()) - 1);
+  }
+  const int64_t np = static_cast<int64_t>(parents.size());
+
+  // New keys: levels below level - 1, the level - 1 run merged with the parents, the kept
+  // leaves, levels above `level`. perm[j] is row j of the merged run in [f[b0:b1]; parents].
+  std::vector<Key> keys;
+  keys.reserve(static_cast<size_t>(N - static_cast<int64_t>(merged.size()) + np));
+  keys.insert(keys.end(), t.keys.begin(), t.keys.begin() + b0);
+  std::vector<int64_t> perm;
+  perm.reserve(static_cast<size_t>(b1 - b0 + np));
+  bool interleaved = false;
+  for (int64_t i = b0, j = 0; i < b1 || j < np;) {
+    if (j == np || (i < b1 && detail::key_less(t.keys[i], parents[j]))) {
+      interleaved = interleaved || j > 0;
+      keys.push_back(t.keys[i]);
+      perm.push_back(i++ - b0);
+    } else {
+      keys.push_back(parents[j]);
+      perm.push_back(b1 - b0 + j++);
+    }
+  }
+  for (int64_t i : kept)
+    keys.push_back(t.keys[i]);
+  keys.insert(keys.end(), t.keys.begin() + e1, t.keys.end());
+
+  const auto dev = f.device();
+  auto pooled = remap_features(f, src, dst, nullptr, np, reduction);
+  std::vector<at::Tensor> pieces;
+  if (b0 > 0)
+    pieces.push_back(f.slice(0, 0, b0));
+  if (b1 == b0)
+    pieces.push_back(pooled);
+  else if (!interleaved) // every parent sorts after the level - 1 run
+    pieces.insert(pieces.end(), {f.slice(0, b0, b1), pooled});
+  else
+    pieces.push_back(torch::cat({f.slice(0, b0, b1), pooled}, 0).index_select(0, index_tensor(perm, dev)));
+  if (!kept.empty()) {
+    if (kept.back() - kept.front() + 1 == static_cast<int64_t>(kept.size()))
+      pieces.push_back(f.slice(0, kept.front(), kept.back() + 1));
+    else
+      pieces.push_back(f.index_select(0, index_tensor(kept, dev)));
+  }
+  if (e1 < N)
+    pieces.push_back(f.slice(0, e1, N));
+  auto feats = pieces.size() == 1 ? pieces[0] : torch::cat(pieces, 0);
+  return {Topology::make(t.config, std::move(keys)), feats};
 }
 
 // Leaf index per point (or -1).
@@ -175,6 +298,43 @@ std::vector<int64_t> assign_points(const Topology &t, const at::Tensor &points) 
     out[static_cast<size_t>(i)] = t.find_containing(q);
   }
   return out;
+}
+
+// drop_empty support. For every selected leaf, the bitmask of its children (bit i = i-th
+// child of child_keys) that contain at least one source point; selected leaves without
+// any source point are deselected (they are left unrefined). `leaf` is assign_points().
+std::vector<uint32_t> occupied_children(const Topology &t, const at::Tensor &points,
+                                        const std::vector<int64_t> &leaf, std::vector<char> &sel) {
+  const uint32_t all = (1u << t.D) - 1u;
+  std::vector<uint32_t> mask(static_cast<size_t>(t.size()), 0);
+  const double *p = points.data_ptr<double>();
+  for (size_t i = 0; i < leaf.size(); ++i) {
+    const int64_t j = leaf[i];
+    if (j < 0 || !sel[static_cast<size_t>(j)])
+      continue;
+    const Key &parent = t.keys[j];
+    DVec q{};
+    for (int d = 0; d < t.D; ++d)
+      q[d] = p[static_cast<int64_t>(i) * t.D + d];
+    Key child;
+    if (!t.locate(q, parent.level + 1, child) || !(detail::parent_key(child) == parent)) {
+      mask[j] = all; // cannot place the point in a child: keep them all (never drop data)
+      continue;
+    }
+    uint32_t bit = 0;
+    for (int d = 0; d < t.D; ++d)
+      bit |= static_cast<uint32_t>(child.coordinates[d] & 1) << d;
+    mask[j] |= 1u << bit;
+  }
+  for (size_t j = 0; j < mask.size(); ++j)
+    if (mask[j] == 0)
+      sel[j] = 0;
+  return mask;
+}
+
+void check_drop_empty(bool drop_empty, const std::shared_ptr<const SourcePoints> &source) {
+  if (drop_empty && !source)
+    throw std::invalid_argument("drop_empty refinement requires source points (use from_points)");
 }
 
 void check_features(const at::Tensor &f) {
@@ -283,7 +443,9 @@ AdaptiveSparseTensor AdaptiveSparseTensor::from_points(const at::Tensor &points,
                               static_cast<int64_t>(sorted.size()), Reduction::Mean);
   auto source = std::make_shared<SourcePoints>();
   source->points = pts;
-  source->features = features.detach();
+  // Not detached: revoxelize_from_points() rebuilds leaf features from these, and gradients
+  // must reach the point features through it (refinement criteria read them under no_grad).
+  source->features = features;
   return from_topology(Topology::make(cfg, std::move(sorted)), feats, source);
 }
 
@@ -327,12 +489,33 @@ int64_t AdaptiveSparseTensor::index_of_key(const std::vector<int64_t> &coordinat
   return topology_->find(k);
 }
 
+bool AdaptiveSparseTensor::refine_selected(std::vector<char> &sel, RefinePolicy policy,
+                                           bool drop_empty, const std::vector<int64_t> *leaf) {
+  const Topology &t = *topology_;
+  std::vector<uint32_t> keep;
+  if (drop_empty) {
+    std::vector<int64_t> own;
+    if (!leaf) {
+      own = assign_points(t, source_->points);
+      leaf = &own;
+    }
+    keep = occupied_children(t, source_->points, *leaf, sel);
+  }
+  if (std::find(sel.begin(), sel.end(), char(1)) == sel.end())
+    return false;
+  auto r = refine_step(t, features_, sel, policy, drop_empty ? &keep : nullptr);
+  topology_ = std::move(r.topology);
+  features_ = std::move(r.features);
+  return true;
+}
+
 void AdaptiveSparseTensor::refine(const AxisAlignedRegion &region, uint32_t target_level,
-                                  RefinePolicy policy) {
+                                  RefinePolicy policy, bool drop_empty) {
   const Topology &t0 = *topology_;
   check_region(t0, region);
   if (target_level > t0.max_depth)
     throw std::invalid_argument("refine target_level exceeds max_depth");
+  check_drop_empty(drop_empty, source_);
   while (true) {
     const Topology &t = *topology_;
     std::vector<char> sel(static_cast<size_t>(t.size()), 0);
@@ -342,11 +525,8 @@ void AdaptiveSparseTensor::refine(const AxisAlignedRegion &region, uint32_t targ
         sel[i] = 1;
         any = true;
       }
-    if (!any)
+    if (!any || !refine_selected(sel, policy, drop_empty, nullptr))
       break;
-    auto r = refine_step(t, features_, sel, policy);
-    topology_ = std::move(r.topology);
-    features_ = std::move(r.features);
   }
 }
 
@@ -367,7 +547,9 @@ void AdaptiveSparseTensor::coarsen(const AxisAlignedRegion &region, uint32_t tar
 
 void AdaptiveSparseTensor::refine_if(
     const std::function<bool(int64_t, const std::array<double, 4> &, const std::array<double, 4> &,
-                             uint32_t)> &criterion) {
+                             uint32_t)> &criterion,
+    bool drop_empty) {
+  check_drop_empty(drop_empty, source_);
   while (true) {
     const Topology &t = *topology_;
     std::vector<char> sel(static_cast<size_t>(t.size()), 0);
@@ -382,21 +564,19 @@ void AdaptiveSparseTensor::refine_if(
         any = true;
       }
     }
-    if (!any)
+    if (!any || !refine_selected(sel, RefinePolicy::Replicate, drop_empty, nullptr))
       break;
-    auto r = refine_step(t, features_, sel, RefinePolicy::Replicate);
-    topology_ = std::move(r.topology);
-    features_ = std::move(r.features);
   }
 }
 
-void AdaptiveSparseTensor::refine_by_density(int64_t threshold) {
+void AdaptiveSparseTensor::refine_by_density(int64_t threshold, bool drop_empty) {
   if (!source_)
     throw std::invalid_argument("refine_by_density requires source points (use from_points)");
   while (true) {
     const Topology &t = *topology_;
+    const auto leaf = assign_points(t, source_->points);
     std::vector<int64_t> count(static_cast<size_t>(t.size()), 0);
-    for (int64_t j : assign_points(t, source_->points))
+    for (int64_t j : leaf)
       if (j >= 0)
         ++count[j];
     std::vector<char> sel(static_cast<size_t>(t.size()), 0);
@@ -406,15 +586,12 @@ void AdaptiveSparseTensor::refine_by_density(int64_t threshold) {
         sel[i] = 1;
         any = true;
       }
-    if (!any)
+    if (!any || !refine_selected(sel, RefinePolicy::Replicate, drop_empty, &leaf))
       break;
-    auto r = refine_step(t, features_, sel, RefinePolicy::Replicate);
-    topology_ = std::move(r.topology);
-    features_ = std::move(r.features);
   }
 }
 
-void AdaptiveSparseTensor::refine_by_variance(double threshold) {
+void AdaptiveSparseTensor::refine_by_variance(double threshold, bool drop_empty) {
   if (!source_)
     throw std::invalid_argument("refine_by_variance requires source points (use from_points)");
   while (true) {
@@ -429,6 +606,7 @@ void AdaptiveSparseTensor::refine_by_variance(double threshold) {
     std::vector<char> sel(static_cast<size_t>(t.size()), 0);
     bool any = false;
     if (!pidx.empty()) {
+      torch::NoGradGuard no_grad; // the variance only drives a topology decision
       auto x = source_->features.index_select(0, index_tensor(pidx, source_->features.device()))
                    .to(torch::kFloat64)
                    .cpu();
@@ -447,11 +625,8 @@ void AdaptiveSparseTensor::refine_by_variance(double threshold) {
           any = true;
         }
     }
-    if (!any)
+    if (!any || !refine_selected(sel, RefinePolicy::Replicate, drop_empty, &leaf))
       break;
-    auto r = refine_step(t, features_, sel, RefinePolicy::Replicate);
-    topology_ = std::move(r.topology);
-    features_ = std::move(r.features);
   }
 }
 
@@ -495,6 +670,11 @@ AdaptiveSparseTensor AdaptiveSparseTensor::resample_to(const AdaptiveSparseTenso
   const Topology &r = *reference.topology_;
   if (s.D != r.D)
     throw std::invalid_argument("resample_to: dimension mismatch");
+  // Keys only describe the same cells when both grids share origin and base size.
+  // max_depth may differ: it only bounds how deep each tree can go.
+  if (s.origin != r.origin || s.base != r.base)
+    throw std::invalid_argument(
+        "resample_to: tensors use different grids (origin or base_voxel_size differ)");
   std::vector<int64_t> src, dst;
   for (int64_t j = 0; j < r.size(); ++j) {
     const Key &rk = r.keys[j];
@@ -520,7 +700,32 @@ AdaptiveSparseTensor AdaptiveSparseTensor::resample_to(const AdaptiveSparseTenso
       }
     }
   }
-  auto feats = remap_features(features_, src, dst, nullptr, r.size(), reduction);
+  if (reduction != Reduction::Mean) {
+    auto feats = remap_features(features_, src, dst, nullptr, r.size(), reduction);
+    return from_topology(reference.topology_, feats);
+  }
+  // Mean must agree with coarsen(): average the occupied children level by level, so a
+  // finer leaf's weight is the product of 1 / (occupied children) over its ancestors below
+  // the reference leaf (the volume-weighted mean when every child is occupied).
+  std::unordered_map<Key, int64_t, detail::KeyHash> occupied;
+  {
+    std::unordered_set<Key, detail::KeyHash> nodes;
+    for (size_t m = 0; m < src.size(); ++m) {
+      const uint32_t top = r.keys[dst[m]].level;
+      for (Key k = s.keys[src[m]]; k.level > top; k = detail::parent_key(k))
+        if (!nodes.insert(k).second)
+          break; // its ancestors were inserted with it
+    }
+    for (const Key &n : nodes)
+      ++occupied[detail::parent_key(n)];
+  }
+  std::vector<double> scale(src.size(), 1.0);
+  for (size_t m = 0; m < src.size(); ++m) {
+    const uint32_t top = r.keys[dst[m]].level;
+    for (Key k = s.keys[src[m]]; k.level > top; k = detail::parent_key(k))
+      scale[m] /= static_cast<double>(occupied[detail::parent_key(k)]);
+  }
+  auto feats = remap_features(features_, src, dst, &scale, r.size(), Reduction::Sum);
   return from_topology(reference.topology_, feats);
 }
 

@@ -1,0 +1,23 @@
+{
+  "captured": "2026-11-02T18:20:03.8371539+01:00",
+  "computer": "DESKTOP-2SE7I5F",
+  "cpu": {
+    "Name": "AMD Ryzen 5 5600X 6-Core Processor             ",
+    "NumberOfCores": 6,
+    "NumberOfLogicalProcessors": 12
+  },
+  "physical_memory_bytes": 17085521920,
+  "gpu": "NVIDIA GeForce RTX 2080 SUPER, 610.88, 8192 MiB",
+  "cuda": [
+    "nvcc: NVIDIA (R) Cuda compiler driver",
+    "Copyright (c) 2005-2026 NVIDIA Corporation",
+    "Built on Sun_Sep_01_02:23:07_Pacific_Standard_Time_2026",
+    "Cuda compilation tools, release 13.4, V13.4.92",
+    "Build cuda_13.4.r13.4/compiler.38855100_0"
+  ],
+  "cmake": "cmake version 4.2.3",
+  "torch": "C:\\Users\\User\\Work\\mink-env\\libtorch-2.15.0-cu134\\libtorch",
+  "docker": false,
+  "upstream": "f4ac612d063698f587357881e910328c057b9217",
+  "available_disk_bytes": 214920966144
+}

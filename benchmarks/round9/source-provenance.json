@@ -1,0 +1,29 @@
+{
+  "captured_utc": "2026-11-02T18:47:53.694548+00:00",
+  "runtime_source": "f3f74919a64bede57fab7d5f303e94ca188c931a",
+  "evidence_merge_head": "2e976be0dce231faef495431351b10a084b81161",
+  "native_source_unchanged": true,
+  "changed_paths_since_runtime": [
+    "benchmarks/adaptive_device_budget_ab.py",
+    "benchmarks/adaptive_device_budget_results.json",
+    "benchmarks/adaptive_device_budget_results.md",
+    "benchmarks/gaussian_gather_results.md",
+    "benchmarks/results/gaussian-gather/cpu-adaptive_tests.txt",
+    "benchmarks/results/gaussian-gather/cpu-gaussian_tests.txt",
+    "benchmarks/results/gaussian-gather/cuda-adaptive_tests.txt",
+    "benchmarks/results/gaussian-gather/cuda-gaussian_tests.txt",
+    "benchmarks/results/gaussian-gather/hostload.log",
+    "benchmarks/results/gaussian-gather/initcheck.txt",
+    "benchmarks/results/gaussian-gather/memcheck.txt",
+    "benchmarks/results/gaussian-gather/profile-summary.json",
+    "benchmarks/results/gaussian-gather/racecheck.txt",
+    "benchmarks/results/gaussian-gather/rejected-gradient-storage.txt",
+    "benchmarks/results/gaussian-gather/runs.json",
+    "benchmarks/results/gaussian-gather/summarize.py",
+    "benchmarks/results/gaussian-gather/validation.json",
+    "docs/benchmarks/gaussian_adam_round9.json",
+    "docs/gaussian-adam.md"
+  ],
+  "open_pr_heads_included": 36,
+  "note": "Runtime receipts remain bound to f3f74919. Later commits merge evidence and add reports; no new runtime validation is implied."
+}

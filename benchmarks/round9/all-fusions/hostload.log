@@ -1,0 +1,11 @@
+2026-11-02T19:24:03 [before] cpu_total_avg_3s=62,4% gpu(util,used,total)=41 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:24:16 [after-round-1] cpu_total_avg_2s=66,5% gpu(util,used,total)=38 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:24:29 [after-round-2] cpu_total_avg_2s=78,1% gpu(util,used,total)=45 %, 1213 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:24:47 [after-round-3] cpu_total_avg_2s=67,7% gpu(util,used,total)=49 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:25:00 [after-round-4] cpu_total_avg_2s=38,3% gpu(util,used,total)=50 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:25:13 [after-round-5] cpu_total_avg_2s=80,2% gpu(util,used,total)=39 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:25:27 [after-round-6] cpu_total_avg_2s=68,3% gpu(util,used,total)=46 %, 1205 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:25:43 [after-round-7] cpu_total_avg_2s=67,3% gpu(util,used,total)=39 %, 1213 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:26:04 [after-round-8] cpu_total_avg_2s=95,3% gpu(util,used,total)=35 %, 1213 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:26:19 [after-round-9] cpu_total_avg_2s=87,4% gpu(util,used,total)=36 %, 1200 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
+2026-11-02T19:26:33 [after-round-10] cpu_total_avg_2s=83,3% gpu(util,used,total)=41 %, 1200 MiB, 8192 MiB top_cpu_time=explorer,MsMpEng,System,ChatGPT,Memory Compression,svchost
