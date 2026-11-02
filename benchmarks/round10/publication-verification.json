@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "checked_utc": "2026-11-02T20:32:36.688754+00:00",
+  "checked_utc": "2026-11-02T21:01:29.234763+00:00",
   "validation": "Exact heads, open state, base main, full body and comprehensive comment read back",
   "pull_requests": [
     {
@@ -11,12 +11,12 @@
       "state": "OPEN",
       "reviewDecision": "review pending",
       "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/54#issuecomment-6587414000",
-      "body_sha256": "7326a3321b720b8b73398f5d1a2cf9dde56b8bf10c565bdbbcad39c7394c05b6",
+      "body_sha256": "eec08256eac240d5d676a47d748c4a6150b020135b6bc91cc5f185e65490e5eb",
       "checks": [
         {
           "name": "build-and-publish (124)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517260319/job/125523870280"
         },
         {
@@ -47,12 +47,12 @@
       "state": "OPEN",
       "reviewDecision": "review pending",
       "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/55#issuecomment-6587409934",
-      "body_sha256": "0ee874ac3bdcf1b8a2f87758d9c6b027b20f86eb88f8f158157796da3e1ab197",
+      "body_sha256": "0471b632f29ec9d4083dfc816099f9c0ae79db15fc0f4f3e510f6745b8a31dda",
       "checks": [
         {
           "name": "build-and-publish (124)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371669"
         },
         {
@@ -63,14 +63,14 @@
         },
         {
           "name": "build-and-publish (132)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371283"
         },
         {
           "name": "build-and-publish (134)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517409288/job/125524371144"
         },
         {
@@ -95,12 +95,12 @@
       "state": "OPEN",
       "reviewDecision": "review pending",
       "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/56#issuecomment-6587410031",
-      "body_sha256": "6f332f964b4988561523bc282fee25cb5b772c15f081a3702c9eb6d076a2b487",
+      "body_sha256": "3b48bc71b62045f4691e652c9d17d92fd9097a1b073e8b8dad96d2d4c242e50a",
       "checks": [
         {
           "name": "build-and-publish (124)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532822691"
         },
         {
@@ -111,14 +111,14 @@
         },
         {
           "name": "build-and-publish (132)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823032"
         },
         {
           "name": "build-and-publish (134)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41519874048/job/125532823114"
         },
         {
@@ -143,12 +143,12 @@
       "state": "OPEN",
       "reviewDecision": "review pending",
       "comment_url": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/pull/57#issuecomment-6587409941",
-      "body_sha256": "f81442c6a0b6505c2813c2c7f56514ceff10a5bdada0c4f24b1361062e924558",
+      "body_sha256": "ef7ea0cd2c210670a9803c47216611bd4a1ba56efd3203e067791b5a64feec8f",
       "checks": [
         {
           "name": "build-and-publish (124)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524369573"
         },
         {
@@ -159,14 +159,14 @@
         },
         {
           "name": "build-and-publish (132)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524368838"
         },
         {
           "name": "build-and-publish (134)",
-          "status": "IN_PROGRESS",
-          "conclusion": "",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
           "detailsUrl": "https://github.com/QuiteLiterallyConnor/Minkowski4CPP/actions/runs/41517408982/job/125524370094"
         },
         {

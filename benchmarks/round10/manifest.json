@@ -21,6 +21,31 @@
       "bytes": 2007
     },
     {
+      "path": "ci-final/audit-final-ci.py",
+      "sha256": "121b2f2958a1b380d07eb3eb8c3fe6e862a9734eb15744f045bf0455b9de293f",
+      "bytes": 5594
+    },
+    {
+      "path": "ci-final/CERTIFICATE.csv",
+      "sha256": "717ec449d5a57808feb9e2668062647a612de0c6a44b62930681db8da9399d6c",
+      "bytes": 3806
+    },
+    {
+      "path": "ci-final/CERTIFICATE.json",
+      "sha256": "ea8eae32042863eae4e5748f1322651a8634e276ab8ed87a3feeff2d34669a17",
+      "bytes": 13417
+    },
+    {
+      "path": "ci-final/CERTIFICATE.md",
+      "sha256": "918e68fb9878d44b318fdbd0f78f8dcac1d95e768ff7770299356413f156d5c3",
+      "bytes": 3923
+    },
+    {
+      "path": "ci-final/production-logs.zip",
+      "sha256": "6d6056bda394e91a2a18cbad177f91a899ec0322a96894c6b79cf0fc3c79dff1",
+      "bytes": 680318
+    },
+    {
       "path": "container-runtime/audit-runtime-stages.py",
       "sha256": "456d14ebc084eed6517908212d069969c67ab9fd609cb21609fc51945ccc37ca",
       "bytes": 11152
@@ -336,6 +361,16 @@
       "bytes": 8740
     },
     {
+      "path": "negative-warp-bounds.patch",
+      "sha256": "0b0878a59deefe0c2984300f86e3e773995d5408ad0151cfdf5dc47c5850567c",
+      "bytes": 12029
+    },
+    {
+      "path": "negative-warp-bounds.zip",
+      "sha256": "19677f422f75d8a3455e92973460219b1de9f422283fa9c70a10b6ea8b804937",
+      "bytes": 90374
+    },
+    {
       "path": "paired-uncertainty.json",
       "sha256": "14c4b61e8889e0112ba14fb00d5bf6632c7ed99f0c8244302f7da93dc70aef9a",
       "bytes": 7445
@@ -357,18 +392,18 @@
     },
     {
       "path": "publication-raw.json",
-      "sha256": "6a38579a752f168fbe4716d7e45e4f5320f5d90f232eef11f6809e3862dc5677",
-      "bytes": 74688
+      "sha256": "1d93f03154d67689b50f79870d93ec24b34867043790b3ba01e9d8df39ed5b3e",
+      "bytes": 83423
     },
     {
       "path": "publication-verification.json",
-      "sha256": "6dc408cf9d30840b48d48632cfa89296cdb3447f000815db8bc0d9c26afba699",
-      "bytes": 7799
+      "sha256": "4526d4d46678b5eaf3ed62e47c6788dc44dd295349a0134a0cf0aacc84973104",
+      "bytes": 7849
     },
     {
       "path": "REPORT.md",
-      "sha256": "39564a62dc19ca60296f7c1d278c5c5d5f5ca5c1292c57956d5811270dc23684",
-      "bytes": 14123
+      "sha256": "2f2034316c79996e4e2f89445e4b3a274553950eef44b7bedd4cef7a3360c507",
+      "bytes": 17319
     },
     {
       "path": "source-equivalence.json",
@@ -397,8 +432,8 @@
     },
     {
       "path": "verify.py",
-      "sha256": "42fd3c9625f0bfe81b3022fee0a135c4431efc232b9c7c04c574501423449f10",
-      "bytes": 1780
+      "sha256": "2788a61ba83cdde09913028e280fb1aa7ea3d7629127059042d7ce2f19fe36b9",
+      "bytes": 2660
     }
   ]
 }

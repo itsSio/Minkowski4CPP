@@ -4,6 +4,8 @@ Status: native integrated CPU and CUDA validation passed, 14/14 suites each.
 Corrected Docker CI passed all three repeated jobs: rebuilt modified library,
 CTest 14/14 and standalone GCC ASan/UBSan 6/6 with zero findings. Four independent
 pull requests and their comprehensive technical-summary comments are submitted.
+All12 current-head upstream CUDA-profile compilation/install checks also pass;
+their actual logged versions and source identities are independently certified.
 Earlier round 9 PRs51–53 remain open and are not recreated.
 
 ## Source and environment
@@ -156,6 +158,9 @@ The earlier Gaussian warp-bound candidate8438c04 passed focused correctness but
 was rejected after ten pairs: dense kernel+4.95%, row-groups+2.40%, sparse-3.55%,
 real512px backward+4.11% with0/10paired wins. Lower theoretical scan counts did
 not produce a useful measured improvement. Its raw history remains in `gaussian/`.
+The complete negative-experiment records and source delta are also published as
+`negative-warp-bounds.zip` and `negative-warp-bounds.patch` in the report package;
+the rejected code is not part of the retained engine runtime.
 The receipt-sharing interruption during the retained atomics A/B was recovered
 without overwriting any of the first60 raw trials; their hashes still match.
 
@@ -203,9 +208,14 @@ All four have comprehensive descriptions and technical-summary comments. Existin
 PRs51–53 were preserved. Only fork branches were pushed; no upstream main push
 or automatic merge occurred. PR54's initial upstream CUDA12.4 build exposed the
 already known allocator namespace issue from existing PR32; merge4ac4292 retains
-that prerequisite's ancestry rather than recreating its fix. New exact-head
-upstream CI compilation checks are running independently of the completed native
-and modified-source container runtime gates. Their unfinished state is not a pass.
+that prerequisite's ancestry rather than recreating its fix. All12 current-head
+upstream compilation checks passed. Actual logged profiles are
+CUDA12.4.131/LibTorch2.5.1, CUDA13.2.78/LibTorch2.15.0 and
+CUDA13.4.92/LibTorch2.15.0. Independent audit verified PR heads, checked-out
+synthetic merge ancestry, CPU_ONLY=OFF, CUDA objects and installation in all12
+public job logs. These compilation results remain separate from native GPU
+execution and the three repeated CPU_ONLY container runtime jobs. The certificate,
+log identities and archived logs are in `ci-final/`.
 
 Detailed reports include raw commands, deterministic seeds, hashes, compiler
 versions, benchmark ranges and reproduction scripts:
@@ -221,3 +231,34 @@ engineering validated atomics and sanitizers; ML engineering added portable RSS
 and packaged datasets/results; benchmark specialists independently checked all
 metrics; integration specialists audited merges, test registration and binary
 identities. Root coordinates source freezes, integration and publication.
+
+| Teammate | Responsibility and completed contribution |
+|---|---|
+| testing_environment / docker_testing_recovery | Recovered actual container jobs, fixed CPU source selection and sanitizer command, audited source/linkage/RSS and production build logs |
+| adaptive_benchmark | Recovered the split candidate, independently audited108 trials and26 summaries, packaged the portable runner and evidence |
+| gaussian_cuda / gaussian_cuda_recovery | Recovered80 paired trials, completed native suites and three CUDA sanitizers, reviewed masks/streams and packaged evidence |
+| machine_learning / ml_benchmark_recovery | Added portable RSS, validated datasets, documented model/features, packaged12 trials and independently reviewed uncertainty calculations |
+| benchmark_specialist | Recomputed all ML confusion metrics and Gaussian benchmark summaries with provenance checks |
+| integration_specialist | Certified14-suite CPU/CUDA runs, exact binary/source identities, source registration and preserved EAGER failure |
+| Root integration lead | Added dataset-summary guards and source-selection regression, ran extra seeds, resolved merges, corrected ignored-file publication, verified exported artifacts and submitted PRs/comments |
+
+## Remaining bottlenecks and recommended research
+
+Further kernel changes need fresh profiles on an isolated GPU. The rejected
+warp-bound experiment and approximately flat real-scene atomics training results
+show diminishing returns from the current hypotheses; the shared device also
+reached approximately 125 MiB free during validation. The next measurements
+should separate kernel share, memory stalls and interference before retaining
+another optimization.
+
+The ModelNet pilot establishes a reproducible real-object pipeline. A validation
+split before tuning, matched-information/capacity ablations, balanced method
+ordering, measured conversion-inclusive inference and separate phase VRAM scopes
+are needed before broader representation-quality claims. Gaussian conversion
+medians exceed cached Gaussian inference here, making conversion a useful
+profiling target; independent medians are not an end-to-end timing measurement.
+
+Other follow-ups are deterministic adaptive Sum/Mean pooling profiles, opt-in
+geometry gradients and correlated box integration, additional GPU architectures,
+and GPU-container execution when suitable hardware/runtime access is available.
+Segmentation and reconstruction should build on those measurement foundations.
