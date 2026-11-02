@@ -570,6 +570,7 @@ if(MINK_BUILD_TESTS AND MINKOWSKI_ENABLE_GAUSSIAN)
         tests/gaussian/test_gaussian_tile_bounds.cpp
         tests/gaussian/test_gaussian_projection.cpp
         tests/gaussian/test_gaussian_cpu_raster.cpp
+        tests/gaussian/test_gaussian_ssim.cpp
         tests/gaussian/test_gaussian_cuda_backward.cpp
         tests/gaussian/test_gaussian_adaptive.cpp
     )
