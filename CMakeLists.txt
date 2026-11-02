@@ -500,6 +500,7 @@ if(MINK_BUILD_ADAPTIVE_TESTS)
         tests/adaptive/test_device_kmap.cpp
         tests/adaptive/test_continuous_interp.cpp
         tests/adaptive/test_sort_keys.cpp
+        tests/adaptive/test_coarsen_merge.cpp
         tests/adaptive/test_coverage.cpp
     )
 
