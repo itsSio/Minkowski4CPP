@@ -717,7 +717,7 @@ int main(int argc, char **argv) {
       batch_size = 16, profile_steps = 0;
   uint64_t data_seed = 2026;
   int64_t density_threshold = 12;
-  double lr = 1e-3, kmap_part_reuse_mb = 0.0;
+  double lr = 1e-3, kmap_part_reuse_mb = 0.0, kmap_part_device_mb = -1.0;
   int deterministic = 0, fused_apply = -1;
   if ((argc - 1) % 2 != 0)
     throw std::invalid_argument("Arguments must be option/value pairs");
@@ -751,6 +751,8 @@ int main(int argc, char **argv) {
       profile_steps = std::stoi(v);
     else if (a == "--kmap-part-reuse-mb") // KernelMapCache part reuse budget, 0 = off
       kmap_part_reuse_mb = std::stod(v);
+    else if (a == "--kmap-part-device-mb") // negative = unlimited, zero = no retention
+      kmap_part_device_mb = std::stod(v);
     else if (a == "--deterministic") // 1: deterministic algorithms (warn only where missing)
       deterministic = std::stoi(v);
     else if (a == "--fused-apply") // 0|1: fused CUDA adaptive apply_map off/on (default on)
@@ -767,6 +769,10 @@ int main(int argc, char **argv) {
     ad::detail::cuda_apply_map_fused() = fused_apply != 0;
   ad::KernelMapCache::instance().set_part_reuse_bytes(
       static_cast<size_t>(kmap_part_reuse_mb * 1048576.0));
+  if (!std::isfinite(kmap_part_device_mb) || kmap_part_device_mb > 1e9)
+    throw std::invalid_argument("--kmap-part-device-mb must be finite and <= 1e9");
+  ad::KernelMapCache::instance().set_part_device_bytes(kmap_part_device_mb < 0 ? size_t(-1) :
+      static_cast<size_t>(kmap_part_device_mb * 1048576.0));
   if (batch_size < 2)
     throw std::invalid_argument("--batch must be at least 2 for training with BatchNorm");
   if (device_s != "cpu" && device_s != "cuda" && device_s != "auto")
@@ -1037,6 +1043,12 @@ int main(int argc, char **argv) {
             {"active_elements_max", *std::max_element(active.begin(), active.end())},
             {"level_histogram_train", level_hist},
             {"curve", epochs_j},
+            {"kmap_part_device_mb", kmap_part_device_mb},
+            {"kmap_part_device_bytes", ad::KernelMapCache::instance().stats().part_device_bytes},
+            {"kmap_part_device_peak_bytes", ad::KernelMapCache::instance().stats().part_device_peak_bytes},
+            {"kmap_part_device_hits", ad::KernelMapCache::instance().stats().part_device_hits},
+            {"kmap_part_device_misses", ad::KernelMapCache::instance().stats().part_device_misses},
+            {"kmap_part_device_groups", ad::KernelMapCache::instance().stats().part_device_groups},
             {"kmap_part_reuse_mb", kmap_part_reuse_mb},
             {"kmap_part_hits", ad::KernelMapCache::instance().stats().part_hits},
             {"kmap_part_misses", ad::KernelMapCache::instance().stats().part_misses},
