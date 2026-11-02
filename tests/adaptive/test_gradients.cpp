@@ -336,6 +336,8 @@ TEST(gradient_interpolation_without_hits_is_connected) {
 TEST(gradient_interpolation_without_hits_is_connected_cuda) {
     require_cuda();
     check_interpolation_without_hits(torch::kCUDA);
+}
+
 // A maximum of exactly 0 keeps the whole gradient (torch's amax backward also counted the
 // zero-initialised output as a tied maximum and halved it at every pooling step).
 TEST(gradient_max_pool_at_zero_keeps_unit_gradient) {
