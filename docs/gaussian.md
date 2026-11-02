@@ -153,10 +153,14 @@ For posed-image reconstruction with densification, use
 
 ## Current limitations
 
-- No Gaussian-to-sparse-voxel bridge or adaptive spatial index.
+- `gaussian_adaptive.hpp` bridges Gaussian tensors and adaptive sparse voxels and
+  provides leaf lookup. A bridge to uniform `SparseTensor` is not available.
+  Bridge weights freeze geometry; BoxIntegral uses axis-aligned marginal
+  variances and does not integrate covariance cross-axis correlations.
 - No shared SE(3) abstraction; transforms accept quaternions directly.
-- The renderer's fused CUDA path covers tile compositing; projection and
-  SH evaluation remain LibTorch operations.
+- The renderer fuses CUDA projection (including its analytic backward),
+  culling/tile-list construction, attribute gathering/scattering and tile
+  compositing. SH evaluation remains in LibTorch.
 
 See [Gaussian tests and benchmarks](testing.md#gaussian-tests-and-benchmarks)
 for fixture paths, parity checks, and local measurements.

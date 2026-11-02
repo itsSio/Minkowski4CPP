@@ -109,7 +109,7 @@ same row count as an encoder output does not prove matching keys.
 | Adaptive overlap | Cost grows with level gap |
 | Uniform resampling | Potentially enormous output |
 | Legacy/adaptive comparison | Per-row numerical equivalence was not established |
-| Gaussian integration | No sparse-voxel bridge or adaptive index |
+| Gaussian integration | Adaptive voxel bridge and leaf lookup available; no uniform SparseTensor bridge; bridge spatial weights freeze geometry |
 | Compressed Gaussian PLY | SH decode not verified against reference output |
 | Gaussian CUDA rasterizer | Fixed 16x16 tiles; tile/chunk options ignored |
 | Backend support | No ROCm backend; macOS is not a documented supported profile |

@@ -86,8 +86,11 @@ recovers transmittance from the final value, warp-reduced atomics); on CPU, or
 with `RenderOptions::use_cuda_kernels = false`, it uses a LibTorch
 implementation with a tile-recompute backward pass. The kernels fix the tile
 size at 16 and ignore `tile_size`/`chunk_size`. The other dedicated CUDA kernels
-cover covariance construction and rigid transforms
-only. `GaussianTensor::transform` accepts quaternion transforms directly; this
+also cover projection and its analytic backward, culling/tile-list construction,
+attribute gathering/scattering, SSIM and trainer Adam updates. SH evaluation
+remains in LibTorch. Bridge spatial weights freeze geometry, and BoxIntegral
+uses marginal variances without integrating covariance cross-axis correlations.
+`GaussianTensor::transform` accepts quaternion transforms directly; this
 repository currently has no shared SE(3) module to integrate with.
 
 ## Rendering, SH and training

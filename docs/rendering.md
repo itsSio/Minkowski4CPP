@@ -83,8 +83,9 @@ compositing in tiles. Autograd reaches Gaussian parameters.
 | Fused CUDA | CUDA tensors, kernels available, `use_cuda_kernels=true` | Forward/backward compositing kernels, 16x16 tiles |
 | LibTorch | CPU, or CUDA with fused kernels disabled | Differentiable tensor-based fallback |
 
-Projection and SH evaluation remain LibTorch operations. CUDA tile
-compositing uses shared-memory batches and warp-reduced gradient
+CUDA projection uses fused kernels with an analytic backward, followed by fused
+culling/tile-list construction and attribute gathering/scattering. SH evaluation
+remains in LibTorch. CUDA tile compositing uses shared-memory batches and warp-reduced gradient
 accumulation. The fused path **always uses tile size 16** and ignores
 `tile_size` / `chunk_size` tuning.
 
