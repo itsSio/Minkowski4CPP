@@ -544,6 +544,7 @@ if(MINK_BUILD_TESTS AND MINKOWSKI_ENABLE_GAUSSIAN)
         tests/gaussian/test_gaussian_render.cpp
         tests/gaussian/test_gaussian_compressed_ply.cpp
         tests/gaussian/test_gaussian_gradcheck.cpp
+        tests/gaussian/test_gaussian_tile_bounds.cpp
         tests/gaussian/test_gaussian_cpu_raster.cpp
         tests/gaussian/test_gaussian_cuda_backward.cpp
     )
